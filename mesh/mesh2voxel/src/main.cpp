@@ -16,33 +16,21 @@ int main(int argc, char * argv[]) {
     if(argc == 6) {
         dim = atoi(argv[5]);
     }
-    Lattice l(nx,ny,nz,Eigen::AlignedBox<double,3>());
-    int buf = 2;
-    Eigen::Vector3d slices(nx-2*buf,ny-2*buf,nz-2*buf);
 
     
     std::cout << "Mesh filename: " << argv[1] << std::endl;
     TriangleMesh m(TriangleMesh::readObj(argv[1]));
-    Eigen::AlignedBox<double,3> & bbox = l.bbox();
-    for(auto&& v: m.vertices) {
-        bbox.extend(v);
-    }
-    Eigen::Vector3d dx = bbox.sizes().cwiseQuotient(slices);
-    bbox.min() -= buf * dx;
-    bbox.max() += buf * dx;
-    l.calculateDx();
-    std::cout << bbox.min().transpose() << "|||" << bbox.max().transpose() << std::endl;
+    std::cout << m.vertices.size() << " " << m.triangles.size() << std::endl;
 
-    Bucket b(m,l,dim);
-    b.getVoxels();
+    Lattice l(m,nx,ny,nz,dim);
     std::vector<bool> s(l.size(),false);
-    auto&& voxels = b.getVoxels();
-    for(auto&& v: voxels) {
+    for(auto&& v: l) {
         s[l.ijk2idx(v[0],v[1],v[2])] = true;
     };
     for(unsigned int i=0; i < l.NI(); ++i) {
         for(unsigned int j=0; j < l.NJ(); ++j) {
             for(unsigned int k=0; k < l.NK(); ++k) {
+
                 if(s[l.ijk2idx(i,j,k)]) {
                     std::cout << "O" ;
                 } else {
@@ -56,6 +44,7 @@ int main(int argc, char * argv[]) {
         std::cout << std::endl;
         std::cout << std::endl;
     }
+    l.write("a.vox");
 
 
     return 0;

@@ -8,7 +8,7 @@ struct absless{
     }
 };
 
-Bucket::Bucket(const TriangleMesh & tm, const Lattice & l, unsigned char dim): tm(tm), l(l), dim(dim), rg(l,dim), I((dim+1)%3), J((dim+2)%3) {
+Bucket::Bucket(const TriangleMesh & tm, Lattice & l, unsigned char dim): tm(tm), l(l), dim(dim), rg(l,dim), I((dim+1)%3), J((dim+2)%3) {
     std::vector<unsigned int> vert_bucket(tm.vertices.size());
     triangles.resize(l.N()(I) * l.N()(J));
     std::transform(tm.vertices.begin(), tm.vertices.end(), vert_bucket.begin(),[&](const Eigen::Vector3d & v) -> unsigned int {
@@ -33,11 +33,12 @@ Bucket::Bucket(const TriangleMesh & tm, const Lattice & l, unsigned char dim): t
     }
 }
 
-std::set<std::array<unsigned int,3 > > && Bucket::getVoxels() const {
+#include <iostream>
+void Bucket::getVoxels() {
 
     std::vector<unsigned int> counter(l.N()(dim));
     std::vector<bool> m(triangles.size(),false);
-    std::set<std::array<unsigned int,3> > voxels;
+    std::set<std::array<unsigned int,3> > & voxels = l.getVoxels();
     for(auto&& r: rg) {
         std::set<double, absless > ipoints;
         for(auto&& ti: triangles[rg.ij2idx(r.ij())]) {
@@ -77,7 +78,6 @@ std::set<std::array<unsigned int,3 > > && Bucket::getVoxels() const {
     }
 
 
-    return std::move(voxels);
-}
 
+}
 

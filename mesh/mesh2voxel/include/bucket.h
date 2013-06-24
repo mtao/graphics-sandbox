@@ -8,15 +8,14 @@
 //A very fragile trianglemesh bucket-er
 class Bucket{
     public:
-        Bucket(const TriangleMesh & tm, const Lattice & lattice, unsigned char dim=0);
+        Bucket(const TriangleMesh & tm, Lattice & lattice, unsigned char dim=0);
 
-        std::set<std::array<unsigned int, 3> > && getVoxels() const;
+        void getVoxels();
 
         
-//        RayIterator getRayIterator(unsigned char dim) { return RayIterator(l,dim);}
     protected:
         const TriangleMesh & tm;
-        const Lattice & l;
+        Lattice & l;
         const unsigned char dim;
         RayGenerator rg;
         const unsigned char I;

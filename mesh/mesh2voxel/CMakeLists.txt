@@ -10,9 +10,10 @@ ADD_DEFINITIONS(-Werror)
 ADD_DEFINITIONS(-Wall)
 
 # Include dirs
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(/opt/boost_1_44_0/include ${CMAKE_CURRENT_SOURCE_DIR}/include /usr/local/include/eigen3)
 # Autogen'd moc code appears in the BINARY_DIR I believe
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+
 
 # Source files
 SET(Mesh2Voxel_SOURCES
@@ -30,11 +31,16 @@ SET(Mesh2Voxel_HEADERS
     include/lattice.h
     include/rayiterator.h
     include/bucket.h
+    include/eigen_boost_serialization.hpp
+    include/serialization.hpp
     )
 
-
+#FIND_PACKAGE(Boost 1.44.0 COMPONENTS serialization REQUIRED)
+FIND_LIBRARY(BOOST_SERIALIZATION_LIB
 # Executable to build
 ADD_EXECUTABLE(Mesh2Voxel
     ${Mesh2Voxel_SOURCES}
     ${Mesh2Voxel_HEADERS})
 
+message(${Boost_LIBRARIES})
+#TARGET_LINK_LIBRARIES(Mesh2Voxel ${Boost_LIBRARIES})
