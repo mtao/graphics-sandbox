@@ -29,3 +29,17 @@ unsigned int Lattice::getIndex(const Eigen::Vector3d &v) const {
 Eigen::Vector3ui Lattice::getIJK(const Eigen::Vector3d & v) const{
     return (v-bbox().min()).cwiseQuotient(dx()).cast<unsigned int>();
 }
+
+Lattice::Lattice(const TriangleMesh & tm, unsigned int nx, unsigned int ny, unsigned int nz, unsigned char dim, int buf): m_N(nx,ny,nz) {
+    Eigen::Vector3d slices(nx-2*buf,ny-2*buf,nz-2*buf);
+    for(auto&& v: tm.vertices) {
+        bbox().extend(v);
+    }
+    Eigen::Vector3d dx = bbox().sizes().cwiseQuotient(slices);
+    bbox().min() -= buf * dx;
+    bbox().max() += buf * dx;
+    calculateDx();
+    Bucket b(tm,*this,dim);
+    b.getVoxels();
+
+}

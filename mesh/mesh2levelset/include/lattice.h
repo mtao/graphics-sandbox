@@ -26,7 +26,7 @@ class Lattice{
 
         unsigned int getIndex(const Eigen::Vector3d & v) const;
         Eigen::Vector3ui getIJK(const Eigen::Vector3d & v) const;
-
+		Lattice(const TriangleMesh & t, unsigned int ni, unsigned int nj, unsigned int nk, unsigned char dim=0, int buf=2);
     private:
         Eigen::Vector3ui m_N;
         Eigen::AlignedBox<double,3> m_bbox;
