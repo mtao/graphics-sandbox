@@ -1,0 +1,13 @@
+#ifdef VFTRIANGLEMESH_H
+#ifndef VFTRIANGLEMESH_IPL
+
+template <typename Scalar>
+VFTriangleMesh<Scalar>::VFTriangleMesh() {}
+
+
+template <typename Scalar>
+VFTriangleMesh<Scalar>::VFTriangleMesh(const TriangleSet& triangles, const VertexVector& vertices): m_triangles(triangles),m_vertices(vertices) {
+}
+
+#endif
+#endif
