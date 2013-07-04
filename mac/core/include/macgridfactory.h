@@ -4,53 +4,60 @@
 #include "mac.h"
 
 
-namespace mtao{ internal {
-    enum GridEnum {NGrid,CGrid,UGrid,VGrid,WGrid,DUGrid,DVGrid,DWGrid,NGrid};
-}}
+namespace mtao{ namespace internal {
+    enum GridEnum {NGrid,UGrid,VGrid,WGrid,DUGrid,DVGrid,DWGrid,CGrid};
 template <typename Scalar, int EmbedDim>
 struct GridSelector {
     template <GridEnum Type>
         struct select {
         };
 };
+/*
 template <typename Scalar>
 struct GridSelector<Scalar,2> {
     template <GridEnum Type>
         struct select {};
     typedef grid_types<Scalar,2> Types;
-    template <>
-        struct select<NGrid> {typedef Types::NGrid type};
-    template <>
-        struct select<UGrid> {typedef Types::UGrid type};
-    template <>
-        struct select<VGrid> {typedef Types::VGrid type};
-    template <>
-        struct select<NGrid> {typedef Types::NGrid type};
 };
+*/
+template <typename Scalar>
+struct GridSelector<Scalar,2>::select<NGrid> {typedef Types::NGrid type};
+template <typename Scalar>
+struct GridSelector<Scalar,2>::select<UGrid> {typedef Types::UGrid type};
+template <typename Scalar>
+struct GridSelector<Scalar,2>::select<VGrid> {typedef Types::VGrid type};
+template <typename Scalar>
+struct GridSelector<Scalar,2>::select<NGrid> {typedef Types::NGrid type};
+/*
 template <typename Scalar>
 struct GridSelector<Scalar,3> {
     template <GridEnum Type>
         struct select {};
     typedef grid_types<Scalar,3> Types;
-    template <>
-        struct select<NGrid> {typedef Types::NGrid type};
-    template <>
-        struct select<UGrid> {typedef Types::UGrid type};
-    template <>
-        struct select<VGrid> {typedef Types::VGrid type};
-    template <>
-        struct select<WGrid> {typedef Types::WGrid type};
-    template <>
-        struct select<UGrid> {typedef Types::DUGrid type};
-    template <>
-        struct select<VGrid> {typedef Types::DVGrid type};
-    template <>
-        struct select<WGrid> {typedef Types::DWGrid type};
-    template <>
-        struct select<NGrid> {typedef Types::NGrid type};
 };
+*/
+template <typename Scalar>
+struct GridSelector<Scalar,3>::select<NGrid> {typedef Types::NGrid type};
+template <typename Scalar>
+struct GridSelector<Scalar,3>::select<UGrid> {typedef Types::UGrid type};
+template <typename Scalar>
+struct GridSelector<Scalar,3>::select<VGrid> {typedef Types::VGrid type};
+template <typename Scalar>
+struct GridSelector<Scalar,3>::select<WGrid> {typedef Types::WGrid type};
+template <typename Scalar>
+struct GridSelector<Scalar,3>::select<UGrid> {typedef Types::DUGrid type};
+template <typename Scalar>
+struct GridSelector<Scalar,3>::select<VGrid> {typedef Types::DVGrid type};
+template <typename Scalar>
+struct GridSelector<Scalar,3>::select<WGrid> {typedef Types::DWGrid type};
+template <typename Scalar>
+struct GridSelector<Scalar,3>::select<NGrid> {typedef Types::NGrid type};
+}}
+
+
 template <typename Scalar, int EmbedDim> 
 struct MACGridFactory {
+    using namespace mtao::internal;
     typedef GridSelector<Scalar,EmbedDim> MySelector;
 
 
@@ -60,7 +67,7 @@ struct MACGridFactory {
     MACGridFactory(const Veci & dim,const Vec & origin,  const Vec & dx): m_N(dim),m_origin(origin),  m_dx(dx) {}
 
 
-    
+
     template <GridEnum Type>
         MySelector<Type>::type create() {
             typedef MySelector<Type>::type ReturnType;

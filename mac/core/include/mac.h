@@ -33,11 +33,19 @@ template <typename Scalar, int EmbedDim,int FormDim,int WhichForm>
 struct traits<MACGrid<Scalar,EmbedDim,FormDim,WhichForm> > {
     enum {embed_dim = EmbedDim, form_dim = FormDim, which_form = WhichForm};
 };
+/*
 template <typename Scalar> 
 struct traits<typename grid_types<Scalar,2>::NGrid > {
     typedef typename grid_types<Scalar,2>::NGrid grid_type;
     enum {embed_dim = grid_type::embed_dim, form_dim = grid_type::form_dim, which_form = grid_type::which_form};
 };
+*/
+template <typename GridType>
+struct mac_offsets {
+    const static typename GridType::Vec offset();
+    const static typename GridType::Veci added_cells();
+};
+/*
 template <typename Scalar> 
 struct mac_offsets<typename grid_types<Scalar,2>::NGrid > {
     const static Eigen::Matrix<Scalar,2,1> offset(0,0);
@@ -98,13 +106,20 @@ struct mac_offsets<typename grid_types<Scalar,3>::CGrid > {
     const static Eigen::Matrix<Scalar,3,1> offset(0.5,0.5,0.5);
     const static Eigen::Matrix<int,3,1> added_cells(0,0,0);
 };
+*/
+template <typename Scalar>
+struct mac_offsets< Eigen::Matrix<Scalar,3,1> > {
+    typedef float merg;
+};
 
+typedef mac_offsets<Eigen::Vector3f>::merg bert;
+typedef mac_offsets<Eigen::Vector3d>::merg berg;
 }}
 template <typename Scalar, int EmbedDim> 
 struct MACGridFactory;
 template <typename Scalar_, int EmbedDim,int FormDim,int WhichForm> 
-class MACGrid<Scalar,EmbedDim,FormDim,WhichForm>: public GridBase<MACGrid<Scalar_,EmbedDim,FormDim,WhichForm> > {
-    typedef MACGrid<Scalar,EmbedDim,FormDim,WhichForm> MyType;
+class MACGrid: public GridBase<MACGrid<Scalar_,EmbedDim,FormDim,WhichForm> > {
+    typedef MACGrid<Scalar_,EmbedDim,FormDim,WhichForm> MyType;
     public:
     //Make template parameters externally available
     typedef Scalar_ Scalar;
@@ -118,4 +133,4 @@ class MACGrid<Scalar,EmbedDim,FormDim,WhichForm>: public GridBase<MACGrid<Scalar
     friend class MACGridFactory<Scalar,EmbedDim>;
     using Base::Base;
 };
-iendif
+#endif
