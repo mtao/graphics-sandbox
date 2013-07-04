@@ -2,32 +2,23 @@
 #define MACGRIDFACTORY_H
 
 #include "mac.h"
+#include <Eigen/Geometry>
 
-
-namespace mtao{ namespace internal {
+namespace mtao{ 
     enum GridEnum {NGrid,UGrid,VGrid,WGrid,DUGrid,DVGrid,DWGrid,CGrid};
-template <typename Scalar, int EmbedDim>
+    namespace internal {
+
+template <typename Scalar, int EmbedDim, GridEnum Enum>
 struct GridSelector {
-    template <GridEnum Type>
-        struct select {
-        };
 };
-/*
 template <typename Scalar>
-struct GridSelector<Scalar,2> {
-    template <GridEnum Type>
-        struct select {};
-    typedef grid_types<Scalar,2> Types;
-};
-*/
+struct GridSelector<Scalar,2,NGrid> {typedef typename grid_types<Scalar,2>::NGrid type;};
 template <typename Scalar>
-struct GridSelector<Scalar,2>::select<NGrid> {typedef Types::NGrid type};
+struct GridSelector<Scalar,2,UGrid> {typedef typename grid_types<Scalar,2>::UGrid type;};
 template <typename Scalar>
-struct GridSelector<Scalar,2>::select<UGrid> {typedef Types::UGrid type};
+struct GridSelector<Scalar,2,VGrid> {typedef typename grid_types<Scalar,2>::VGrid type;};
 template <typename Scalar>
-struct GridSelector<Scalar,2>::select<VGrid> {typedef Types::VGrid type};
-template <typename Scalar>
-struct GridSelector<Scalar,2>::select<NGrid> {typedef Types::NGrid type};
+struct GridSelector<Scalar,2,CGrid> {typedef typename grid_types<Scalar,2>::CGrid type;};
 /*
 template <typename Scalar>
 struct GridSelector<Scalar,3> {
@@ -37,44 +28,47 @@ struct GridSelector<Scalar,3> {
 };
 */
 template <typename Scalar>
-struct GridSelector<Scalar,3>::select<NGrid> {typedef Types::NGrid type};
+struct GridSelector<Scalar,3,NGrid> {typedef typename grid_types<Scalar,3>::NGrid type;};
 template <typename Scalar>
-struct GridSelector<Scalar,3>::select<UGrid> {typedef Types::UGrid type};
+struct GridSelector<Scalar,3,UGrid> {typedef typename grid_types<Scalar,3>::UGrid type;};
 template <typename Scalar>
-struct GridSelector<Scalar,3>::select<VGrid> {typedef Types::VGrid type};
+struct GridSelector<Scalar,3,VGrid> {typedef typename grid_types<Scalar,3>::VGrid type;};
 template <typename Scalar>
-struct GridSelector<Scalar,3>::select<WGrid> {typedef Types::WGrid type};
+struct GridSelector<Scalar,3,WGrid> {typedef typename grid_types<Scalar,3>::WGrid type;};
 template <typename Scalar>
-struct GridSelector<Scalar,3>::select<UGrid> {typedef Types::DUGrid type};
+struct GridSelector<Scalar,3,DUGrid> {typedef typename grid_types<Scalar,3>::DUGrid type;};
 template <typename Scalar>
-struct GridSelector<Scalar,3>::select<VGrid> {typedef Types::DVGrid type};
+struct GridSelector<Scalar,3,DVGrid> {typedef typename grid_types<Scalar,3>::DVGrid type;};
 template <typename Scalar>
-struct GridSelector<Scalar,3>::select<WGrid> {typedef Types::DWGrid type};
+struct GridSelector<Scalar,3,DWGrid> {typedef typename grid_types<Scalar,3>::DWGrid type;};
 template <typename Scalar>
-struct GridSelector<Scalar,3>::select<NGrid> {typedef Types::NGrid type};
+struct GridSelector<Scalar,3,CGrid> {typedef typename grid_types<Scalar,3>::CGrid type;};
 }}
 
 
 template <typename Scalar, int EmbedDim> 
 struct MACGridFactory {
-    using namespace mtao::internal;
-    typedef GridSelector<Scalar,EmbedDim> MySelector;
+    template <mtao::GridEnum GridType>
+        struct selector {
+            typedef typename mtao::internal::GridSelector<Scalar,EmbedDim,GridType>::type type;
+        };
 
 
     typedef Eigen::Matrix<Scalar,EmbedDim,1> Vec;
-    typedef Eigen::Matrix<int,EmbedDim,1> Vec;
+    typedef Eigen::Matrix<int,EmbedDim,1> Veci;
 
-    MACGridFactory(const Veci & dim,const Vec & origin,  const Vec & dx): m_N(dim),m_origin(origin),  m_dx(dx) {}
+    MACGridFactory(const Veci & dim,const Vec & origin=Vec(0,0,0),  const Vec & dx=Vec(1,1,1)): m_N(dim),m_origin(origin),  m_dx(dx) {}
+
+    MACGridFactory(const Veci & dim,const Eigen::AlignedBox<Scalar,EmbedDim>& bbox): m_N(dim),m_origin(bbox.min()),  m_dx(bbox.sizes().cwiseQuotient(dim.template cast<Scalar>())) {}
 
 
-
-    template <GridEnum Type>
-        MySelector<Type>::type create() {
-            typedef MySelector<Type>::type ReturnType;
-            typedef typename mac_offsets<ReturnType> MyMACOffsets;
+    template <mtao::GridEnum Type>
+        typename selector<Type>::type create() {
+            typedef typename selector<Type>::type ReturnType;
+            typedef typename mtao::internal::mac_offsets<ReturnType> MyMACOffsets;
             return ReturnType(
-                    m_origin+m_dx.cwiseProduct(MyMACOffsets::offset),
-                    m_N+MyMACOffsets::added_cells,
+                    m_N+MyMACOffsets::added_cells(),
+                    m_origin+m_dx.cwiseProduct(MyMACOffsets::offset()),
                     m_dx
                     );
         }
