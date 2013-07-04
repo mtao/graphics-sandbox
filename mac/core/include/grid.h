@@ -18,7 +18,7 @@ class GridBase{
     typedef typename Eigen::Map<Eigen::Matrix<Scalar,Eigen::Dynamic,1> > MapVec;
     typedef typename Eigen::Map<const Eigen::Matrix<Scalar,Eigen::Dynamic,1> > ConstMapVec;
     protected:
-    GridBase(const Veci & dim,const Vec & origin,  const Vec & dx): m_N(dim),m_origin(origin),  m_dx(dx), m_data(N(0)*N(1)*N(2)), m_lerp(*this) {}
+    GridBase(const Veci & dim,const Vec & origin,  const Vec & dx): m_N(dim),m_origin(origin),  m_dx(dx), m_data(m_N.prod()), m_lerp(*this) {}
     public:
 
     typedef Scalar value_type;
@@ -49,6 +49,7 @@ class GridBase{
     Vec worldToIndex(const Vec & v) {return (v-origin()).cwiseQuotient(dx());}
     Vec indexToWorld(const Vec & v) {return v.cwiseProduct(dx()) + origin();}
     Vec indexToWorld(const Veci & v) {return v.template cast<Scalar>().cwiseProduct(dx()) + origin();}
+    Vec indexToWorld(int x,int y) {return indexToWorld(Veci(x,y));}
     Vec indexToWorld(int x,int y, int z) {return indexToWorld(Veci(x,y,z));}
 
     //linear interpolation for a index-space vector
@@ -78,6 +79,12 @@ class GridBase{
     Scalar operator()(int a)const {return m_data[a];}
     Scalar operator()(int a, int b) const{return m_data[idx2ind(a,b)];}
     Scalar operator()(int a, int b, int c)const {return m_data[idx2ind(a,b,c)];}
+    //Iterators
+    typename std::vector<Scalar>::iterator begin() {return m_data.begin();}
+    typename std::vector<Scalar>::iterator end() {return m_data.end();}
+    typename std::vector<Scalar>::const_iterator cbegin() {return m_data.cbegin();}
+    typename std::vector<Scalar>::const_iterator cend() {return m_data.cend();}
+
     private:
     Veci m_N;
     Vec m_origin;

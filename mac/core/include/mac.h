@@ -6,6 +6,7 @@
 
 template <typename Scalar, int EmbedDim,int FormDim,int WhichForm> 
 class MACGrid;
+//Introduce some more tradition names than the exterior calculus form declarations
 template <typename Scalar, int D>
 struct grid_types{};
 template <typename Scalar>
@@ -34,38 +35,34 @@ struct traits<MACGrid<Scalar_,EmbedDim,FormDim,WhichForm> > {
     enum {embed_dim = EmbedDim, form_dim = FormDim, which_form = WhichForm};
     typedef Scalar_ Scalar;
 };
-/*
-template <typename Scalar> 
-struct traits<typename grid_types<Scalar,2>::NGrid > {
-    typedef typename grid_types<Scalar,2>::NGrid grid_type;
-    enum {embed_dim = grid_type::embed_dim, form_dim = grid_type::form_dim, which_form = grid_type::which_form};
-};
-*/
+
+
+//All of the ugly case work for staggered grids...
 template <typename GridType>
 struct mac_offsets {
 };
-/*
+
 template <typename Scalar> 
-struct mac_offsets<typename grid_types<Scalar,2>::NGrid > {
-    constexpr static Eigen::Matrix<Scalar,2,1> offset(0,0);
-    constexpr static Eigen::Matrix<int,2,1> added_cells(1,1);
+struct mac_offsets<MACGrid<Scalar,2,0,0> > {
+    constexpr static Eigen::Matrix<Scalar,2,1> offset() {return Eigen::Matrix<Scalar,2,1>(0,0);}
+    constexpr static Eigen::Matrix<int,2,1> added_cells() {return Eigen::Matrix<int,2,1>(1,1);}
 };
 template <typename Scalar> 
-struct mac_offsets<typename grid_types<Scalar,2>::UGrid > {
-    constexpr static Eigen::Matrix<Scalar,2,1> offset(0,0.5);
-    constexpr static Eigen::Matrix<int,2,1> added_cells(1,0);
+struct mac_offsets<MACGrid<Scalar,2,1,0> > {
+    constexpr static Eigen::Matrix<Scalar,2,1> offset() {return Eigen::Matrix<Scalar,2,1>(0,0.5);}
+    constexpr static Eigen::Matrix<int,2,1> added_cells() {return Eigen::Matrix<int,2,1>(1,0);}
 };
 template <typename Scalar> 
-struct mac_offsets<typename grid_types<Scalar,2>::VGrid > {
-    constexpr static Eigen::Matrix<Scalar,2,1> offset(0.5,0);
-    constexpr static Eigen::Matrix<int,2,1> added_cells(0,1);
+struct mac_offsets<MACGrid<Scalar,2,1,1> > {
+    constexpr static Eigen::Matrix<Scalar,2,1> offset() {return Eigen::Matrix<Scalar,2,1>(0.5,0.0);}
+    constexpr static Eigen::Matrix<int,2,1> added_cells() {return Eigen::Matrix<int,2,1>(0,1);}
 };
 template <typename Scalar> 
-struct mac_offsets<typename grid_types<Scalar,2>::CGrid > {
-    constexpr static Eigen::Matrix<Scalar,2,1> offset(0.5,0.5);
-    constexpr static Eigen::Matrix<int,2,1> added_cells(0,0);
+struct mac_offsets<MACGrid<Scalar,2,2,0> > {
+    constexpr static Eigen::Matrix<Scalar,2,1> offset() {return Eigen::Matrix<Scalar,2,1>(.5,.5);}
+    constexpr static Eigen::Matrix<int,2,1> added_cells() {return Eigen::Matrix<int,2,1>(0,0);}
 };
-*/
+
 template <typename Scalar> 
 struct mac_offsets<MACGrid<Scalar,3,0,0> > {
     constexpr static Eigen::Matrix<Scalar,3,1> offset() {return Eigen::Matrix<Scalar,3,1>(0,0,0);}
@@ -106,45 +103,6 @@ struct mac_offsets<MACGrid<Scalar,3,2,2> > {
     constexpr static Eigen::Matrix<Scalar,3,1> offset() {return Eigen::Matrix<Scalar,3,1>(0.0,0.0,0.5);}
     constexpr static Eigen::Matrix<int,3,1> added_cells() {return Eigen::Matrix<int,3,1>(1,1,0);}
 };
-/*
-template <typename Scalar> 
-struct mac_offsets<typename grid_types<Scalar,3>::VGrid > {
-    constexpr static Eigen::Matrix<Scalar,3,1> offset(0.5,0,0.5);
-    constexpr static Eigen::Matrix<int,3,1> added_cells(0,1,0);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types<Scalar,3>::WGrid > {
-    constexpr static Eigen::Matrix<Scalar,3,1> offset(0.5,0.5,0);
-    constexpr static Eigen::Matrix<int,3,1> added_cells(0,0,1);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types<Scalar,3>::DUGrid > {
-    constexpr static Eigen::Matrix<Scalar,3,1> offset(0.5,0.0,0.0);
-    constexpr static Eigen::Matrix<int,3,1> added_cells(0,1,1);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types<Scalar,3>::DVGrid > {
-    constexpr static Eigen::Matrix<Scalar,3,1> offset(0.0,0.5,0.0);
-    constexpr static Eigen::Matrix<int,3,1> added_cells(1,0,1);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types<Scalar,3>::DWGrid > {
-    constexpr static Eigen::Matrix<Scalar,3,1> offset(0.0,0.0,0.5);
-    constexpr static Eigen::Matrix<int,3,1> added_cells(1,1,0);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types<Scalar,3>::CGrid > {
-    constexpr static Eigen::Matrix<Scalar,3,1> offset(0.5,0.5,0.5);
-    constexpr static Eigen::Matrix<int,3,1> added_cells(0,0,0);
-};
-template <typename Scalar>
-struct mac_offsets< Eigen::Matrix<Scalar,3,1> > {
-    typedef float merg;
-};
-
-typedef mac_offsets<Eigen::Vector3f>::merg bert;
-typedef mac_offsets<Eigen::Vector3d>::merg berg;
-*/
 }}
 template <typename Scalar, int EmbedDim> 
 struct MACGridFactory;

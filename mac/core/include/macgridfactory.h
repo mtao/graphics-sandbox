@@ -4,13 +4,16 @@
 #include "mac.h"
 #include <Eigen/Geometry>
 
+//To make things easier we provide an enum to declare grid types, and then crud to map the 
+//enum to the appropriate grid types
 namespace mtao{ 
     enum GridEnum {NGrid,UGrid,VGrid,WGrid,DUGrid,DVGrid,DWGrid,CGrid};
     namespace internal {
 
 template <typename Scalar, int EmbedDim, GridEnum Enum>
-struct GridSelector {
-};
+struct GridSelector {};
+
+//2D
 template <typename Scalar>
 struct GridSelector<Scalar,2,NGrid> {typedef typename grid_types<Scalar,2>::NGrid type;};
 template <typename Scalar>
@@ -19,14 +22,8 @@ template <typename Scalar>
 struct GridSelector<Scalar,2,VGrid> {typedef typename grid_types<Scalar,2>::VGrid type;};
 template <typename Scalar>
 struct GridSelector<Scalar,2,CGrid> {typedef typename grid_types<Scalar,2>::CGrid type;};
-/*
-template <typename Scalar>
-struct GridSelector<Scalar,3> {
-    template <GridEnum Type>
-        struct select {};
-    typedef grid_types<Scalar,3> Types;
-};
-*/
+
+//3D
 template <typename Scalar>
 struct GridSelector<Scalar,3,NGrid> {typedef typename grid_types<Scalar,3>::NGrid type;};
 template <typename Scalar>
@@ -57,7 +54,7 @@ struct MACGridFactory {
     typedef Eigen::Matrix<Scalar,EmbedDim,1> Vec;
     typedef Eigen::Matrix<int,EmbedDim,1> Veci;
 
-    MACGridFactory(const Veci & dim,const Vec & origin=Vec(0,0,0),  const Vec & dx=Vec(1,1,1)): m_N(dim),m_origin(origin),  m_dx(dx) {}
+    MACGridFactory(const Veci & dim,const Vec & origin=Vec::Zero(),  const Vec & dx=Vec::Ones()): m_N(dim),m_origin(origin),  m_dx(dx) {}
 
     MACGridFactory(const Veci & dim,const Eigen::AlignedBox<Scalar,EmbedDim>& bbox): m_N(dim),m_origin(bbox.min()),  m_dx(bbox.sizes().cwiseQuotient(dim.template cast<Scalar>())) {}
 
