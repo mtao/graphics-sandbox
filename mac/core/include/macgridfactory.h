@@ -87,8 +87,8 @@ class MACGridFactory {
             typedef typename mtao::internal::GridSelector<Scalar,EmbedDim,Type>::type ReturnType;
             typedef typename mtao::internal::mac_offsets<ReturnType> MyMACOffsets;
             return ReturnType(
-                    m_N+Eigen::Map<const Veci>(MyMACOffsets::extra_cells),
-                    m_origin+m_dx.cwiseProduct(Eigen::Map<const Vec>(MyMACOffsets::offsets)),
+                    m_N+Eigen::Map<const Veci>(MyMACOffsets::extra_cells().data()),
+                    m_origin+m_dx.cwiseProduct(Eigen::Map<const Vec>(MyMACOffsets::offsets().data())),
                     m_dx
                     );
         }

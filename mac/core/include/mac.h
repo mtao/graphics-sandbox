@@ -44,64 +44,64 @@ struct mac_offsets {
 
 template <typename Scalar> 
 struct mac_offsets<MACGrid<Scalar,2,0,0> > {
-     constexpr static Scalar offsets[2] = {0,0};
-     constexpr static int extra_cells[2] = {1,1};
+     constexpr static std::array<Scalar,2> offsets() {return {{0,0}};}
+     constexpr static std::array<int,2> extra_cells() {return {{1,1}};}
 };
 template <typename Scalar> 
 struct mac_offsets<MACGrid<Scalar,2,1,0> > {
-     constexpr static Scalar offsets[2] = {0,0.5};
-     constexpr static int extra_cells[2] = {1,0};
+     constexpr static std::array<Scalar,2> offsets() {return {{0,0.5}};}
+     constexpr static std::array<int,2> extra_cells() {return {{1,0}};}
 };
 template <typename Scalar> 
 struct mac_offsets<MACGrid<Scalar,2,1,1> > {
-     constexpr static Scalar offsets[2] = {0.5,0.0};
-     constexpr static int extra_cells[2] = {0,1};
+     constexpr static std::array<Scalar,2> offsets() {return {{0.5,0.0}};}
+     constexpr static std::array<int,2> extra_cells() {return {{0,1}};}
 };
 template <typename Scalar> 
 struct mac_offsets<MACGrid<Scalar,2,2,0> > {
-     constexpr static Scalar offsets[2] = {.5,.5};
-     constexpr static int extra_cells[2] = {0,0};
+     constexpr static std::array<Scalar,2> offsets() {return {{.5,.5}};}
+     constexpr static std::array<int,2> extra_cells() {return {{0,0}};}
 };
 
 template <typename Scalar> 
 struct mac_offsets<MACGrid<Scalar,3,0,0> > {
-     constexpr static Scalar offsets[3] = {0,0,0};
-     constexpr static int extra_cells[3] = {1,1,1};
+     constexpr static std::array<Scalar,3> offsets() {return {{0,0,0}};}
+     constexpr static std::array<int,3> extra_cells() {return {{1,1,1}};}
 };
 template <typename Scalar> 
 struct mac_offsets<MACGrid<Scalar,3,1,0> > {
-     constexpr static Scalar offsets[3] = {0,0.5,0.5};
-     constexpr static int extra_cells[3] = {1,0,0};
+     constexpr static std::array<Scalar,3> offsets() {return {{0,0.5,0.5}};}
+     constexpr static std::array<int,3> extra_cells() {return {{1,0,0}};}
 };
 template <typename Scalar> 
 struct mac_offsets<MACGrid<Scalar,3,1,1> > {
-     constexpr static Scalar offsets[3] = {0.5,0.0,0.5};
-     constexpr static int extra_cells[3] = {0,1,0};
+     constexpr static std::array<Scalar,3> offsets() {return {{0.5,0.0,0.5}};}
+     constexpr static std::array<int,3> extra_cells() {return {{0,1,0}};}
 };
 template <typename Scalar> 
 struct mac_offsets<MACGrid<Scalar,3,1,2> > {
-     constexpr static Scalar offsets[3] = {0.5,0.5,0.0};
-     constexpr static int extra_cells[3] = {0,0,1};
+     constexpr static std::array<Scalar,3> offsets() {return {{0.5,0.5,0.0}};}
+     constexpr static std::array<int,3> extra_cells() {return {{0,0,1}};}
 };
 template <typename Scalar> 
 struct mac_offsets<MACGrid<Scalar,3,3,0> > {
-     constexpr static Scalar offsets[3] = {.5,.5,.5};
-     constexpr static int extra_cells[3] = {0,0,0};
+     constexpr static std::array<Scalar,3> offsets() {return {{.5,.5,.5}};}
+     constexpr static std::array<int,3> extra_cells() {return {{0,0,0}};}
 };
 template <typename Scalar> 
 struct mac_offsets<MACGrid<Scalar,3,2,0> > {
-     constexpr static Scalar offsets[3] = {0.5,0.0,0.0};
-     constexpr static int extra_cells[3] = {0,1,1};
+     constexpr static std::array<Scalar,3> offsets() {return {{0.5,0.0,0.0}};}
+     constexpr static std::array<int,3> extra_cells() {return {{0,1,1}};}
 };
 template <typename Scalar> 
 struct mac_offsets<MACGrid<Scalar,3,2,1> > {
-     constexpr static Scalar offsets[3] = {0.0,0.5,0.0};
-     constexpr static int extra_cells[3] = {1,0,1};
+     constexpr static std::array<Scalar,3> offsets() {return {{0.0,0.5,0.0}};}
+     constexpr static std::array<int,3> extra_cells() {return {{1,0,1}};}
 };
 template <typename Scalar> 
 struct mac_offsets<MACGrid<Scalar,3,2,2> > {
-     constexpr static Scalar offsets[3] = {0.0,0.0,0.5};
-     constexpr static int extra_cells[3] = {1,1,0};
+     constexpr static std::array<Scalar,3> offsets() {return {{0.0,0.0,0.5}};}
+     constexpr static std::array<int,3> extra_cells() {return {{1,1,0}};}
 };
 }}
 template <typename Scalar, int EmbedDim> 
