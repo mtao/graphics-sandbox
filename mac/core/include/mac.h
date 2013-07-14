@@ -121,6 +121,8 @@ class MACGrid: public GridBase<MACGrid<Scalar_,EmbedDim,FormDim,WhichForm> > {
     protected:
     friend class MACGridFactory<Scalar,EmbedDim>;
     MACGrid(const Veci & dim,const Vec & origin,  const Vec & dx): Base(dim,origin,dx) {}
+    public:
+    MACGrid(MyType&& grid): Base(std::move(grid)) {}
     //using Base::Base;
 };
 #endif

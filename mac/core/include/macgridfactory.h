@@ -2,6 +2,7 @@
 #define MACGRIDFACTORY_H
 
 #include "mac.h"
+#include <memory>
 
 
 namespace mtao{ 
@@ -87,6 +88,16 @@ class MACGridFactory {
             typedef typename mtao::internal::GridSelector<Scalar,EmbedDim,Type>::type ReturnType;
             typedef typename mtao::internal::mac_offsets<ReturnType> MyMACOffsets;
             return ReturnType(
+                    m_N+Eigen::Map<const Veci>(MyMACOffsets::extra_cells().data()),
+                    m_origin+m_dx.cwiseProduct(Eigen::Map<const Vec>(MyMACOffsets::offsets().data())),
+                    m_dx
+                    );
+        }
+    template <mtao::GridEnum Type>
+        typename mtao::internal::GridSelector<Scalar,EmbedDim,Type>::type createPtr() {
+            typedef typename mtao::internal::GridSelector<Scalar,EmbedDim,Type>::type ReturnType;
+            typedef typename mtao::internal::mac_offsets<ReturnType> MyMACOffsets;
+            return std::make_shared<ReturnType>(
                     m_N+Eigen::Map<const Veci>(MyMACOffsets::extra_cells().data()),
                     m_origin+m_dx.cwiseProduct(Eigen::Map<const Vec>(MyMACOffsets::offsets().data())),
                     m_dx

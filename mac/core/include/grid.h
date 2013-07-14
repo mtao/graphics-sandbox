@@ -5,7 +5,6 @@
 #include "lerp.h"
 #include <vector>
 
-#include <iostream>
 template <typename Derived>
 class GridBase{
     enum {dim = mtao::internal::traits<Derived>::embed_dim};
@@ -19,11 +18,24 @@ class GridBase{
     typedef typename Eigen::Map<const Eigen::Matrix<Scalar,Eigen::Dynamic,1> > ConstMapVec;
     protected:
     GridBase(const Veci & dim,const Vec & origin,  const Vec & dx): m_N(dim),m_origin(origin),  m_dx(dx), m_data(m_N.prod()), m_lerp(*this) {}
+    GridBase(GridBase&& other): m_N(other.m_N),m_origin(other.m_origin),  m_dx(other.m_dx), m_data(std::move(other.m_data)), m_lerp(*this) {}
+    GridBase& operator=(GridBase&& other) {
+        m_N=other.m_N;
+        m_origin=other.m_origin;
+        m_dx=other.m_dx;
+        m_data=std::move(other.m_data);
+    }
+    GridBase& operator=(const GridBase& other) {
+        m_N=other.m_N;
+        m_origin=other.m_origin;
+        m_dx=other.m_dx;
+        m_data=other.m_data;
+    }
     public:
 
     typedef Scalar value_type;
     int size() const {return stlVector().size();}
-    
+
 
     //Derived handlers
     Derived& derived(){return *static_cast<Derived*>(this);}
