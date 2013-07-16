@@ -125,11 +125,14 @@ class MACGridFactory {
           , m_origin(bbox.min())
           , m_dx(bbox.sizes().cwiseQuotient(dim.template cast<Scalar>())) {}
 
-
+    template <mtao::GridEnum Type>
+    struct Selector {
+        typedef typename mtao::internal::GridSelector<Scalar,EmbedDim,Type>::type type;
+    };
 
     template <mtao::GridEnum Type>
-        typename mtao::internal::GridSelector<Scalar,EmbedDim,Type>::type create() {
-            typedef typename mtao::internal::GridSelector<Scalar,EmbedDim,Type>::type ReturnType;
+        typename Selector<Type>::type create() {
+            typedef typename Selector<Type>::type ReturnType;
             typedef typename mtao::internal::mac_offsets<ReturnType> MyMACOffsets;
             return ReturnType(
                     m_N+Eigen::Map<const Veci>(MyMACOffsets::extra_cells().data()),
@@ -138,14 +141,14 @@ class MACGridFactory {
                     );
         }
     template <mtao::GridEnum Type>
-        typename mtao::internal::GridSelector<Scalar,EmbedDim,Type>::type createPtr() {
-            typedef typename mtao::internal::GridSelector<Scalar,EmbedDim,Type>::type ReturnType;
+        typename Selector<Type>::type::ptr createPtr() {
+            typedef typename Selector<Type>::type ReturnType;
             typedef typename mtao::internal::mac_offsets<ReturnType> MyMACOffsets;
-            return std::make_shared<ReturnType>(
+            return std::shared_ptr<ReturnType>(new ReturnType(//Can't use make_shared without allowing make_shared to create its own grids
                     m_N+Eigen::Map<const Veci>(MyMACOffsets::extra_cells().data()),
                     m_origin+m_dx.cwiseProduct(Eigen::Map<const Vec>(MyMACOffsets::offsets().data())),
                     m_dx
-                    );
+                    ));
         }
     private:
     Veci m_N;

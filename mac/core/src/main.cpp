@@ -1,6 +1,26 @@
 #include "macgridfactory.h"
 #include <iostream>
 
+
+struct A {
+    typedef MACGridFactory<float,2> FactoryType;
+    A(Eigen::AlignedBox<float,2> bbox, Eigen::Vector2i v)
+        : m_factory(v,bbox)
+          , u(m_factory.create<mtao::UGrid>()) 
+    {}
+    FactoryType m_factory;
+    FactoryType::Selector<mtao::UGrid>::type u;
+};
+struct B {
+    typedef MACGridFactory<float,2> FactoryType;
+    B(Eigen::AlignedBox<float,2> bbox, Eigen::Vector2i v)
+        : m_factory(v,bbox)
+          , u(m_factory.createPtr<mtao::UGrid>()) 
+    {}
+    FactoryType m_factory;
+    FactoryType::Selector<mtao::UGrid>::type::ptr u;
+};
+
 int main() {
     //The grid will be fined by an axis aligned bounding box...
     Eigen::AlignedBox<double,3> m(Eigen::Vector3d(0,0,0),Eigen::Vector3d(1,1,1));
