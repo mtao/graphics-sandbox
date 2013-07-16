@@ -107,16 +107,18 @@ struct mac_offsets<MACGrid<Scalar,3,2,2> > {
 template <typename Scalar, int EmbedDim> 
 class MACGridFactory;
 template <typename Scalar_, int EmbedDim,int FormDim,int WhichForm> 
-class MACGrid: public GridBase<MACGrid<Scalar_,EmbedDim,FormDim,WhichForm> > {
+class MACGrid: public Grid<Scalar_,EmbedDim> {
     typedef MACGrid<Scalar_,EmbedDim,FormDim,WhichForm> MyType;
     public:
     //Make template parameters externally available
     typedef Scalar_ Scalar;
     enum {embed_dim = EmbedDim, form_dim = FormDim, which_form = WhichForm};
     //Some helpful typedefs, not necessarily for external use
-    typedef GridBase<MACGrid<Scalar,EmbedDim,FormDim,WhichForm> > Base;
+    typedef Grid<Scalar,EmbedDim> Base;
     typedef typename mtao::dim_types<EmbedDim>::template scalar_types<Scalar>::Vec Vec;
     typedef typename mtao::dim_types<EmbedDim>::Veci Veci;
+    typedef std::shared_ptr<MyType> ptr;
+    typedef std::weak_ptr<MyType > weak_ptr;
 
     protected:
     friend class MACGridFactory<Scalar,EmbedDim>;

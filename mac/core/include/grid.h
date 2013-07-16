@@ -4,28 +4,33 @@
 #include "traits.h"
 #include "lerp.h"
 #include <vector>
+#include <memory>
 
-template <typename Derived>
-class GridBase{
-    enum {dim = mtao::internal::traits<Derived>::embed_dim};
-    typedef typename mtao::internal::traits<Derived> derived_traits;
-    typedef typename derived_traits::Scalar Scalar;
+template <typename Scalar_, int EmbedDim>
+class Grid{
+//    enum {dim = mtao::internal::traits<Derived>::embed_dim};
+    enum {dim = EmbedDim};
+//    typedef typename mtao::internal::traits<Derived> derived_traits;
+//    typedef typename derived_traits::Scalar Scalar;
+    typedef Scalar_ Scalar;
     typedef typename mtao::dim_types<dim> _dt;
     public:
     typedef typename _dt::template scalar_types<Scalar>::Vec Vec;
     typedef typename _dt::Veci Veci;
     typedef typename Eigen::Map<Eigen::Matrix<Scalar,Eigen::Dynamic,1> > MapVec;
     typedef typename Eigen::Map<const Eigen::Matrix<Scalar,Eigen::Dynamic,1> > ConstMapVec;
+    typedef std::shared_ptr<Grid<Scalar,dim> > ptr;
+    typedef std::weak_ptr<Grid<Scalar,dim> > weak_ptr;
     protected:
-    GridBase(const Veci & dim,const Vec & origin,  const Vec & dx): m_N(dim),m_origin(origin),  m_dx(dx), m_data(m_N.prod()), m_lerp(*this) {}
-    GridBase(GridBase&& other): m_N(other.m_N),m_origin(other.m_origin),  m_dx(other.m_dx), m_data(std::move(other.m_data)), m_lerp(*this) {}
-    GridBase& operator=(GridBase&& other) {
+    Grid(const Veci & dim,const Vec & origin,  const Vec & dx): m_N(dim),m_origin(origin),  m_dx(dx), m_data(m_N.prod()), m_lerp(*this) {}
+    Grid(Grid&& other): m_N(other.m_N),m_origin(other.m_origin),  m_dx(other.m_dx), m_data(std::move(other.m_data)), m_lerp(*this) {}
+    Grid& operator=(Grid&& other) {
         m_N=other.m_N;
         m_origin=other.m_origin;
         m_dx=other.m_dx;
         m_data=std::move(other.m_data);
     }
-    GridBase& operator=(const GridBase& other) {
+    Grid& operator=(const Grid& other) {
         m_N=other.m_N;
         m_origin=other.m_origin;
         m_dx=other.m_dx;
@@ -37,9 +42,9 @@ class GridBase{
     int size() const {return stlVector().size();}
 
 
-    //Derived handlers
-    Derived& derived(){return *static_cast<Derived*>(this);}
-    const Derived & derived()const {return *static_cast<const Derived*>(this);}
+//    //Derived handlers
+//    Derived& derived(){return *static_cast<Derived*>(this);}
+//    const Derived & derived()const {return *static_cast<const Derived*>(this);}
 
     //Internal data accessors
     const Veci& N() const {return m_N;}
@@ -102,7 +107,7 @@ class GridBase{
     Vec m_origin;
     Vec m_dx;
     std::vector<Scalar> m_data;
-    const typename mtao::lerp::template LinearInterpolator<Vec::RowsAtCompileTime, GridBase<Derived> > m_lerp;
+    const typename mtao::lerp::template LinearInterpolator<Vec::RowsAtCompileTime, Grid<Scalar,EmbedDim> > m_lerp;
 
         
 };

@@ -8,6 +8,49 @@
 namespace mtao{ 
     enum GridEnum {NGrid,CGrid,UGrid,VGrid,WGrid,DUGrid,DVGrid,DWGrid};
     namespace internal {
+        template <int EmbedDim, int FormDim, int WhichForm>
+            struct GridEnumSelector{
+            };
+        template <int EmbedDim>
+            struct GridEnumSelector<EmbedDim,0,0>{
+                enum {value = NGrid};
+            };
+        template <int EmbedDim>
+            struct GridEnumSelector<EmbedDim,1,0>{
+                enum {value = UGrid};
+            };
+        template <int EmbedDim>
+            struct GridEnumSelector<EmbedDim,1,1>{
+                enum {value = VGrid};
+            };
+        template <int EmbedDim>
+            struct GridEnumSelector<EmbedDim,1,2>{
+                enum {value = WGrid};
+            };
+        template <int EmbedDim>
+            struct GridEnumSelector<EmbedDim,2,0>{
+                enum {value = DUGrid};
+            };
+        template <int EmbedDim>
+            struct GridEnumSelector<EmbedDim,2,1>{
+                enum {value = DVGrid};
+            };
+        template <int EmbedDim>
+            struct GridEnumSelector<EmbedDim,2,2>{
+                enum {value = DWGrid};
+            };
+        template <>
+            struct GridEnumSelector<1,1,0>{
+                enum {value = CGrid};
+            };
+        template <>
+            struct GridEnumSelector<2,2,0>{
+                enum {value = CGrid};
+            };
+        template <>
+            struct GridEnumSelector<3,3,0>{
+                enum {value = CGrid};
+            };
     template <typename Scalar, int EmbedDim, GridEnum Type>
         struct GridSelector {
         };
@@ -59,6 +102,7 @@ namespace mtao{
         struct GridSelector<Scalar,3,DWGrid> {
             typedef grid_types<Scalar,3> Types;
             typedef typename Types::DWGrid type;};
+
 
 
 }}
