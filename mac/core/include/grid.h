@@ -21,7 +21,7 @@ class Grid{
     typedef typename Eigen::Map<const Eigen::Matrix<Scalar,Eigen::Dynamic,1> > ConstMapVec;
     typedef std::shared_ptr<Grid<Scalar,dim> > ptr;
     typedef std::weak_ptr<Grid<Scalar,dim> > weak_ptr;
-    protected:
+
     Grid(const Veci & dim,const Vec & origin,  const Vec & dx): m_N(dim),m_origin(origin),  m_dx(dx), m_data(m_N.prod()), m_lerp(*this) {}
     Grid(Grid&& other): m_N(other.m_N),m_origin(other.m_origin),  m_dx(other.m_dx), m_data(std::move(other.m_data)), m_lerp(*this) {}
     Grid& operator=(Grid&& other) {
