@@ -70,4 +70,20 @@ int main() {
         std::cout << v << " ";
     }
     std::cout << std::endl;
+    g3.loop([](double v)->double{
+            return 2*v;
+            });
+    for(auto&& v: g3) {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
+    Eigen::Vector2d center = factory2.bbox().center();
+    g3.loop([&](const Eigen::Vector2i& c, double v)->double{
+            
+            return (g3.indexToWorld(c)-center).norm()-.3;
+            });
+    for(auto&& v: g3) {
+        std::cout << v << " ";
+    }
+    std::cout << std::endl;
 }

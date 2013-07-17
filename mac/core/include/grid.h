@@ -80,27 +80,64 @@ class Grid{
         return ilerp(worldToIndex(v));
     }
     //Maps from 3d to 2d elements
-    int idx2ind(int a) const{
+    int coord2idx(int a) const{
         return a;
     }
-    int idx2ind(int a, int b) const{
+    int coord2idx(int a, int b) const{
         return m_N(1) * a + b;
     }
-    int idx2ind(int a, int b, int c)const {
+    int coord2idx(int a, int b, int c)const {
         return m_N(2) * (m_N(1) * a + b) + c;
     }
+    int coord2idx(const Veci& c)const {
+        int idx=c(0);
+        for(int i=1; i <EmbedDim; ++i) {
+            idx = m_N(i) * idx + c(i);
+        }
+        return idx;
+    }
     //Accessors
-    Scalar& operator()(int a) {return m_data[a];}
-    Scalar& operator()(int a, int b) {return m_data[idx2ind(a,b)];}
-    Scalar& operator()(int a, int b, int c) {return m_data[idx2ind(a,b,c)];}
-    Scalar operator()(int a)const {return m_data[a];}
-    Scalar operator()(int a, int b) const{return m_data[idx2ind(a,b)];}
-    Scalar operator()(int a, int b, int c)const {return m_data[idx2ind(a,b,c)];}
+    Scalar& coeffRef(int a) {return m_data[a];}
+    Scalar& coeffRef(int a, int b) {return m_data[coord2idx(a,b)];}
+    Scalar& coeffRef(int a, int b, int c) {return m_data[coord2idx(a,b,c)];}
+    Scalar coeff(int a)const {return m_data[a];}
+    Scalar coeff(int a, int b) const{return m_data[coord2idx(a,b)];}
+    Scalar coeff(int a, int b, int c)const {return m_data[coord2idx(a,b,c)];}
+    Scalar& operator()(int a) {return coeffRef(a);}
+    Scalar& operator()(int a, int b) {return coeffRef(a,b);}
+    Scalar& operator()(int a, int b, int c) {return coeffRef(a,b,c);}
+    Scalar operator()(int a)const {return coeff(a);}
+    Scalar operator()(int a, int b) const {return coeff(a,b);}
+    Scalar operator()(int a, int b, int c)const {return coeff(a,b,c);}
     //Iterators
     typename std::vector<Scalar>::iterator begin() {return m_data.begin();}
     typename std::vector<Scalar>::iterator end() {return m_data.end();}
     typename std::vector<Scalar>::const_iterator cbegin() {return m_data.cbegin();}
     typename std::vector<Scalar>::const_iterator cend() {return m_data.cend();}
+
+    void incrementLoop(Veci& c) {
+        for(int i = EmbedDim-1; i >= 0; --i) {
+            if(++c(i) >= m_N(i)) {
+                c(i)=0;
+                continue;
+            } else {
+                return;
+            }
+        }
+    }
+    //Looping
+    Grid& loop(const std::function<Scalar(const Veci&, Scalar)>& f) {
+        Veci coord(Veci::Zero());
+        for(Scalar& v: m_data) {
+            v=f(coord,v);
+            incrementLoop(coord);
+        }
+        return *this;
+    }
+    Grid& loop(const std::function<Scalar(Scalar)>& f) {
+        std::transform(m_data.begin(),m_data.end(),m_data.begin(), f);
+        return *this;
+    }
 
     private:
     Veci m_N;
@@ -109,7 +146,7 @@ class Grid{
     std::vector<Scalar> m_data;
     const typename mtao::lerp::template LinearInterpolator<Vec::RowsAtCompileTime, Grid<Scalar,EmbedDim> > m_lerp;
 
-        
-};
+
+    };
 
 #endif
