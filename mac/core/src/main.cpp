@@ -86,4 +86,9 @@ int main() {
         std::cout << v << " ";
     }
     std::cout << std::endl;
+    Eigen::Vector2i coord(2,2);
+    std::cout << factory2.create<mtao::CGrid>().indexToWorld(coord).transpose() << std::endl;
+    std::cout << factory2.create<mtao::UGrid>().indexToWorld(coord).transpose() << std::endl;
+    std::cout << factory2.create<mtao::VGrid>().indexToWorld(coord).transpose() << std::endl;
+    std::cout << factory2.create<mtao::NGrid>().indexToWorld(coord).transpose() << std::endl;
 }

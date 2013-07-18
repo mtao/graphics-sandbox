@@ -115,7 +115,7 @@ class Grid{
     typename std::vector<Scalar>::const_iterator cbegin() {return m_data.cbegin();}
     typename std::vector<Scalar>::const_iterator cend() {return m_data.cend();}
 
-    void incrementLoop(Veci& c) {
+    void incrementLoop(Veci& c)const {
         for(int i = EmbedDim-1; i >= 0; --i) {
             if(++c(i) >= m_N(i)) {
                 c(i)=0;
@@ -133,6 +133,13 @@ class Grid{
             incrementLoop(coord);
         }
         return *this;
+    }
+    void loop(const std::function<void(const Veci&, Scalar)>& f)const {
+        Veci coord(Veci::Zero());
+        for(Scalar v: m_data) {
+            f(coord,v);
+            incrementLoop(coord);
+        }
     }
     Grid& loop(const std::function<Scalar(Scalar)>& f) {
         std::transform(m_data.begin(),m_data.end(),m_data.begin(), f);
