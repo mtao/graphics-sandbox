@@ -9,7 +9,7 @@ namespace mtao{ namespace lerp {
     template <typename T>
         T bilerp(T v00, T v01, T v10, T v11, T a, T b) {
             return (1-b) * lerp(v00,v01,a)
-                + b * lerp(v10,v11,b);
+                + b * lerp(v10,v11,a);
         }
     template <typename T>
         T trilerp(
