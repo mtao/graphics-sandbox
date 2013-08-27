@@ -1,99 +1,137 @@
 #ifndef MAC_H
 #define MAC_H
 #include "grid.h"
+#include "traits.h"
 
 
 template <typename Scalar, int EmbedDim,int FormDim,int WhichForm> 
-class MACGrid<Scalar,EmbedDim,FormDim,WhichForm>;
+class MACGrid;
+//Introduce some more tradition names than the exterior calculus form declarations
+template <typename Scalar, int D>
+struct grid_types{};
 template <typename Scalar>
-struct grid_types2d {
+struct grid_types<Scalar,2>{
     typedef MACGrid<Scalar,2,0,0> NGrid;
     typedef MACGrid<Scalar,2,1,0> UGrid;
     typedef MACGrid<Scalar,2,1,1> VGrid;
     typedef MACGrid<Scalar,2,2,0> CGrid;
 };
 template <typename Scalar>
-struct grid_types3d {
+struct grid_types<Scalar,3> {
     typedef MACGrid<Scalar,3,0,0> NGrid;
     typedef MACGrid<Scalar,3,1,0> UGrid;
     typedef MACGrid<Scalar,3,1,1> VGrid;
-    typedef MACGrid<Scalar,3,1,2> VGrid;
+    typedef MACGrid<Scalar,3,1,2> WGrid;
     typedef MACGrid<Scalar,3,2,0> DUGrid;
     typedef MACGrid<Scalar,3,2,1> DVGrid;
-    typedef MACGrid<Scalar,3,2,2> DVGrid;
+    typedef MACGrid<Scalar,3,2,2> DWGrid;
     typedef MACGrid<Scalar,3,3,0> CGrid;
 };
 //TODO: Make sure grids live in index space
 
 namespace mtao{namespace internal{
-template <typename Scalar, int EmbedDim,int FormDim,int WhichForm> 
-struct traits<MACGrid<Scalar,EmbedDim,FormDim,WhichForm> > {
+template <typename Scalar_, int EmbedDim,int FormDim,int WhichForm> 
+struct traits<MACGrid<Scalar_,EmbedDim,FormDim,WhichForm> > {
     enum {embed_dim = EmbedDim, form_dim = FormDim, which_form = WhichForm};
-};
-template <typename Scalar> 
-struct traits<typename grid_types2d<Scalar>::NGrid > {
-    typedef typename grid_types2d<Scalar>::NGrid grid_type;
-    enum {embed_dim = grid_type::embed_dim, form_dim = grid_type::form_dim, which_form = grid_type::which_form};
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types2d<Scalar>::NGrid > {
-    const static Eigen::Matrix<Scalar,2,1> offset(0,0);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types2d<Scalar>::UGrid > {
-    const static Eigen::Matrix<Scalar,2,1> offset(0,0.5);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types2d<Scalar>::VGrid > {
-    const static Eigen::Matrix<Scalar,2,1> offset(0.5,0);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types2d<Scalar>::CGrid > {
-    const static Eigen::Matrix<Scalar,2,1> offset(0.5,0.5);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types3d<Scalar>::NGrid > {
-    const static Eigen::Matrix<Scalar,3,1> offset(0,0,0);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types3d<Scalar>::UGrid > {
-    const static Eigen::Matrix<Scalar,3,1> offset(0,0.5,0.5);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types3d<Scalar>::VGrid > {
-    const static Eigen::Matrix<Scalar,3,1> offset(0.5,0,0.5);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types3d<Scalar>::WGrid > {
-    const static Eigen::Matrix<Scalar,3,1> offset(0.5,0.5,0);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types3d<Scalar>::DUGrid > {
-    const static Eigen::Matrix<Scalar,3,1> offset(0.5,0.0,0.0);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types3d<Scalar>::DVGrid > {
-    const static Eigen::Matrix<Scalar,3,1> offset(0.0,0.5,0.0);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types3d<Scalar>::DWGrid > {
-    const static Eigen::Matrix<Scalar,3,1> offset(0.0,0.0,0.5);
-};
-template <typename Scalar> 
-struct mac_offsets<typename grid_types3d<Scalar>::CGrid > {
-    const static Eigen::Matrix<Scalar,3,1> offset(0.5,0.5,0.5);
+    typedef Scalar_ Scalar;
 };
 
+
+//All of the ugly case work for staggered grids...
+template <typename GridType>
+struct mac_offsets {
+};
+
+template <typename Scalar> 
+struct mac_offsets<MACGrid<Scalar,2,0,0> > {
+     constexpr static std::array<Scalar,2> offsets() {return {{0,0}};}
+     constexpr static std::array<int,2> extra_cells() {return {{1,1}};}
+};
+template <typename Scalar> 
+struct mac_offsets<MACGrid<Scalar,2,1,0> > {
+     constexpr static std::array<Scalar,2> offsets() {return {{0,0.5}};}
+     constexpr static std::array<int,2> extra_cells() {return {{1,0}};}
+};
+template <typename Scalar> 
+struct mac_offsets<MACGrid<Scalar,2,1,1> > {
+     constexpr static std::array<Scalar,2> offsets() {return {{0.5,0.0}};}
+     constexpr static std::array<int,2> extra_cells() {return {{0,1}};}
+};
+template <typename Scalar> 
+struct mac_offsets<MACGrid<Scalar,2,2,0> > {
+     constexpr static std::array<Scalar,2> offsets() {return {{.5,.5}};}
+     constexpr static std::array<int,2> extra_cells() {return {{0,0}};}
+};
+
+template <typename Scalar> 
+struct mac_offsets<MACGrid<Scalar,3,0,0> > {
+     constexpr static std::array<Scalar,3> offsets() {return {{0,0,0}};}
+     constexpr static std::array<int,3> extra_cells() {return {{1,1,1}};}
+};
+template <typename Scalar> 
+struct mac_offsets<MACGrid<Scalar,3,1,0> > {
+     constexpr static std::array<Scalar,3> offsets() {return {{0,0.5,0.5}};}
+     constexpr static std::array<int,3> extra_cells() {return {{1,0,0}};}
+};
+template <typename Scalar> 
+struct mac_offsets<MACGrid<Scalar,3,1,1> > {
+     constexpr static std::array<Scalar,3> offsets() {return {{0.5,0.0,0.5}};}
+     constexpr static std::array<int,3> extra_cells() {return {{0,1,0}};}
+};
+template <typename Scalar> 
+struct mac_offsets<MACGrid<Scalar,3,1,2> > {
+     constexpr static std::array<Scalar,3> offsets() {return {{0.5,0.5,0.0}};}
+     constexpr static std::array<int,3> extra_cells() {return {{0,0,1}};}
+};
+template <typename Scalar> 
+struct mac_offsets<MACGrid<Scalar,3,3,0> > {
+     constexpr static std::array<Scalar,3> offsets() {return {{.5,.5,.5}};}
+     constexpr static std::array<int,3> extra_cells() {return {{0,0,0}};}
+};
+template <typename Scalar> 
+struct mac_offsets<MACGrid<Scalar,3,2,0> > {
+     constexpr static std::array<Scalar,3> offsets() {return {{0.5,0.0,0.0}};}
+     constexpr static std::array<int,3> extra_cells() {return {{0,1,1}};}
+};
+template <typename Scalar> 
+struct mac_offsets<MACGrid<Scalar,3,2,1> > {
+     constexpr static std::array<Scalar,3> offsets() {return {{0.0,0.5,0.0}};}
+     constexpr static std::array<int,3> extra_cells() {return {{1,0,1}};}
+};
+template <typename Scalar> 
+struct mac_offsets<MACGrid<Scalar,3,2,2> > {
+     constexpr static std::array<Scalar,3> offsets() {return {{0.0,0.0,0.5}};}
+     constexpr static std::array<int,3> extra_cells() {return {{1,1,0}};}
+};
 }}
+template <typename Scalar, int EmbedDim> 
+class MACGridFactory;
+template <typename Scalar, int EmbedDim, int FormDim, int WhichForm>
+struct ManagedGridStructureFeather;
+
 template <typename Scalar_, int EmbedDim,int FormDim,int WhichForm> 
-class MACGrid<Scalar,EmbedDim,FormDim,WhichForm>: public GridBase<MACGrid<Scalar_,EmbedDim,FormDim,WhichForm> > {
+class MACGrid: public Grid<Scalar_,EmbedDim> {
+    typedef MACGrid<Scalar_,EmbedDim,FormDim,WhichForm> MyType;
     public:
+    //Make template parameters externally available
     typedef Scalar_ Scalar;
     enum {embed_dim = EmbedDim, form_dim = FormDim, which_form = WhichForm};
-    typedef GridBase<MACGrid<Scalar,EmbedDim,FormDim,WhichForm> > Base;
-    typedef typename Base::Vec Vec;
-    typedef typename Base::Veci Veci;
+    //Some helpful typedefs, not necessarily for external use
+    typedef Grid<Scalar,EmbedDim> Base;
+    typedef typename mtao::dim_types<EmbedDim>::template scalar_types<Scalar>::Vec Vec;
+    typedef typename mtao::dim_types<EmbedDim>::Veci Veci;
+    typedef std::shared_ptr<MyType> ptr;
+    typedef std::weak_ptr<MyType > weak_ptr;
+
     protected:
-    using Base::Base;
+    friend class MACGridFactory<Scalar,EmbedDim>;
+    friend struct ManagedGridStructureFeather<Scalar,EmbedDim,FormDim,WhichForm>;
+    MACGrid(const Veci & dim,const Vec & origin,  const Vec & dx): Base(dim,origin,dx) {}
+    public:
+    MACGrid(MyType&& grid): Base(std::move(grid)) {}
+    void resize(const Veci& N) {Base::resize(N);}
+    void setOrigin(const Vec& origin) {Base::setOrigin(origin);}
+    void setDx(const Vec& dx) {Base::setDx(dx);}
+    //using Base::Base;
 };
-iendif
+#endif

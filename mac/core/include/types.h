@@ -14,8 +14,8 @@ namespace mtao{
     typedef Eigen::Vector3d Vec3d;
     typedef Eigen::Vector2d Vec2d;
 
-    typedef Eigen::Vector3f Vec3i;
-    typedef Eigen::Vector2f Vec2i;
+    typedef Eigen::Vector3i Vec3i;
+    typedef Eigen::Vector2i Vec2i;
     template <int Dim>
         struct dim_types {
             typedef Eigen::Matrix<double,Dim,1> Vecf;
