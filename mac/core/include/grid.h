@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 
+
 template <typename Scalar_, int EmbedDim>
 class Grid{
 //    enum {dim = mtao::internal::traits<Derived>::embed_dim};
@@ -49,11 +50,18 @@ class Grid{
     //Internal data accessors
     const Veci& N() const {return m_N;}
     int N(int idx) const {return m_N(idx);}
-    const Vec dx() const {return m_dx;}
+    const Vec& dx() const {return m_dx;}
     Scalar dx(int idx) const {return m_dx(idx);}
     const Vec& origin() const {return m_origin;}
     Scalar origin(int idx) const {return m_origin(idx);}
+    //protected modifiers
+    protected:
+    void resize(const Veci& N) {m_N = N;}
+    void setOrigin(const Vec& origin) {m_origin = origin;}
+    void setDx(const Vec& dx) {m_dx = dx;}
+    
 
+    public:
     //There are several nice ways to access the data...
     std::vector<Scalar> & stlVector(){return m_data;}
     const std::vector<Scalar> & stlVector()const{return m_data;}
@@ -125,7 +133,7 @@ class Grid{
     typename std::vector<Scalar>::const_iterator cbegin() {return m_data.cbegin();}
     typename std::vector<Scalar>::const_iterator cend() {return m_data.cend();}
 
-    void incrementLoop(Veci& c) {
+    void incrementLoop(Veci& c)const {
         for(int i = EmbedDim-1; i >= 0; --i) {
             if(++c(i) >= m_N(i)) {
                 c(i)=0;
@@ -143,6 +151,13 @@ class Grid{
             incrementLoop(coord);
         }
         return *this;
+    }
+    void loop(const std::function<void(const Veci&, Scalar)>& f)const {
+        Veci coord(Veci::Zero());
+        for(Scalar v: m_data) {
+            f(coord,v);
+            incrementLoop(coord);
+        }
     }
     Grid& loop(const std::function<Scalar(Scalar)>& f) {
         std::transform(m_data.begin(),m_data.end(),m_data.begin(), f);

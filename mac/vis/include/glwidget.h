@@ -23,7 +23,7 @@ struct GridRenderable{
     QString gridName;
     mtao::GridEnum gridType=mtao::NGrid;
     GridType::weak_ptr gridPtr;
-    bool enabled=false;
+    bool enabled=true;
 };
 
 class GLWidget: public QGLWidget {
@@ -35,6 +35,7 @@ class GLWidget: public QGLWidget {
         GLWidget(QWidget * parent);
         void paintGL();
         void resizeGL(int w, int h);
+        void initializeGL();
     protected:
         friend class MainWindow;
         void mousePressEvent(QMouseEvent *);
@@ -44,5 +45,11 @@ class GLWidget: public QGLWidget {
         public slots:
         void cleanRenderables();
         void addGrid(GridType::ptr, mtao::GridEnum type, const QString & name);
+    private:
+        void renderGridTypeSelector(const GridRenderable &);
+        template <mtao::GridEnum Type>
+        void renderGridByType(const GridRenderable & gr) {renderGrid(gr);}
+        void renderGrid(const GridRenderable &);
+
 };
 #endif

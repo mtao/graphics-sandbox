@@ -17,7 +17,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 # Source files
 SET(MACVis_SOURCES
-    src/main.cpp
+    src/demomain.cpp
     src/glwidget.cpp
     src/mainwindow.cpp
     )

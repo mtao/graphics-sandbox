@@ -106,6 +106,9 @@ struct mac_offsets<MACGrid<Scalar,3,2,2> > {
 }}
 template <typename Scalar, int EmbedDim> 
 class MACGridFactory;
+template <typename Scalar, int EmbedDim, int FormDim, int WhichForm>
+struct ManagedGridStructureFeather;
+
 template <typename Scalar_, int EmbedDim,int FormDim,int WhichForm> 
 class MACGrid: public Grid<Scalar_,EmbedDim> {
     typedef MACGrid<Scalar_,EmbedDim,FormDim,WhichForm> MyType;
@@ -122,9 +125,13 @@ class MACGrid: public Grid<Scalar_,EmbedDim> {
 
     protected:
     friend class MACGridFactory<Scalar,EmbedDim>;
+    friend struct ManagedGridStructureFeather<Scalar,EmbedDim,FormDim,WhichForm>;
     MACGrid(const Veci & dim,const Vec & origin,  const Vec & dx): Base(dim,origin,dx) {}
     public:
     MACGrid(MyType&& grid): Base(std::move(grid)) {}
+    void resize(const Veci& N) {Base::resize(N);}
+    void setOrigin(const Vec& origin) {Base::setOrigin(origin);}
+    void setDx(const Vec& dx) {Base::setDx(dx);}
     //using Base::Base;
 };
 #endif

@@ -86,4 +86,29 @@ int main() {
         std::cout << v << " ";
     }
     std::cout << std::endl;
+    auto&& a = factory2.createManagedPtr<mtao::CGrid>();
+    auto&& b = factory2.createManagedPtr<mtao::CGrid>();
+    auto&& c = factory2.createManagedPtr<mtao::NGrid>();
+    auto&& d = factory2.createManagedPtr<mtao::UGrid>();
+    Eigen::Vector2i coord(2,2);
+    a->indexToWorld(coord);
+    b->indexToWorld(coord);
+    c->indexToWorld(coord);
+    d->indexToWorld(coord);
+    std::cout << factory2.create<mtao::CGrid>().indexToWorld(coord).transpose() << std::endl;
+    std::cout << factory2.create<mtao::UGrid>().indexToWorld(coord).transpose() << std::endl;
+    std::cout << factory2.create<mtao::VGrid>().indexToWorld(coord).transpose() << std::endl;
+    std::cout << factory2.create<mtao::NGrid>().indexToWorld(coord).transpose() << std::endl;
+
+    std::cout << std::endl << "Resize test: " << std::endl;
+    std::cout << a->indexToWorld(coord).transpose() << std::endl;
+    std::cout << b->indexToWorld(coord).transpose() << std::endl;
+    std::cout << c->indexToWorld(coord).transpose() << std::endl;
+    std::cout << d->indexToWorld(coord).transpose() << std::endl;
+    std::cout << std::endl;
+    factory2.resize(Eigen::Vector2i(30,30));
+    std::cout << a->indexToWorld(coord).transpose() << std::endl;
+    std::cout << b->indexToWorld(coord).transpose() << std::endl;
+    std::cout << c->indexToWorld(coord).transpose() << std::endl;
+    std::cout << d->indexToWorld(coord).transpose() << std::endl;
 }
