@@ -96,6 +96,16 @@ class Grid{
         }
         return idx;
     }
+    void idx2coord2(int idx, Veci& c) {
+        c(0) = idx%m_N(2);
+        c(1) = idx/m_N(2);
+    }
+    void idx2coord2(int idx, Veci& c) {
+        c(2) = idx%m_N(1);
+        idx /= m_N(1);
+        c(1) = idx%m_N(2);
+        c(0) = idx/m_N(2);
+    }
     //Accessors
     Scalar& coeffRef(int a) {return m_data[a];}
     Scalar& coeffRef(int a, int b) {return m_data[coord2idx(a,b)];}
