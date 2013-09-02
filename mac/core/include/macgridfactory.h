@@ -8,7 +8,7 @@
 #include <iostream>
 
 namespace mtao{ 
-    enum GridEnum {NGrid,CGrid,UGrid,VGrid,WGrid,DUGrid,DVGrid,DWGrid};
+    enum GridEnum {NGrid,CGrid,UGrid,VGrid,WGrid,DUGrid,DVGrid,DWGrid,UVGrid,UVWGrid,DUVWGrid};
     namespace internal {
         template <int EmbedDim, int FormDim, int WhichForm>
             struct GridEnumSelector{
@@ -333,6 +333,19 @@ class MACGridFactory {
         const BBox& bbox()const {return m_bbox;}
         const Veci& N()const {return m_N;}
         const Vec& dx()const {return m_dx;}
+
+        template <mtao::GridEnum Type>
+        std::function<Vec(const Vec&)> indexToWorldFunction() {
+            return [=](const Vec& v) -> Vec {
+                return v.cwiseProduct(dx())+offsets<Type>();
+            };
+        }
+        template <mtao::GridEnum Type>
+        std::function<Vec(const Veci&)> indexToWorldIntegralFunction() {
+            return [=](const Veci& v) -> Vec {
+                return v.template cast<Scalar>().cwiseProduct(dx())+offsets<Type>();
+            };
+        }
     private:
         mtao::internal::ManagedGridStructure<Scalar,EmbedDim> m_managed_grids;
         Veci m_N;

@@ -111,4 +111,6 @@ int main() {
     std::cout << b->indexToWorld(coord).transpose() << std::endl;
     std::cout << c->indexToWorld(coord).transpose() << std::endl;
     std::cout << d->indexToWorld(coord).transpose() << std::endl;
+    auto&& f1 = factory2.indexToWorldIntegralFunction<mtao::CGrid>();
+    std::cout << f1(coord) << std::endl;
 }
