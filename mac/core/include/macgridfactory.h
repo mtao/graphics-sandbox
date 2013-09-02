@@ -346,6 +346,20 @@ class MACGridFactory {
                 return v.template cast<Scalar>().cwiseProduct(dx())+offsets<Type>();
             };
         }
+        template <mtao::GridEnum Type>
+            std::function<int(int,int)> coordToIndexFunction2() {
+                const Vec n = offsets<Type>();
+                return [=](int a, int b) -> int {
+            return  n(1) * a + b;
+                };
+            }
+        template <mtao::GridEnum Type>
+            std::function<int(int,int,int)> coordToIndexFunction3() {
+                const Veci n = offsets<Type>();
+                return [=](int a, int b, int c) -> int {
+                    return n(2) * (n(1) * a + b) + c;
+                };
+            }
     private:
         mtao::internal::ManagedGridStructure<Scalar,EmbedDim> m_managed_grids;
         Veci m_N;
