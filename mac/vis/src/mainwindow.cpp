@@ -5,9 +5,9 @@
 #include <QWheelEvent>
 
 
-MainWindow::MainWindow() {
+MainWindow::MainWindow(const GridFactoryType::ptr & ptr): m_factory(ptr) {
 
-    GLWidget * widget = new GLWidget(this);
+    GLWidget * widget = new GLWidget(this,ptr);
     setCentralWidget(widget);
 }
 

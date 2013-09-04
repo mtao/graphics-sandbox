@@ -71,20 +71,20 @@ class Grid{
     ConstMapVec mapVector()const{return ConstMapVec(data());}
 
     //Some transformations
-    Vec worldToIndex(const Vec & v) {return (v-origin()).cwiseQuotient(dx());}
-    Vec indexToWorld(const Vec & v) {return v.cwiseProduct(dx()) + origin();}
-    Vec indexToWorld(const Veci & v) {return v.template cast<Scalar>().cwiseProduct(dx()) + origin();}
-    Vec indexToWorld(int x,int y) {return indexToWorld(Veci(x,y));}
-    Vec indexToWorld(int x,int y, int z) {return indexToWorld(Veci(x,y,z));}
+    Vec worldToIndex(const Vec & v) const {return (v-origin()).cwiseQuotient(dx());}
+    Vec indexToWorld(const Vec & v) const {return v.cwiseProduct(dx()) + origin();}
+    Vec indexToWorld(const Veci & v) const {return v.template cast<Scalar>().cwiseProduct(dx()) + origin();}
+    Vec indexToWorld(int x,int y) const {return indexToWorld(Veci(x,y));}
+    Vec indexToWorld(int x,int y, int z) const {return indexToWorld(Veci(x,y,z));}
 
     //linear interpolation for a index-space vector
-    Scalar ilerp(const Vec & iv) {
+    Scalar ilerp(const Vec & iv) const {
         Veci idx = iv.template cast<int>();
         Vec bary = iv - idx.template cast<Scalar>();
         return m_lerp(bary,idx);
     }
     //linear interpolation for a world-space vector
-    Scalar lerp(const Vec & v) {
+    Scalar lerp(const Vec & v) const {
         return ilerp(worldToIndex(v));
     }
     //Maps from 3d to 2d elements

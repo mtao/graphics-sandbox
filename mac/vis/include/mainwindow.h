@@ -16,13 +16,14 @@ class MainWindow: public QMainWindow {
         enum {embed_dim = 2};
         typedef float Scalar;
         typedef Grid<Scalar,embed_dim> GridType;
-        MainWindow();
+        typedef MACGridFactory<Scalar,embed_dim> GridFactoryType;
+        MainWindow(const GridFactoryType::ptr& ptr = 0);
     GLWidget & glwidget(){return *static_cast<GLWidget*>(centralWidget());}
     protected:
-    void mousePressEvent(QMouseEvent *);
-    void wheelEvent(QWheelEvent *);
-    void keyPressEvent(QKeyEvent *);
+        void mousePressEvent(QMouseEvent *);
+        void wheelEvent(QWheelEvent *);
+        void keyPressEvent(QKeyEvent *);
     private:
-    //std::unique_ptr<MACGridFactory<Scalar,embed_dim> > m_factory;
+        GridFactoryType::ptr m_factory;
 };
 #endif
