@@ -82,6 +82,7 @@ void flo() {
 int main() {
     openvdb::initialize();
     flo();
+    vec();
 
     /*
     for(openvdb::Vec3DGrid::ValueOnCIter iter = v3grid->cbeginValueOn(); iter; ++iter) {

@@ -66,18 +66,14 @@ public:
         const bool leftA = mActive[l];
         const bool rightA = mActive[r];
         const int c = SevenPt< 0, 0, 0>::idx;
-        std::cout << "(" << mStencil[l] << ", " << mStencil[c] << ", " << mStencil[r] << ")";
         if(leftA) {
             if(rightA) {
-                std::cout << "[c]";
                 return .5*mInvDx*(mStencil[l] - mStencil[r]);
             } else {
-                std::cout << "[l]";
                 return mInvDx*(mStencil[l] - mStencil[c]);
             }
         } else {
             if(rightA) {
-                std::cout << "[r]";
                 return mInvDx*(mStencil[c] - mStencil[r]);
             } else {
                 return ValueType();
@@ -86,15 +82,12 @@ public:
     }
 
     inline ValueType _dx() const {
-        std::cout << "dx: ";
         return _d(SevenPt< 1, 0, 0>::idx, SevenPt< -1, 0, 0>::idx);
     }
     inline ValueType _dy() const {
-        std::cout << "dy: ";
         return _d(SevenPt< 0, 1, 0>::idx, SevenPt<  0,-1, 0>::idx);
     }
     inline ValueType _dz() const {
-        std::cout << "dz: ";
         return _d(SevenPt< 0, 0, 1>::idx, SevenPt<  0, 0,-1>::idx);
     }
 
@@ -103,27 +96,16 @@ private:
     
     inline void init(const Coord& ijk)
     {
-        mStencil[SevenPt< 0, 0, 0>::idx] = mCache.getValue(ijk.offsetBy( 0,  0,  0));
-
-        mStencil[SevenPt<-1, 0, 0>::idx] = mCache.getValue(ijk.offsetBy(-1,  0,  0));
-        mStencil[SevenPt< 1, 0, 0>::idx] = mCache.getValue(ijk.offsetBy( 1,  0,  0));
-
-        mStencil[SevenPt< 0,-1, 0>::idx] = mCache.getValue(ijk.offsetBy( 0, -1,  0));
-        mStencil[SevenPt< 0, 1, 0>::idx] = mCache.getValue(ijk.offsetBy( 0,  1,  0));
-
-        mStencil[SevenPt< 0, 0,-1>::idx] = mCache.getValue(ijk.offsetBy( 0,  0, -1));
-        mStencil[SevenPt< 0, 0, 1>::idx] = mCache.getValue(ijk.offsetBy( 0,  0,  1));
-
-        mActive[SevenPt< 0, 0, 0>::idx] = mCache.isValueOn(ijk.offsetBy( 0,  0,  0));
-                                      
-        mActive[SevenPt<-1, 0, 0>::idx] = mCache.isValueOn(ijk.offsetBy(-1,  0,  0));
-        mActive[SevenPt< 1, 0, 0>::idx] = mCache.isValueOn(ijk.offsetBy( 1,  0,  0));
-                                      
-        mActive[SevenPt< 0,-1, 0>::idx] = mCache.isValueOn(ijk.offsetBy( 0, -1,  0));
-        mActive[SevenPt< 0, 1, 0>::idx] = mCache.isValueOn(ijk.offsetBy( 0,  1,  0));
-                                      
-        mActive[SevenPt< 0, 0,-1>::idx] = mCache.isValueOn(ijk.offsetBy( 0,  0, -1));
-        mActive[SevenPt< 0, 0, 1>::idx] = mCache.isValueOn(ijk.offsetBy( 0,  0,  1));
+        mActive[SevenPt< 0, 0, 0>::idx] = mCache.probeValue(ijk.offsetBy( 0,  0,  0),mStencil[SevenPt< 0, 0, 0>::idx]);
+                                                                                                                     
+        mActive[SevenPt<-1, 0, 0>::idx] = mCache.probeValue(ijk.offsetBy(-1,  0,  0),mStencil[SevenPt<-1, 0, 0>::idx]);
+        mActive[SevenPt< 1, 0, 0>::idx] = mCache.probeValue(ijk.offsetBy( 1,  0,  0),mStencil[SevenPt< 1, 0, 0>::idx]);
+                                                                                                                     
+        mActive[SevenPt< 0,-1, 0>::idx] = mCache.probeValue(ijk.offsetBy( 0, -1,  0),mStencil[SevenPt< 0,-1, 0>::idx]);
+        mActive[SevenPt< 0, 1, 0>::idx] = mCache.probeValue(ijk.offsetBy( 0,  1,  0),mStencil[SevenPt< 0, 1, 0>::idx]);
+                                                                                                                     
+        mActive[SevenPt< 0, 0,-1>::idx] = mCache.probeValue(ijk.offsetBy( 0,  0, -1),mStencil[SevenPt< 0, 0,-1>::idx]);
+        mActive[SevenPt< 0, 0, 1>::idx] = mCache.probeValue(ijk.offsetBy( 0,  0,  1),mStencil[SevenPt< 0, 0, 1>::idx]);
     }
     
     template<typename, typename> friend class BaseStencil; // allow base class to call init()
