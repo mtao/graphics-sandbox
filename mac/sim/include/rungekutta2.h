@@ -6,7 +6,7 @@ namespace mtao{ namespace advection{
         class RungeKutta2 {};
 
     template <typename Scalar>
-        class RungeKutta2<Scalar,2,1>: public Advection<RungeKutta2,Scalar,2,1> {
+        class RungeKutta2<Scalar,2,1>: public Advection<template RungeKutta2,Scalar,2,1> {
             public:
                 enum {embed_dim = 2, form_dim = 1};
                 MTAO_ADVECTIONTYPE_DEFINITIONS_2

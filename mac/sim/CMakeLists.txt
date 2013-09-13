@@ -17,6 +17,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 # Source files
 SET(MACSim_SOURCES
+    #src/stablefluids.cpp
     src/demomain.cpp
     )
 # Include files

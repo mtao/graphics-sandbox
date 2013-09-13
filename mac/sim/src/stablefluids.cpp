@@ -125,11 +125,12 @@ void StableFluids::project() {
     rhs.topRows(u.size()) = u.mapVector();
     rhs.bottomRows(v.size()) = v.mapVector();
     rhs = d * rhs;
-    Vector x(rows);
-    //TODO: solve L to x
+    
+    Eigen::ConjugateGradient<SparseMatrix> solver(A);
+    p.mapVector() = solver.solve(rhs);
 
 
-    rhs = d * x;
+    rhs = d * p.mapVector();
     u.mapVector() -= rhs.topRows(u.size());
     v.mapVector() -= rhs.bottomRows(v.size());
 
