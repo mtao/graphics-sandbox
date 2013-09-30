@@ -29,22 +29,22 @@ class Lattice {
         inline int NI() const {return m_N(0);}
         inline int NJ() const {return m_N(1);}
         inline int NK() const {return m_N(2);}
-        inline int N() const {return m_N.prod();}
+        inline int size() const {return m_N.prod();}
         //Warning: this isn't necessarily accurate with deletion operations 
         //until after a compactify
         unsigned int activeCount() const {return m_active_count;}
         //Array accessors
-        inline int & operator()(size_t i, size_t j, size_t k);
-        inline int operator()(size_t i, size_t j, size_t k) const;
+        inline int & operator()(int i, int j, int k);
+        inline int operator()(int i, int j, int k) const;
         inline int & operator()(const mtao::Coord3 & coord);
         inline int operator()(const mtao::Coord3 & coord) const;
 
         inline int add(const mtao::Coord3 & c);
-        inline int add(size_t i, size_t j, size_t k, bool & b);
+        inline int add(int i, int j, int k, bool & b);
         inline int add(const mtao::Coord3& c, bool & b);
-        inline int add(size_t i, size_t j, size_t k);
+        inline int add(int i, int j, int k);
 
-        inline void resize(size_t i, size_t j, size_t k);
+        inline void resize(int i, int j, int k);
         //General cleaning
         void reset();
         //Compactification only needs to be done if deletions have happened
@@ -54,12 +54,12 @@ class Lattice {
             static void remap(const std::map<int,int> & newmap, std::vector<Object> & vec);
 
     protected:
-        Lattice(size_t i, size_t j, size_t k, unsigned int default_active=0);
+        Lattice(int i, int j, int k, unsigned int default_active=0);
     private:
         mtao::Coord3 m_N;
     protected:
-        size_t m_active_count;
-        std::set<Index> m_vertexIndices;
+        int m_active_count;
+        std::set<mtao::Coord3> m_vertexCoords;
 };
 
 
@@ -67,20 +67,19 @@ class Lattice {
 
 class DenseLattice: public Lattice<DenseLattice>{
     public:
-        typedef ActiveLatticeIterator<DenseLattice> ActiveIteratorType;
-        DenseLattice(size_t ni, size_t nj, size_t nk);
-        using Lattice<NaiveSparseLattice>::operator();
+        DenseLattice(int ni, int nj, int nk);
+        using Lattice<DenseLattice>::operator();
         //Array accessors
-        inline int & operator()(size_t i, size_t j, size_t k);
-        inline int operator()(size_t i, size_t j, size_t k) const;
-        inline int getIndex(size_t i, size_t j, size_t k) const;
+        inline int & operator()(int i, int j, int k);
+        inline int operator()(int i, int j, int k) const;
+        inline int getIndex(int i, int j, int k) const;
         inline int getIndex(const mtao::Coord3 & coord) const;
 
 
 
         //General cleaning
         void reset();
-        inline void resize(size_t i, size_t j, size_t k);
+        inline void resize(int i, int j, int k);
         void fill();
         std::map<int,int> compactifyIndices();
     private:
@@ -98,16 +97,15 @@ class DenseLattice: public Lattice<DenseLattice>{
 
 class NaiveSparseLattice: public Lattice<NaiveSparseLattice> {
     public:
-        NaiveSparseLattice(size_t ni, size_t nj, size_t nk);
-        typedef ActiveLatticeIterator<NaiveSparseLattice> ActiveIteratorType;
+        NaiveSparseLattice(int ni, int nj, int nk);
         //Status accessor
         //        unsigned int activeCount() const;
         //Array accessors
         using Lattice<NaiveSparseLattice>::operator();
-        inline int & operator()(size_t i, size_t j, size_t k);
-        inline int operator()(size_t i, size_t j, size_t k) const;
+        inline int & operator()(int i, int j, int k);
+        inline int operator()(int i, int j, int k) const;
         //General cleaning
-        inline void resize(size_t i, size_t j, size_t k);
+        inline void resize(int i, int j, int k);
         void reset();
         std::map<int,int> compactifyIndices();
     private:
@@ -122,25 +120,26 @@ class NaiveSparseLattice: public Lattice<NaiveSparseLattice> {
 //A space/time tradeoff of the above sparse lattice, where we now assume that the first two 
 // dimensions are the relevant 
 
-class SparseLattice: public Lattice<SparseLattice>, public std::vector<std::map<size_t,int> >{
+class SparseLattice: public Lattice<SparseLattice>{
     public:
-        SparseLattice(size_t ni, size_t nj, size_t nk);
+        SparseLattice(int ni, int nj, int nk);
         //Status accessors
         //        unsigned int activeCount() const;
         //Array accessors
         using Lattice<SparseLattice>::operator();
-        inline int & operator()(size_t i, size_t j, size_t k);
-        inline int operator()(size_t i, size_t j, size_t k) const;
+        inline int & operator()(int i, int j, int k);
+        inline int operator()(int i, int j, int k) const;
         //General cleaning
         void reset();
-        inline void resize(size_t i, size_t j, size_t k);
+        inline void resize(int i, int j, int k);
         std::map<int,int> compactifyIndices();
     private:
         //TODO: Someone please give me a better name for this :)
         //Note: i_ji_i simply means contract i then contract j, where i is the contraction operator
         //Sorry for overloading, can just assume i_ is overload operator :)
-        inline std::map<size_t,int> & i_ji_i(size_t i, size_t j);
-        inline const std::map<size_t,int> & i_ji_i(size_t i, size_t j) const;
+        inline std::map<int,int> & i_ji_i(int i, int j);
+        inline const std::map<int,int> & i_ji_i(int i, int j) const;
+        std::vector<std::map<int,int> > m_data;
 };
 
 
@@ -148,6 +147,5 @@ class SparseLattice: public Lattice<SparseLattice>, public std::vector<std::map<
 
 
 #include "src/lattice.hpp"
-#include "voxelIterators.h"
 
 #endif

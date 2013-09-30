@@ -1,27 +1,27 @@
-#include "../include/lattice.h"
+#include "lattice.h"
 
 
 //Lattice Constructors
 
 
 DenseLattice::
-    DenseLattice(size_t ni, size_t nj, size_t nk)
-    : Lattice<DenseLattice>(ni,nj,nk,0), std::vector<int>(ni*nj*nk,-1)
+    DenseLattice(int ni, int nj, int nk)
+    : Lattice<DenseLattice>(ni,nj,nk,0), m_data(ni*nj*nk,-1)
 {
-    std::fill(begin(),end(),-1);
+    std::fill(m_data.begin(),m_data.end(),-1);
 }
 
 
 NaiveSparseLattice::
-    NaiveSparseLattice(size_t ni, size_t nj, size_t nk)
-    : Lattice<NaiveSparseLattice>(ni,nj,nk,0), std::map<Index,int>()
+    NaiveSparseLattice(int ni, int nj, int nk)
+    : Lattice<NaiveSparseLattice>(ni,nj,nk,0), m_data()
 {
 }
 
 SparseLattice::
-    SparseLattice(size_t ni, size_t nj, size_t nk)
+    SparseLattice(int ni, int nj, int nk)
     : Lattice<SparseLattice>(ni,nj,nk,0)
-    , std::vector<std::map<size_t,int> >(ni*nj,std::map<size_t,int>())
+    , m_data(ni*nj,std::map<int,int>())
 {
 }
 
@@ -29,33 +29,33 @@ SparseLattice::
 
 void DenseLattice::
 reset() {
-    std::fill(begin(),end(),-1);
+    std::fill(m_data.begin(),m_data.end(),-1);
 }
 
 void NaiveSparseLattice::
 reset() {
-    clear();
+    m_data.clear();
 }
 
 void SparseLattice::
 reset() {
-    for(std::map<size_t,int> & k: *this) {
+    for(std::map<int,int> & k: m_data) {
         k.clear();
     }
 }
 
 
 //Lattice Resizers
-void DenseLattice::resize(size_t i, size_t j, size_t k) {
-    resize(i*j*k);
+void DenseLattice::resize(int i, int j, int k) {
+    m_data.resize(i*j*k);
     Lattice<DenseLattice>::resize(i,j,k);
 }
 
-void NaiveSparseLattice::resize(size_t i, size_t j, size_t k) {
+void NaiveSparseLattice::resize(int i, int j, int k) {
     Lattice<NaiveSparseLattice>::resize(i,j,k);
 }
-void SparseLattice::resize(size_t i, size_t j, size_t k) {
-    std::vector<std::map<size_t,int> >::resize(i*j);
+void SparseLattice::resize(int i, int j, int k) {
+    m_data.resize(i*j);
     Lattice<SparseLattice>::resize(i,j,k);
 }
 //Lattice Compactification
@@ -65,7 +65,7 @@ std::map<int,int> DenseLattice::
 compactifyIndices() {
     std::map<int,int> conversion;
     int index=0;
-    for(int& ind: *this) {
+    for(int& ind: m_data) {
         if(ind != -1) {
             conversion.insert(std::pair<int,int>(ind,index));
             ind=index++;
@@ -78,7 +78,7 @@ std::map<int,int> NaiveSparseLattice::
 compactifyIndices() {
     std::map<int,int> conversion;
     int index=0;
-    for(std::pair<const Index,int> & p: *this) {
+    for(std::pair<const mtao::Coord3,int> & p: m_data) {
         int & ind = p.second;
         if(ind != -1) {
             conversion.insert(std::pair<int,int>(ind,index));
@@ -92,8 +92,8 @@ std::map<int,int> SparseLattice::
 compactifyIndices() {
     std::map<int,int> conversion;
     int index=0;
-    for(std::map<size_t,int> & m: *this) {
-        for(std::pair<const size_t,int> & p: m) {
+    for(std::map<int,int> & m: m_data) {
+        for(std::pair<const int,int> & p: m) {
             int & ind = p.second;
             if(ind != -1) {
                 conversion.insert(std::pair<int,int>(ind,index));
@@ -133,8 +133,8 @@ activeCount() const{
 unsigned int SparseLattice::
 activeCount() const{
     unsigned int count=0;
-    for(const std::map<size_t, int> & i_ii_j: *this) {
-        for(const std::pair<size_t,int> & k: i_ii_j) {
+    for(const std::map<int, int> & i_ii_j: *this) {
+        for(const std::pair<int,int> & k: i_ii_j) {
             if(k.second != -1) {
                 ++count;
             }
@@ -148,7 +148,7 @@ activeCount() const{
 void DenseLattice::
 fill() {
     int idx=0;
-    for(int& i: *this) {
+    for(int& i: m_data) {
         i=idx++;
     }
 }

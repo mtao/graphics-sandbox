@@ -1,4 +1,5 @@
 
+/*
 template <>
 struct LatticeIteratorStorage<DenseLattice>{
     typedef DenseLattice LatticeType;
@@ -20,20 +21,21 @@ struct LatticeIteratorStorage<SparseLattice>{
     LatticeIteratorStorage(const LatticeType & obj): m_obj(obj) {}
     const LatticeType & m_obj;
     std::map<Index,int>::const_iterator m_it;
-    std::vector<std::map<size_t,int> >::const_iterator m_outer_it;
-    std::map<size_t,int>::const_iterator m_inner_it;
+    std::vector<std::map<int,int> >::const_iterator m_outer_it;
+    std::map<int,int>::const_iterator m_inner_it;
     Index m_ind;
     inline void setIndex() {
         m_ind.k = m_inner_it->first;
-        size_t ind = m_outer_it - m_obj.cbegin();
+        int ind = m_outer_it - m_obj.cbegin();
         m_ind.j = ind/m_obj.NI();
         m_ind.i = ind%m_obj.NI();
     }
 };
+*/
 
 template <typename DerivedType>
 Lattice<DerivedType>::
-    Lattice(size_t i, size_t j, size_t k, unsigned int default_active)
+    Lattice(int i, int j, int k, unsigned int default_active)
     : m_N(i,j,k)
       , m_active_count(default_active)
 {
@@ -41,19 +43,19 @@ Lattice<DerivedType>::
 
 template <typename DerivedType>
 inline void Lattice<DerivedType>::
-resize(size_t i, size_t j, size_t k) {
+resize(int i, int j, int k) {
     m_N = mtao::Coord3(i,j,k);
 }
 
 //Accessors
 template <typename DerivedType>
 inline int & Lattice<DerivedType>::
-operator()(size_t i, size_t j, size_t k) {
+operator()(int i, int j, int k) {
     return derived()(i,j,k);
 }
 template <typename DerivedType>
 inline int Lattice<DerivedType>::
-operator()(size_t i, size_t j, size_t k) const {
+operator()(int i, int j, int k) const {
     return derived()(i,j,k);
 }
 template <typename DerivedType>
@@ -70,7 +72,7 @@ operator()(const mtao::Coord3 & c) const {
 //Adders
 template <typename DerivedType>
 inline int Lattice<DerivedType>::
-add(size_t i, size_t j, size_t k) {
+add(int i, int j, int k) {
     int& curval = derived()(i,j,k);
     if(curval == -1)
         curval = m_active_count++;
@@ -83,7 +85,7 @@ add(const mtao::Coord3 & c) {
 }
 template <typename DerivedType>
 inline int Lattice<DerivedType>::
-add(size_t i, size_t j, size_t k, bool & b) {
+add(int i, int j, int k, bool & b) {
     int& curval = derived()(i,j,k);
     if((b = (curval == -1))) 
         curval = m_active_count++;
@@ -125,9 +127,9 @@ remap(const std::map<int,int> & newmap, std::vector<Object> & vec) {
 }
 
 //Index Accessors
-inline Index DenseLattice::
+inline mtao::Coord3 DenseLattice::
 _index2Coord(int idx) const {
-    mtao::Coord val;
+    mtao::Coord3 val;
     val.z() = idx%NJ();
     idx/=NJ();
     val.y() = idx%NI();
@@ -141,7 +143,7 @@ _coord2Index(int i, int j, int k) const {
 }
 inline int DenseLattice::
 _coord2Index(const mtao::Coord3 & c) const {
-    return coord2Index(c.x(),c.y(),c.z());
+    return _coord2Index(c.x(),c.y(),c.z());
 }
 
 inline int & DenseLattice::
@@ -157,36 +159,36 @@ operator()(int i, int j, int k) const {
 
 
 inline int & NaiveSparseLattice::
-operator()(size_t i, size_t j, size_t k) {
+operator()(int i, int j, int k) {
     //try to insert the value with default -1 for unset index
     return m_data.insert(std::pair<mtao::Coord3,int>(mtao::Coord3{i,j,k},-1)).first->second;
 }
 
 inline int NaiveSparseLattice::
-operator()(size_t i, size_t j, size_t k) const {
+operator()(int i, int j, int k) const {
     std::map<mtao::Coord3,int>::const_iterator result = m_data.find(mtao::Coord3{i,j,k});
     if(result == m_data.end()) return -1;
     return result->second;
 }
 
-inline std::map<size_t,int> & SparseLattice::
-i_ji_i(size_t i, size_t j) {
-    return this->operator[](j*NI()+i);
+inline std::map<int,int> & SparseLattice::
+i_ji_i(int i, int j) {
+    return m_data[j*NI()+i];
 }
-inline const std::map<size_t,int> & SparseLattice::
-i_ji_i(size_t i, size_t j) const {
-    return this->operator[](j*NI()+i);
+inline const std::map<int,int> & SparseLattice::
+i_ji_i(int i, int j) const {
+    return m_data[j*NI()+i];
 }
 inline int & SparseLattice::
-operator()(size_t i, size_t j, size_t k) {
+operator()(int i, int j, int k) {
     //try to insert the value with default -1 for unset index
-    return i_ji_i(i,j).insert(std::pair<size_t,int>(k,-1)).first->second;
+    return i_ji_i(i,j).insert(std::pair<int,int>(k,-1)).first->second;
 }
 
 inline int SparseLattice::
-operator()(size_t i, size_t j, size_t k) const {
-    const std::map<size_t,int> & kmap = i_ji_i(i,j);
-    std::map<size_t,int>::const_iterator result = kmap.find(k);
+operator()(int i, int j, int k) const {
+    const std::map<int,int> & kmap = i_ji_i(i,j);
+    std::map<int,int>::const_iterator result = kmap.find(k);
     if(result == kmap.end()) return -1;
     return result->second;
 }
