@@ -57,19 +57,34 @@ void GLWidget::initializeGL() {
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_NORMALIZE);
     //glLineWidth(2.0);
-    GLfloat white[] = {0.3,0.3,0.3};
-    GLfloat red[] = {1,0,0};
-    glLightfv(GL_LIGHT0,GL_SPECULAR, white);
-    glLightfv(GL_LIGHT0,GL_DIFFUSE, white);
-    glLightfv(GL_LIGHT0,GL_AMBIENT, white);
-    GLfloat ambient[] = {.19225,.19225,.19225};
-    GLfloat diffuse[] = {.50754,.504754,.50754};
-    GLfloat specular[] = {.508273,.508273,.508273};
-    GLfloat shininess = 0.4;
-    glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,diffuse);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,ambient);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,specular);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&shininess);
+    GLfloat white_specular[] = {.8,.8,.8};
+    GLfloat white_diffuse[] = {0.3,0.3,0.3};
+    GLfloat white_ambient[] = {.1,.1,.1};
+    glLightfv(GL_LIGHT0,GL_SPECULAR, white_specular);
+    glLightfv(GL_LIGHT0,GL_DIFFUSE, white_diffuse);
+    glLightfv(GL_LIGHT0,GL_AMBIENT, white_ambient);
+    GLfloat silver_ambient[] = {.19225,.19225,.19225};
+    GLfloat silver_diffuse[] = {.50754,.504754,.50754};
+    GLfloat silver_specular[] = {.508273,.508273,.508273};
+    GLfloat silver_shininess = 0.4;
+
+    GLfloat gold_ambient[] = {.24725,.1995,.0745};
+    GLfloat gold_diffuse[] = {.75164,.60648,.22648};
+    GLfloat gold_specular[] = {.628281,.555802,.366065};
+    GLfloat gold_shininess = 0.4;
+    switch(1) {
+        case 0:
+            glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,silver_diffuse);
+            glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,silver_ambient);
+            glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,silver_specular);
+            glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&silver_shininess);
+            break;
+        case 1:
+            glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,gold_diffuse);
+            glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,gold_ambient);
+            glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,gold_specular);
+            glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&gold_shininess);
+    }
 }
 
 
