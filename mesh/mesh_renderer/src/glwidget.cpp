@@ -58,11 +58,15 @@ void GLWidget::initializeGL() {
     glEnable(GL_NORMALIZE);
     //glLineWidth(2.0);
     GLfloat white_specular[] = {.8,.8,.8};
-    GLfloat white_diffuse[] = {0.3,0.3,0.3};
-    GLfloat white_ambient[] = {.1,.1,.1};
+    GLfloat white_diffuse[] = {.4,.4,.4};
+    GLfloat white_ambient[] = {.2,.2,.2};
+    GLfloat light_pos[] = {-1,1,-10};
     glLightfv(GL_LIGHT0,GL_SPECULAR, white_specular);
     glLightfv(GL_LIGHT0,GL_DIFFUSE, white_diffuse);
     glLightfv(GL_LIGHT0,GL_AMBIENT, white_ambient);
+    glLightfv(GL_LIGHT0,GL_POSITION, light_pos);
+
+
     GLfloat silver_ambient[] = {.19225,.19225,.19225};
     GLfloat silver_diffuse[] = {.50754,.504754,.50754};
     GLfloat silver_specular[] = {.508273,.508273,.508273};
@@ -71,7 +75,7 @@ void GLWidget::initializeGL() {
     GLfloat gold_ambient[] = {.24725,.1995,.0745};
     GLfloat gold_diffuse[] = {.75164,.60648,.22648};
     GLfloat gold_specular[] = {.628281,.555802,.366065};
-    GLfloat gold_shininess = 0.4;
+    GLfloat gold_shininess = 1.0;
     switch(1) {
         case 0:
             glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,silver_diffuse);
@@ -109,7 +113,8 @@ void GLWidget::paintGL() {
     glLoadIdentity();
     glLoadMatrixf(glm::value_ptr(mat_mv));
 
-    m_glWrap.Draw<vcg::GLW::DMSmooth, vcg::GLW::CMNone, vcg::GLW::TMNone> ();
+    m_glWrap.Draw<vcg::GLW::DMSmooth, vcg::GLW::CMPerMesh, vcg::GLW::TMNone> ();
+    m_glWrap.Draw<vcg::GLW::DMBox, vcg::GLW::CMPerMesh, vcg::GLW::TMNone> ();
 }
 
 
