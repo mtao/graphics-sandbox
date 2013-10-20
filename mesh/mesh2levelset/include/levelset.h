@@ -5,6 +5,7 @@
 
 class Levelset: public Lattice{
     public:
+        typedef Eigen::Vector3d Vector3;
         
         Levelset(unsigned int i, unsigned int j, unsigned int k, const Eigen::AlignedBox<double,3> & bbox);
         double & operator()(unsigned int i){return m_data[i];}
@@ -23,8 +24,12 @@ class Levelset: public Lattice{
         void unionInPlace(const Levelset & other);
         void intersectInPlace(const Levelset & other);
         void unionInPlace(const TriangleMesh & other);
+        void signedTriangleUnion(const TriangleMesh & tm, const Triangle & t);
+        void pointIntersection(const Eigen::Hyperplane<double,3> & hp, const Vector3 &);
+        void edgeIntersection( const Eigen::Hyperplane<double,3> & hp, const Vector3 &, const Vector3 &);
         //void intersectInPlace(const TriangleMesh & other);
     private:
         std::vector<double> m_data;
+        std::vector<bool> m_active;
 
 };

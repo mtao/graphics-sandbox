@@ -1,5 +1,8 @@
-#ifdef VEFTRIANGLEMESH_H
 #ifndef VEFTRIANGLEMESH_IPL
+#define VEFTRIANGLEMESH_IPL
+#ifndef VEFTRIANGLEMESH_H
+#include "veftrianglemesh.h"
+#endif
 
 template <typename Scalar>
 VEFTriangleMesh<Scalar>::VEFTriangleMesh(): VFMesh() {}
@@ -46,5 +49,4 @@ void VEFTriangleMesh<Scalar>::generateEdgesFromTriangles() {
 
 }
 
-#endif
 #endif

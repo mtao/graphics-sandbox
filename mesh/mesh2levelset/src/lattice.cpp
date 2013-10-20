@@ -1,5 +1,5 @@
 #include "lattice.h"
-
+#include "levelset.h"
 Lattice::Lattice(unsigned int i, unsigned int j, unsigned int k, const Eigen::AlignedBox<double,3> & bbox): m_N(i,j,k) {
     calculateDx();
 }
@@ -13,21 +13,24 @@ void Lattice::calculateDx() {
 unsigned int Lattice::ijk2idx(unsigned int i, unsigned int j, unsigned int k) const{
     return NK() * (NJ() * i + j) + k;
 }
-unsigned int Lattice::ijk2idx(const Eigen::Vector3ui & ijk) const{
+unsigned int Lattice::ijk2idx(const Eigen::Vector3i & ijk) const{
     return ijk2idx(ijk(0),ijk(1),ijk(2));
 }
-Eigen::Vector3ui Lattice::idx2ijk(unsigned int ind) const{
+Eigen::Vector3i Lattice::idx2ijk(unsigned int ind) const{
     unsigned int jk = NJ() * NK();
-    Eigen::Vector3ui ijk(ind/(jk),(ind%jk)/NK(),ind%NK());
+    Eigen::Vector3i ijk(ind/(jk),(ind%jk)/NK(),ind%NK());
     return ijk;
 }
 
 unsigned int Lattice::getIndex(const Eigen::Vector3d &v) const {
-    return ijk2idx((v-bbox().min()).cwiseQuotient(dx()).cast<unsigned int>());
+    return ijk2idx((v-bbox().min()).cwiseQuotient(dx()).cast<int>());
 }
 
-Eigen::Vector3ui Lattice::getIJK(const Eigen::Vector3d & v) const{
-    return (v-bbox().min()).cwiseQuotient(dx()).cast<unsigned int>();
+Eigen::Vector3i Lattice::getIJK(const Eigen::Vector3d & v) const{
+    return (v-bbox().min()).cwiseQuotient(dx()).cast<int>();
+}
+Eigen::Vector3d Lattice::getVertex(const Eigen::Vector3i & v) const{
+    return v.cast<double>().cwiseProduct(dx()) + bbox().min();
 }
 
 Lattice::Lattice(const TriangleMesh & tm, unsigned int nx, unsigned int ny, unsigned int nz, unsigned char dim, int buf): m_N(nx,ny,nz) {
@@ -39,7 +42,5 @@ Lattice::Lattice(const TriangleMesh & tm, unsigned int nx, unsigned int ny, unsi
     bbox().min() -= buf * dx;
     bbox().max() += buf * dx;
     calculateDx();
-    Bucket b(tm,*this,dim);
-    b.getVoxels();
 
 }

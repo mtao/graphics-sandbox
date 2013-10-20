@@ -3,7 +3,7 @@
 #include <Eigen/Dense>
 
 template <int N>
-class Coord: public Eigen::Matrix<int,N> {
+class Coord: public Eigen::Matrix<int,N,1> {
     public:
         //Lexicographical ordering
         inline bool operator<(const Coord& other) const;
@@ -14,7 +14,7 @@ class Coord: public Eigen::Matrix<int,N> {
 
 
 template <int N>
-inline bool Coord::operator<(const Coord& other) const {
+inline bool Coord<N>::operator<(const Coord& other) const {
     for(int i=0; i < N; ++i) {
         auto&& me = (*this)(i);
         auto&& ot = other(i);
@@ -38,7 +38,7 @@ inline bool Coord<N>::operator<=(const Coord& other) const {
     return !(other < *this);
 }
 template <int N>
-inline bool Coord<N>::operator<=(const Coord& other) const {
+inline bool Coord<N>::operator>=(const Coord& other) const {
     return !(*this < other);
 }
 

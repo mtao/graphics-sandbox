@@ -16,5 +16,6 @@ bool operator<(const Eigen::DenseBase<Derived1>& a, const Eigen::DenseBase<Deriv
     return false;
 }
 
+
 #endif
 
