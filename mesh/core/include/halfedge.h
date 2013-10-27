@@ -8,14 +8,17 @@
 
 struct HalfEdge: public std::array<int,2> {
     public:
-        friend std::shared_ptr<HalfEdge> std::make_shared<HalfEdge>
-        HalfEdge* next() const {return m_next;}
-        HalfEdge* dual() const {return m_dual;}
-        static std::array<std::shared_ptr<HalfEdge>,2> make_half_edge(int a, int b);
+        typedef std::shared_ptr<HalfEdge> ptr;
+        typedef ptr pointer_type;
+
+        pointer_type next() const {return m_next;}
+        pointer_type dual() const {return m_dual;}
+        static std::array<pointer_type,2> make_half_edge(int a, int b);
+        static void set_triangle(pointer_type& a, pointer_type& b, pointer_type& c);
     private:
         HalfEdge(int a, int b);
-        HalfEdge* m_next = 0;
-        HalfEdge* m_dual = 0;
+        pointer_type m_next = 0;
+        pointer_type m_dual = 0;
 
 };
 

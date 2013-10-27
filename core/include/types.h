@@ -1,8 +1,8 @@
 #ifndef TYPES_H
 #define TYPES_H
-#include "coord.h"
 
 #include <Eigen/Dense>
+#include "coord.h"
 namespace mtao{ 
 
     typedef Eigen::Matrix3f Mat3f;
@@ -19,6 +19,13 @@ namespace mtao{
     typedef Eigen::Vector2i Vec2i;
     typedef Coord<3> Coord3;
     typedef Coord<2> Coord2;
+    template <typename T>
+        struct scalar_types {
+            typedef Eigen::Matrix<T,2,1> Vec2;
+            typedef Eigen::Matrix<T,3,1> Vec3;
+            typedef Eigen::Matrix<T,2,2> Mat2;
+            typedef Eigen::Matrix<T,3,3> Mat3;
+        };
     template <int Dim>
         struct dim_types {
             typedef Eigen::Matrix<double,Dim,1> Vecf;
@@ -32,7 +39,6 @@ namespace mtao{
                     typedef Eigen::Matrix<T,Dim,1> Vec;
                     typedef Eigen::Matrix<T,Dim,Dim> Mat;
                 };
-            typedef Veci Coord;
         };
 }
 #endif
