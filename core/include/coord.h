@@ -6,6 +6,7 @@ template <int N>
 class Coord: public Eigen::Matrix<int,N,1> {
     public:
         typedef Eigen::Matrix<int,N,1> Base;
+        Coord();
         Coord(const int& a);
         Coord(const int& a, const int& b);
         Coord(const int& a, const int& b, const int& c);
@@ -20,6 +21,9 @@ class Coord: public Eigen::Matrix<int,N,1> {
         using Base::m_storage;
 };
 
+template <int N>
+Coord<N>::Coord() {
+}
 template <int N>
 Coord<N>::Coord(const int& a) {
     m_storage.data()[0] = a;
