@@ -1,0 +1,45 @@
+#ifndef HETRIANGLEMESH_IPL
+#define HETRIANGLEMESH_IPL
+#ifndef HETRIANGLEMESH_H
+#include "hetrianglemesh.h"
+#endif
+
+template <typename Scalar>
+inline size_t HETriangleMesh<Scalar>::add_vertex(const Vec3& v) {
+    const size_t size = m_vertices.size();
+    m_vertices.insert(v);
+    return size;
+}
+
+template <typename Scalar>
+inline size_t HETriangleMesh<Scalar>::emplace_vertex(Vec3&& v) {
+    const size_t size = m_vertices.size();
+    m_vertices.emplace(v);
+    return size;
+}
+template <typename Scalar>
+inline auto HETriangleMesh<Scalar>::get_vertex(size_t idx) -> Vec3& {
+    return m_vertices[idx];
+}
+template <typename Scalar>
+inline auto HETriangleMesh<Scalar>::get_vertex(size_t idx) const -> const Vec3&{
+    return m_vertices[idx];
+}
+
+
+
+template <typename Scalar>
+internal::MeshConstructor<HETriangleMesh<Scalar> >::MeshConstructor(const std::string& filename): MeshConstructorBase<Scalar>(filename) {
+}
+
+template <typename Scalar>
+void internal::MeshConstructor<HETriangleMesh<Scalar> >::add_triangle(int a, int b, int c) {
+    m_edge_manager.add_triangle(a,b,c);
+}
+template <typename Scalar>
+void internal::MeshConstructor<HETriangleMesh<Scalar> >::add_vertex(Scalar a, Scalar b, Scalar c) {
+    m_edge_manager.add_triangle(a,b,c);
+}
+
+
+#endif

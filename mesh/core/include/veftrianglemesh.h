@@ -1,4 +1,3 @@
-
 #ifndef VEFTRIANGLEMESH_H
 #define VEFTRIANGLEMESH_H
 #include <Eigen/Core>
@@ -7,7 +6,8 @@
 //Vertex+Face triangle mesh
 template <typename Scalar>
 class VEFTriangleMesh: public VFTriangleMesh<Scalar> {
-    typedef Eigen::Vector2i Edge;
+    typedef mtao::Vec2i Edge;
+    typedef typename mtao::scalar_types<Scalar>::Vec3 Vec3;
     typedef VFTriangleMesh<Scalar> VFMesh;
     typedef typename VFMesh::TriangleSet TriangleSet;
     typedef typename VFMesh::VertexVector VertexVector;
@@ -22,7 +22,6 @@ class VEFTriangleMesh: public VFTriangleMesh<Scalar> {
     VEFTriangleMesh(const VFMesh& vf);
     VEFTriangleMesh(VFMesh&& vf);
     VEFTriangleMesh(const TriangleSet& triangles, const VertexVector& vertices);
-    void loadObj(const std::string& str);
     static VEFTriangleMesh<Scalar>&& openObj(const std::string& str);
     //Bulk Accessors
     EdgeSet & edges() {return m_edges;}
@@ -38,6 +37,12 @@ class VEFTriangleMesh: public VFTriangleMesh<Scalar> {
     private:
     void generateEdgesFromTriangles();
 };
+
+namespace internal {
+    template <typename Scalar>
+        class MeshConstructor<VEFTriangleMesh<Scalar> >: public MeshConstructor<VFTriangleMesh<Scalar> > {
+        };
+}
 
 #include "veftrianglemesh.ipl"
 #endif

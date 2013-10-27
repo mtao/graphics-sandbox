@@ -24,7 +24,9 @@ int main() {
     es.eigenvalues().maxCoeff(&maxcoeff);
     Eigen::Vector3d lambda_0 = es.eigenvectors().col(maxcoeff);
 
-    Plane p{center,lambda_0};
+    lambda_0 = Eigen::Vector3d(0,1,0);
+    center = Eigen::Vector3d(0,0,0);
+    Plane p{{center,lambda_0}};
     //Plane p{Eigen::Vector3d(0,0,0),Eigen::Vector3d(1,0,0)};
 
     p.cut(m).writeObj("cutMesh.obj");
