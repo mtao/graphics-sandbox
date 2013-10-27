@@ -38,6 +38,7 @@ ADD_LIBRARY(blockFEM STATIC ${blockFEM_SOURCES} ${blockFEM_HEADERS})
 INSTALL(FILES ${blockFEM_HEADERS} DESTINATION /usr/local/include/blockFEM)
 
 
+ADD_EXECUTABLE(test src/testmain.cpp ${blockFEM_HEADERS})
 
 
 
