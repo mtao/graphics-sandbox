@@ -59,8 +59,9 @@ MainWindow::MainWindow(QWidget * parent): QMainWindow(parent) {
 void MainWindow::openFile(const QString & filename) {
     emit loadingNewMesh();
     m_mesh.reset(new Mesh());
-    if(vcg::tri::io::Importer<Mesh>::Open(*m_mesh,filename.toStdString().c_str()) != 0) {
-        qDebug() << "Couldn't read mesh";
+    int err_code = vcg::tri::io::Importer<Mesh>::Open(*m_mesh,filename.toStdString().c_str());
+    if(vcg::tri::io::Importer<Mesh>::ErrorCritical(err_code)){
+        qDebug() << "Couldn't read mesh: " << vcg::tri::io::Importer<Mesh>::ErrorMsg(err_code);
         return;
     }
     initializeMesh();
@@ -68,6 +69,28 @@ void MainWindow::openFile(const QString & filename) {
 
 void MainWindow::initializeMesh() {
     if(!m_mesh) return;
+    auto&& bbox = m_mesh->bbox;
+    for(auto&& p: m_mesh->vert) {
+        bbox.Add(p.P());
+    }
+    auto&& dim = bbox.Dim();
+    auto&& center = bbox.Center();
+    double max = std::max({dim[0],dim[1],dim[2]});
+    for(auto&& p: m_mesh->vert) {
+        auto&& v = p.P();
+        v = (v-center)/max;
+    }
+    bbox.SetNull();
+    for(auto&& p: m_mesh->vert) {
+        bbox.Add(p.P());
+    }
+    std::cout << "(";
+    std::cout << bbox.min[0] << " ";
+    std::cout << bbox.min[1] << " ";
+    std::cout << bbox.min[2] << ")->(";
+    std::cout << bbox.max[0] << " ";
+    std::cout << bbox.max[1] << " ";
+    std::cout << bbox.max[2] << ")\n";
     std::cout << "Building normals per vertex:" << std::endl;
     vcg::tri::UpdateNormal<Mesh>::PerVertexNormalizedPerFace(*m_mesh);
     std::cout << "Building normals per face:" << std::endl;

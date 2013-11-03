@@ -56,11 +56,12 @@ void GLWidget::initializeGL() {
     glEnable(GL_LIGHT0);
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_NORMALIZE);
+    glCullFace(GL_BACK);
     //glLineWidth(2.0);
     GLfloat white_specular[] = {.8,.8,.8};
     GLfloat white_diffuse[] = {.4,.4,.4};
     GLfloat white_ambient[] = {.2,.2,.2};
-    GLfloat light_pos[] = {-1,1,-10};
+    GLfloat light_pos[] = {10,10,1000};
     glLightfv(GL_LIGHT0,GL_SPECULAR, white_specular);
     glLightfv(GL_LIGHT0,GL_DIFFUSE, white_diffuse);
     glLightfv(GL_LIGHT0,GL_AMBIENT, white_ambient);
@@ -121,6 +122,8 @@ void GLWidget::paintGL() {
 void GLWidget::receiveMesh(const Mesh::shared_ptr& ptr) {
     m_mesh = ptr;
     m_glWrap.m = ptr.get();
+    for(auto&& face: m_mesh->vert) {
+    }
 }
 
 
