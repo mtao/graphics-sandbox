@@ -68,8 +68,11 @@ void MainWindow::openFile(const QString & filename) {
 
 void MainWindow::initializeMesh() {
     if(!m_mesh) return;
+    std::cout << "Building normals per vertex:" << std::endl;
     vcg::tri::UpdateNormal<Mesh>::PerVertexNormalizedPerFace(*m_mesh);
+    std::cout << "Building normals per face:" << std::endl;
     vcg::tri::UpdateNormal<Mesh>::PerFaceNormalized(*m_mesh);
+    std::cout << "Done with normals" << std::endl;
     emit meshLoaded(m_mesh);
 }
 
