@@ -10,6 +10,7 @@ ADD_DEFINITIONS(-Werror)
 
 # Include dirs
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(/usr/local/include/eigen3)
 # Autogen'd moc code appears in the BINARY_DIR I believe
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 

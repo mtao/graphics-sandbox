@@ -58,10 +58,10 @@ void GLWidget::initializeGL() {
     glEnable(GL_NORMALIZE);
     glCullFace(GL_BACK);
     //glLineWidth(2.0);
-    GLfloat white_specular[] = {.8,.8,.8};
-    GLfloat white_diffuse[] = {.4,.4,.4};
-    GLfloat white_ambient[] = {.2,.2,.2};
-    GLfloat light_pos[] = {10,10,1000};
+    GLfloat white_specular[] = {.5,.5,.5};
+    GLfloat white_diffuse[] = {.5,.5,.5};
+    GLfloat white_ambient[] = {.5,.5,.5};
+    GLfloat light_pos[] = {1,1,10};
     glLightfv(GL_LIGHT0,GL_SPECULAR, white_specular);
     glLightfv(GL_LIGHT0,GL_DIFFUSE, white_diffuse);
     glLightfv(GL_LIGHT0,GL_AMBIENT, white_ambient);
@@ -71,7 +71,7 @@ void GLWidget::initializeGL() {
     GLfloat silver_ambient[] = {.19225,.19225,.19225};
     GLfloat silver_diffuse[] = {.50754,.504754,.50754};
     GLfloat silver_specular[] = {.508273,.508273,.508273};
-    GLfloat silver_shininess = 0.4;
+    GLfloat silver_shininess = .4;
 
     GLfloat gold_ambient[] = {.24725,.1995,.0745};
     GLfloat gold_diffuse[] = {.75164,.60648,.22648};

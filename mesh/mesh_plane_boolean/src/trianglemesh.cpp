@@ -9,11 +9,11 @@ void TriangleMesh::writeObj(const std::string & path) {
     std::ofstream of(path.c_str());
 
     if(!of.is_open()) return;
-    for(auto&& t: triangles) {
-        write(of,t);
-    }
     for(auto&& v: vertices) {
         of << "v " << v.transpose() << std::endl;
+    }
+    for(auto&& t: triangles) {
+        write(of,t);
     }
 }
 
