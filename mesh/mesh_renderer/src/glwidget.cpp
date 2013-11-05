@@ -114,8 +114,11 @@ void GLWidget::paintGL() {
     glLoadIdentity();
     glLoadMatrixf(glm::value_ptr(mat_mv));
 
-    m_glWrap.Draw<vcg::GLW::DMSmooth, vcg::GLW::CMPerMesh, vcg::GLW::TMNone> ();
-    m_glWrap.Draw<vcg::GLW::DMBox, vcg::GLW::CMPerMesh, vcg::GLW::TMNone> ();
+//    m_glWrap.Draw<vcg::GLW::DMSmooth, vcg::GLW::CMPerMesh, vcg::GLW::TMNone> ();
+    m_glWrap.Draw(m_drawMode, vcg::GLW::CMPerMesh, vcg::GLW::TMNone);
+    if(m_drawBBox) {
+        m_glWrap.Draw<vcg::GLW::DMBox, vcg::GLW::CMPerMesh, vcg::GLW::TMNone> ();
+    }
 }
 
 
@@ -182,4 +185,22 @@ void GLWidget::unloadMesh() {
 }
 
 
+void GLWidget::toggleBBox() {
+    m_drawBBox ^= true;
+    
+}
+void GLWidget::toggleDrawMode() {
+    //m_drawMode = (m_drawMode+1)%vcg::GLW::DMLast;
+    
+}
+
+void GLWidget::drawSmooth() {
+    m_drawMode = vcg::GLW::DMSmooth;
+}
+void GLWidget::drawWire() {
+    m_drawMode = vcg::GLW::DMWire;
+}
+void GLWidget::drawPoints() {
+    m_drawMode = vcg::GLW::DMPoints;
+}
 

@@ -24,6 +24,11 @@ signals:
     void meshLoaded(const Mesh::shared_ptr&);
     void dataLoaded();
     void loadingNewMesh();
+    void toggleDrawMode();
+    void toggleBBox();
+    void drawSmooth();
+    void drawWire();
+    void drawPoints();
 };
 
 #endif

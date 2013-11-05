@@ -51,6 +51,14 @@ MainWindow::MainWindow(QWidget * parent): QMainWindow(parent) {
 
     connect(this,&MainWindow::loadingNewMesh
             , m_glwidget,&GLWidget::unloadMesh);
+    connect(this,&MainWindow::toggleDrawMode
+            , m_glwidget,&GLWidget::toggleDrawMode);
+    connect(this,&MainWindow::drawSmooth
+            , m_glwidget,&GLWidget::drawSmooth);
+    connect(this,&MainWindow::drawPoints
+            , m_glwidget,&GLWidget::drawPoints);
+    connect(this,&MainWindow::drawWire
+            , m_glwidget,&GLWidget::drawWire);
 
 }
 
@@ -123,6 +131,20 @@ void MainWindow::openFile() {
 void MainWindow::keyPressEvent(QKeyEvent *event) {
 
     switch(event->key()){
+        case Qt::Key_AsciiTilde:
+            emit toggleDrawMode();
+        case Qt::Key_1:
+            emit drawSmooth();
+            break;
+        case Qt::Key_2:
+            emit drawWire();
+            break;
+        case Qt::Key_3:
+            emit drawPoints();
+            break;
+        case Qt::Key_B:
+            emit toggleBBox();
+            break;
     default:
         m_glwidget->keyPressEvent(event);
         QMainWindow::keyPressEvent(event);
