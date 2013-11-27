@@ -9,16 +9,22 @@ int main(int argc, char * argv[]) {
     auto&& trellis = generator.generate();
     auto grid = openvdb::DoubleGrid::create(1.0);
     grid->setTransform(
-                    openvdb::math::Transform::createLinearTransform(/*voxel size=*/0.005));
+                    openvdb::math::Transform::createLinearTransform(0.01));
 
-    trellis.createSDF(grid);
+    std::cout << "Creating SDF" << std::endl;
+    trellis.createSDF(grid,0.01);
 
-    std::cout << "Sizes: " << trellis.vertices.size() << " " << trellis.edges.size() << std::endl;
-    for(auto&& e: trellis.edges) {
-        std::cout << e[0] << " " << e[1] << std::endl;
+    openvdb::math::BBox<Trellis::Vertex> bbox;
+    for(auto&& v: trellis.vertices) {
+        bbox.expand(v);
     }
+    auto&& min = bbox.min();
+    auto&& max = bbox.max();
+    std::cout << min.x() << " " << min.y() << " " << min.z() << std::endl;
+    std::cout << max.x() << " " << max.y() << " " << max.z() << std::endl;
+
     grid->setName("Trellis");
-    openvdb::io::File file("output.vdb");
+    openvdb::io::File file("output2.vdb");
     openvdb::GridPtrVec grids;
     grids.push_back(grid);
     file.write(grids);

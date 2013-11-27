@@ -45,6 +45,7 @@ auto TrellisGenerator::generate_vertices(const openvdb::DoubleGrid::Ptr& grid) c
     std::uniform_real_distribution<> dis(0,1);
 
 
+int pos=0;
     for(auto&& v: vertices) {
         if(have_grid) {
             while(true) {
@@ -52,11 +53,29 @@ auto TrellisGenerator::generate_vertices(const openvdb::DoubleGrid::Ptr& grid) c
                 v = randomVertex(dis,gen);
                 if(stencil->interpolation(v) < 0)
                     break;
+                if(stencil->interpolation(v) < 0.1) {
+                    v = v + stencil->gradient(v);
+                }
             }
 
         } else {
-            v = randomVertex(dis,gen);
+            for(int c = 0; c < 30; c++) {
+
+                v = randomVertex(dis,gen);
+                bool tooClose = false;
+                for(int i=0; i < pos; ++i) {
+                    auto&& v2 = vertices[i];
+                    if((v2 - v).length() < min_vertex_dist) {
+                        tooClose = true;
+                        break;
+                    }
+                }
+                if(!tooClose) {
+                    break;
+                }
+            }
         }
+        pos = pos+1;
     }
 
     return std::move(vertices);

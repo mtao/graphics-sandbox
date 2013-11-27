@@ -10,8 +10,10 @@ ADD_DEFINITIONS(-Werror)
 ADD_DEFINITIONS(-Wall)
 
 # Include dirs
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include /opt/intel/tbb/include/)
 
+
+LINK_DIRECTORIES(/usr/local/lib64 /opt/intel/tbb/lib/intel64/gcc4.4)
 
 # Source files
 SET(trillis_generator_SOURCES
