@@ -5,10 +5,10 @@
 #include "mesh.h"
 
 
-class MainWindow: public QMainWindow {
+class MeshRenderMainWindow: public QMainWindow {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
+    MeshRenderMainWindow(QWidget *parent = 0);
 
 protected:
     void keyPressEvent(QKeyEvent *);

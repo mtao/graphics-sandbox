@@ -12,7 +12,7 @@
 #include <wrap/io_trimesh/import.h>
 #include <vcg/complex/algorithms/update/normal.h>
 
-MainWindow::MainWindow(QWidget * parent): QMainWindow(parent) {
+MeshRenderMainWindow::MeshRenderMainWindow(QWidget * parent): QMainWindow(parent) {
     setMenuBar(new QMenuBar(this));
     QMenu *fileMenu = menuBar() -> addMenu(tr("&File"));
     QAction *openAct = new QAction(tr("&Open"), this);
@@ -44,27 +44,27 @@ MainWindow::MainWindow(QWidget * parent): QMainWindow(parent) {
     glFormat.setProfile( QGLFormat::CompatibilityProfile );
     glFormat.setSampleBuffers( true );
     m_glwidget = new GLWidget(glFormat,this);
-    connect(this,&MainWindow::meshLoaded, m_glwidget,&GLWidget::receiveMesh);
+    connect(this,&MeshRenderMainWindow::meshLoaded, m_glwidget,&GLWidget::receiveMesh);
     setCentralWidget(m_glwidget);
 
 
 
-    connect(this,&MainWindow::loadingNewMesh
+    connect(this,&MeshRenderMainWindow::loadingNewMesh
             , m_glwidget,&GLWidget::unloadMesh);
-    connect(this,&MainWindow::toggleDrawMode
+    connect(this,&MeshRenderMainWindow::toggleDrawMode
             , m_glwidget,&GLWidget::toggleDrawMode);
-    connect(this,&MainWindow::drawSmooth
+    connect(this,&MeshRenderMainWindow::drawSmooth
             , m_glwidget,&GLWidget::drawSmooth);
-    connect(this,&MainWindow::drawPoints
+    connect(this,&MeshRenderMainWindow::drawPoints
             , m_glwidget,&GLWidget::drawPoints);
-    connect(this,&MainWindow::drawWire
+    connect(this,&MeshRenderMainWindow::drawWire
             , m_glwidget,&GLWidget::drawWire);
 
 }
 
 
 
-void MainWindow::openFile(const QString & filename) {
+void MeshRenderMainWindow::openFile(const QString & filename) {
     emit loadingNewMesh();
     m_mesh.reset(new Mesh());
     int err_code = vcg::tri::io::Importer<Mesh>::Open(*m_mesh,filename.toStdString().c_str());
@@ -75,7 +75,7 @@ void MainWindow::openFile(const QString & filename) {
     initializeMesh();
 }
 
-void MainWindow::initializeMesh() {
+void MeshRenderMainWindow::initializeMesh() {
     if(!m_mesh) return;
     auto&& bbox = m_mesh->bbox;
     for(auto&& p: m_mesh->vert) {
@@ -112,7 +112,7 @@ void MainWindow::initializeMesh() {
 
 
 
-void MainWindow::openFile() {
+void MeshRenderMainWindow::openFile() {
     QFileDialog::Options options(QFileDialog::HideNameFilterDetails);
     QString filename = QFileDialog::getOpenFileName(
                 this,
@@ -128,7 +128,7 @@ void MainWindow::openFile() {
     openFile(filename);
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *event) {
+void MeshRenderMainWindow::keyPressEvent(QKeyEvent *event) {
 
     switch(event->key()){
         case Qt::Key_AsciiTilde:

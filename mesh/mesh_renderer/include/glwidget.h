@@ -11,12 +11,12 @@
 #include <wrap/gl/trimesh.h>
 
 
-class MainWindow;
+class MeshRenderMainWindow;
 class GLWidget: public QGLWidget
 {
     Q_OBJECT
 public:
-    friend class MainWindow;
+    friend class MeshRenderMainWindow;
     GLWidget(const QGLFormat&  format, QWidget * parent=0);
     void getVels(const std::vector<Eigen::Vector3f> & vel) {
         velocitytuples = vel;

@@ -14,7 +14,6 @@ INCLUDE_DIRECTORIES(
     )
 ADD_DEFINITIONS(-std=c++11)
 SET(MeshRender_SOURCES
-    src/main.cpp
     src/mainwindow.cpp
     src/glwidget.cpp
     src/plylib.cpp
@@ -51,11 +50,21 @@ FIND_PACKAGE(Qt5Core)
 
 QT5_ADD_RESOURCES(MeshRender_RCC ${MeshRender_RESOURCE})
 
-ADD_EXECUTABLE(meshRender ${MeshRender_SOURCES} ${MeshRender_HEADERS} ${MeshRender_RCC} ${MeshRender_SHADERS})
+ADD_LIBRARY(MeshRender STATIC ${MeshRender_SOURCES} ${MeshRender_HEADERS} ${MeshRender_RCC} ${MeshRender_SHADERS})
 
-TARGET_LINK_LIBRARIES(meshRender ${QT_LIBRARIES} GLEW GL GLU)
+TARGET_LINK_LIBRARIES(MeshRender ${QT_LIBRARIES} GLEW GL GLU)
 
+
+ADD_EXECUTABLE(meshRender src/main.cpp)
+TARGET_LINK_LIBRARIES(meshRender MeshRender)
+
+
+QT5_USE_MODULES(MeshRender Widgets OpenGL)
 QT5_USE_MODULES(meshRender Widgets OpenGL)
 
 
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/meshRender DESTINATION ${INSTALL_PATH}/bin)
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/libMeshRender.a DESTINATION
+    ${INSTALL_PATH}/lib)
+INSTALL(FILES ${MeshRender_HEADERS} DESTINATION
+    ${INSTALL_PATH}/include/meshRender)
