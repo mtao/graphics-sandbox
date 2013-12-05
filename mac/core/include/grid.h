@@ -104,11 +104,11 @@ class Grid{
         }
         return idx;
     }
-    void idx2coord2(int idx, Veci& c) {
+    void idx2coord2(int idx, mtao::dim_types<2>::Veci & c) {
         c(0) = idx%m_N(2);
         c(1) = idx/m_N(2);
     }
-    void idx2coord2(int idx, Veci& c) {
+    void idx2coord3(int idx, mtao::dim_types<3>::Veci& c) {
         c(2) = idx%m_N(1);
         idx /= m_N(1);
         c(1) = idx%m_N(2);
@@ -144,6 +144,8 @@ class Grid{
         }
     }
     //Looping
+    //Provides the index-space coordinate of the vector and the current value in the grid
+    //Expects a value returned for writing
     Grid& loop(const std::function<Scalar(const Veci&, Scalar)>& f) {
         Veci coord(Veci::Zero());
         for(Scalar& v: m_data) {
@@ -152,6 +154,8 @@ class Grid{
         }
         return *this;
     }
+    //Provides the index-space coordinate of the vector and the current value in the grid
+    //Doesn't expect any modification of the grid
     void loop(const std::function<void(const Veci&, Scalar)>& f)const {
         Veci coord(Veci::Zero());
         for(Scalar v: m_data) {
@@ -159,6 +163,7 @@ class Grid{
             incrementLoop(coord);
         }
     }
+    //Provides a value-by-value evaluation
     Grid& loop(const std::function<Scalar(Scalar)>& f) {
         std::transform(m_data.begin(),m_data.end(),m_data.begin(), f);
         return *this;
