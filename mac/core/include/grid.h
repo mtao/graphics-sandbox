@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 
+
 template <typename Scalar_, int EmbedDim>
 class Grid{
 //    enum {dim = mtao::internal::traits<Derived>::embed_dim};
@@ -49,11 +50,18 @@ class Grid{
     //Internal data accessors
     const Veci& N() const {return m_N;}
     int N(int idx) const {return m_N(idx);}
-    const Vec dx() const {return m_dx;}
+    const Vec& dx() const {return m_dx;}
     Scalar dx(int idx) const {return m_dx(idx);}
     const Vec& origin() const {return m_origin;}
     Scalar origin(int idx) const {return m_origin(idx);}
+    //protected modifiers
+    protected:
+    void resize(const Veci& N) {m_N = N;}
+    void setOrigin(const Vec& origin) {m_origin = origin;}
+    void setDx(const Vec& dx) {m_dx = dx;}
+    
 
+    public:
     //There are several nice ways to access the data...
     std::vector<Scalar> & stlVector(){return m_data;}
     const std::vector<Scalar> & stlVector()const{return m_data;}
@@ -63,20 +71,20 @@ class Grid{
     ConstMapVec mapVector()const{return ConstMapVec(data());}
 
     //Some transformations
-    Vec worldToIndex(const Vec & v) {return (v-origin()).cwiseQuotient(dx());}
-    Vec indexToWorld(const Vec & v) {return v.cwiseProduct(dx()) + origin();}
-    Vec indexToWorld(const Veci & v) {return v.template cast<Scalar>().cwiseProduct(dx()) + origin();}
-    Vec indexToWorld(int x,int y) {return indexToWorld(Veci(x,y));}
-    Vec indexToWorld(int x,int y, int z) {return indexToWorld(Veci(x,y,z));}
+    Vec worldToIndex(const Vec & v) const {return (v-origin()).cwiseQuotient(dx());}
+    Vec indexToWorld(const Vec & v) const {return v.cwiseProduct(dx()) + origin();}
+    Vec indexToWorld(const Veci & v) const {return v.template cast<Scalar>().cwiseProduct(dx()) + origin();}
+    Vec indexToWorld(int x,int y) const {return indexToWorld(Veci(x,y));}
+    Vec indexToWorld(int x,int y, int z) const {return indexToWorld(Veci(x,y,z));}
 
     //linear interpolation for a index-space vector
-    Scalar ilerp(const Vec & iv) {
+    Scalar ilerp(const Vec & iv) const {
         Veci idx = iv.template cast<int>();
         Vec bary = iv - idx.template cast<Scalar>();
         return m_lerp(bary,idx);
     }
     //linear interpolation for a world-space vector
-    Scalar lerp(const Vec & v) {
+    Scalar lerp(const Vec & v) const {
         return ilerp(worldToIndex(v));
     }
     //Maps from 3d to 2d elements
@@ -95,6 +103,16 @@ class Grid{
             idx = m_N(i) * idx + c(i);
         }
         return idx;
+    }
+    void idx2coord2(int idx, mtao::dim_types<2>::Veci & c) {
+        c(0) = idx%m_N(2);
+        c(1) = idx/m_N(2);
+    }
+    void idx2coord3(int idx, mtao::dim_types<3>::Veci& c) {
+        c(2) = idx%m_N(1);
+        idx /= m_N(1);
+        c(1) = idx%m_N(2);
+        c(0) = idx/m_N(2);
     }
     //Accessors
     Scalar& coeffRef(int a) {return m_data[a];}
@@ -126,6 +144,8 @@ class Grid{
         }
     }
     //Looping
+    //Provides the index-space coordinate of the vector and the current value in the grid
+    //Expects a value returned for writing
     Grid& loop(const std::function<Scalar(const Veci&, Scalar)>& f) {
         Veci coord(Veci::Zero());
         for(Scalar& v: m_data) {
@@ -134,6 +154,8 @@ class Grid{
         }
         return *this;
     }
+    //Provides the index-space coordinate of the vector and the current value in the grid
+    //Doesn't expect any modification of the grid
     void loop(const std::function<void(const Veci&, Scalar)>& f)const {
         Veci coord(Veci::Zero());
         for(Scalar v: m_data) {
@@ -141,6 +163,7 @@ class Grid{
             incrementLoop(coord);
         }
     }
+    //Provides a value-by-value evaluation
     Grid& loop(const std::function<Scalar(Scalar)>& f) {
         std::transform(m_data.begin(),m_data.end(),m_data.begin(), f);
         return *this;

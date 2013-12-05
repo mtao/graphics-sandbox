@@ -1,0 +1,12 @@
+#include "../include/mainwindow.h"
+#include <QApplication>
+#include "../include/voxelObject.h"
+
+int main(int argc, char * argv[]) {
+    QApplication app(argc,argv);
+
+
+    MainWindow window;
+    window.show();
+    return app.exec();
+}

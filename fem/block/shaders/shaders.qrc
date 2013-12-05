@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/vertexRendering">
+        <file>vertex.130.f.glsl</file>
+        <file>vertex.130.v.glsl</file>
+    </qresource>
+</RCC>
