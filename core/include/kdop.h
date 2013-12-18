@@ -8,31 +8,32 @@ namespace mtao {
         template <typename T, int Dim_>
         struct CubeNormals {
             typedef T Scalar;
-            enum {Dim = Dim_, DynamicStorage=false, DefaultStorageSize=3};
+            enum {Dim = Dim_, DynamicStorage=false, DefaultStorageSize=Dim_};
             typedef typename mtao::numerical_types<T,Dim>::Vec Vec;
-            static Vec operator()(int i) {return Vec::Unit(i);}
+            constexpr Vec operator()(int i) {return Vec::Unit(i);}
             constexpr static int size() {return Dim;}
-        }
-    };
+        };
+    }
     template <typename T, int Dim_, typename Normals_=internal::CubeNormals<T,Dim_> >
         class KDOP {
             public:
                 typedef T Scalar;
+                typedef Normals_ Normals;
                 enum {Dim = Dim_,DynamicStorage=Normals::DynamicStorage,DefaultStorageSize=Normals::DefaultStorageSize};
-                typedef Normals Normals;
                 typedef typename mtao::numerical_types<T,DynamicStorage?Eigen::Dynamic:DefaultStorageSize>::Vec Vector;
                 typedef typename mtao::numerical_types<T,Dim>::Vec Vec;
                 KDOP();
-                void expand(const Vec&);
+                void expand(const Eigen::Ref<const Vec>&);
                 void expand(const KDOP<T,Dim,Normals>&);
                 bool operator()(const Vec&) const;
-                operator bool() const;
+                operator bool();
                 const Vector& min() const {return m_min;}
                 const Vector& max() const {return m_max;}
+                int size() const {return m_normals.size();}
             private:
                 Vector m_min;
                 Vector m_max;
-                CubeNormals m_normals;
+                Normals m_normals;
 
         };
     template <typename T, int Dim, typename Normals>
@@ -42,7 +43,7 @@ namespace mtao {
     {}
 
     template <typename T, int Dim, typename Normals>
-        void KDOP<T,Dim,Normals>::expand(const Vec& v) {
+        void KDOP<T,Dim,Normals>::expand(const Eigen::Ref<const Vec>& v) {
             for(int i=0; i < m_normals.size(); ++i) {
                 T val = m_normals(i).dot(v);
                 T& min = m_min[i];
@@ -52,9 +53,13 @@ namespace mtao {
             }
         }
     template <typename T, int Dim, typename Normals>
-        void KDOP<T,Dim,Normals>::expand(const KDOP<T,Dim,Normals>& other) const {
-            m_min.noalias() = m_min.cwiseMin(other.min());
-            m_max.noalias() = m_max.cwiseMax(other.max());
+        void KDOP<T,Dim,Normals>::expand(const KDOP<T,Dim,Normals>& other) {
+            int othersize = other.size();
+            assert(size() >= othersize);
+            auto&& minhead = m_min.head(othersize);
+            auto&& maxhead = m_max.head(othersize);
+            minhead.noalias() = minhead.cwiseMin(other.min());
+            maxhead.noalias() = maxhead.cwiseMax(other.max());
         }
 
     template <typename T, int Dim, typename Normals>
@@ -70,7 +75,7 @@ namespace mtao {
             return true;
         }
     template <typename T, int Dim, typename Normals>
-        bool KDOP<T,Dim,Normals>::operator bool() const {
+        KDOP<T,Dim,Normals>::operator bool() {
             return (m_min.array() < m_min.array()).all();
         }
 }

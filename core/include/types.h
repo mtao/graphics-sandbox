@@ -39,7 +39,7 @@ namespace mtao{
             typedef Eigen::Matrix<int,Dim,1> Veci;
             typedef Eigen::Matrix<double,Dim,Dim> Matf;
             typedef Eigen::Matrix<float,Dim,Dim> Matd;
-            typedef Coord<Dim> Coord;
+            typedef mtao::Coord<Dim> Coord;
         };
     template <typename T, int Dim>
         struct numerical_types {
