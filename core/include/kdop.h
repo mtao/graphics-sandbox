@@ -26,6 +26,7 @@ namespace mtao {
                 void expand(const Eigen::Ref<const Vec>&);
                 void expand(const KDOP<T,Dim,Normals>&);
                 bool operator()(const Vec&) const;
+                bool operator()(const KDOP<T,Dim,Normals>&);
                 operator bool();
                 const Vector& min() const {return m_min;}
                 const Vector& max() const {return m_max;}
@@ -68,15 +69,24 @@ namespace mtao {
                 T val = m_normals(i).dot(v);
                 T& min = m_min[i];
                 T& max = m_max[i];
-                if(val < min || val > max) {
+                //include end points to be conservative
+                if(val <= min || val >= max) {
                     return false;
                 }
             }
             return true;
         }
     template <typename T, int Dim, typename Normals>
+        bool KDOP<T,Dim,Normals>::operator()(const KDOP<T,Dim,Normals>& other) {
+            int minsize = std::min(size(),other.size());
+            auto&& min = m_min.head(minsize).max(other.min().head(minsize));
+            auto&& max = m_max.head(minsize).min(other.max().head(minsize));
+            return (min.array() > max.array()).all();
+        }
+    template <typename T, int Dim, typename Normals>
         KDOP<T,Dim,Normals>::operator bool() {
-            return (m_min.array() < m_min.array()).all();
+            //include end points to be conservative
+            return (m_min.array() <= m_min.array()).all();
         }
 }
 
