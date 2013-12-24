@@ -26,6 +26,7 @@ namespace mtao {
                 void expand(const Eigen::Ref<const Vec>&);
                 void expand(const KDOP<T,Dim,Normals>&);
                 bool operator()(const Vec&) const;
+                bool operator()(const Vec& o, const Vec& d, T tmin=0, T tmax=std::numeric_limits<Scalar>::max()) const;
                 operator bool();
                 const Vector& min() const {return m_min;}
                 const Vector& max() const {return m_max;}
@@ -66,13 +67,36 @@ namespace mtao {
         bool KDOP<T,Dim,Normals>::operator()(const Vec& v) const {
             for(int i=0; i < m_normals.size(); ++i) {
                 T val = m_normals(i).dot(v);
-                T& min = m_min[i];
-                T& max = m_max[i];
+                const T& min = m_min[i];
+                const T& max = m_max[i];
                 if(val < min || val > max) {
                     return false;
                 }
             }
             return true;
+        }
+    template <typename T, int Dim, typename Normals>
+        bool KDOP<T,Dim,Normals>::operator()(const Vec& o, const Vec& d, T tmin=0, T tmax=std::numeric_limits<Scalar>::max()) const {
+            //r = d*t + o
+            //c = n . r
+            //c = n . d * t + n . o
+            for(int i=0; i < m_normals.size(); ++i) {
+                const Vec& n = m_normals(i);
+                T nd = n.dot(d);
+                T no = n.dot(o);
+                const T& min = m_min[i];
+                const T& max = m_max[i];
+                T t0 = (min - no) / nd;
+                T t1 = (max - no) / nd;
+                if(t0 > t1) {
+                    std::swap(t0,t1);
+                }
+                if(t0 > tmax || t1 < tmin) {
+                    return false;
+                }
+            }
+            return true;
+
         }
     template <typename T, int Dim, typename Normals>
         KDOP<T,Dim,Normals>::operator bool() {
