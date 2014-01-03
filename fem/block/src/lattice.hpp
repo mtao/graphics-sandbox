@@ -49,19 +49,9 @@ resize(int i, int j, int k) {
 
 //Accessors
 template <typename DerivedType>
-inline int & Lattice<DerivedType>::
-operator()(int i, int j, int k) {
-    return derived()(i,j,k);
-}
-template <typename DerivedType>
 inline int Lattice<DerivedType>::
 operator()(int i, int j, int k) const {
     return derived()(i,j,k);
-}
-template <typename DerivedType>
-inline int & Lattice<DerivedType>::
-operator()(const mtao::Coord3 & c) {
-    return this->operator()(c.x(),c.y(),c.z());
 }
 template <typename DerivedType>
 inline int Lattice<DerivedType>::
@@ -71,30 +61,33 @@ operator()(const mtao::Coord3 & c) const {
 
 //Adders
 template <typename DerivedType>
+inline bool Lattice<DerivedType>::
+addRef(int& v) {
+    if(v == -1) {
+        v = m_active_count++;
+        return true;
+    }
+    return false;
+}
+template <typename DerivedType>
 inline int Lattice<DerivedType>::
 add(int i, int j, int k) {
-    int& curval = derived()(i,j,k);
-    if(curval == -1)
-        curval = m_active_count++;
-    return curval;
+    return derived().add(i,j,k);
+}
+template <typename DerivedType>
+inline int Lattice<DerivedType>::
+add(int i, int j, int k, bool& b) {
+    return derived().add(i,j,k,b);
 }
 template <typename DerivedType>
 inline int Lattice<DerivedType>::
 add(const mtao::Coord3 & c) {
-    return add(c.x(),c.y(),c.z());
+    return this->add(c.x(),c.y(),c.z());
 }
 template <typename DerivedType>
 inline int Lattice<DerivedType>::
-add(int i, int j, int k, bool & b) {
-    int& curval = derived()(i,j,k);
-    if((b = (curval == -1))) 
-        curval = m_active_count++;
-    return curval;
-}
-template <typename DerivedType>
-inline int Lattice<DerivedType>::
-add(const mtao::Coord3 & c, bool & b) {
-    return add(c.x(),c.y(),c.z(),b);
+add(const mtao::Coord3 & c, bool& b) {
+    return this->add(c,b);
 }
 
 template <typename DerivedType>
@@ -146,9 +139,21 @@ _coord2Index(const mtao::Coord3 & c) const {
     return _coord2Index(c.x(),c.y(),c.z());
 }
 
-inline int & DenseLattice::
-operator()(int i, int j, int k) {
+inline int& DenseLattice::
+getRef(int i, int j, int k) {
     return m_data[_coord2Index(i,j,k)];
+}
+inline int DenseLattice::
+add(int i, int j, int k) {
+    int v;
+    Base::addRef(v);
+    return v;
+}
+inline int DenseLattice::
+add(int i, int j, int k, bool& b) {
+    int v;
+    b = Base::addRef(v);
+    return v;
 }
 inline int DenseLattice::
 operator()(int i, int j, int k) const {
@@ -159,9 +164,21 @@ operator()(int i, int j, int k) const {
 
 
 inline int & NaiveSparseLattice::
-operator()(int i, int j, int k) {
+getRef(int i, int j, int k) {
     //try to insert the value with default -1 for unset index
     return m_data.insert(std::pair<mtao::Coord3,int>(mtao::Coord3{i,j,k},-1)).first->second;
+}
+inline int NaiveSparseLattice::
+add(int i, int j, int k) {
+    int v;
+    Base::addRef(v);
+    return v;
+}
+inline int NaiveSparseLattice::
+add(int i, int j, int k, bool& b) {
+    int v;
+    b = Base::addRef(v);
+    return v;
 }
 
 inline int NaiveSparseLattice::
@@ -179,10 +196,23 @@ inline const std::map<int,int> & SparseLattice::
 i_ji_i(int i, int j) const {
     return m_data[j*NI()+i];
 }
-inline int & SparseLattice::
-operator()(int i, int j, int k) {
+inline int SparseLattice::
+getRef(int i, int j, int k) {
     //try to insert the value with default -1 for unset index
     return i_ji_i(i,j).insert(std::pair<int,int>(k,-1)).first->second;
+}
+
+inline int SparseLattice::
+add(int i, int j, int k) {
+    int v;
+    Base::addRef(v);
+    return v;
+}
+inline int SparseLattice::
+add(int i, int j, int k, bool& b) {
+    int v;
+    b = Base::addRef(v);
+    return v;
 }
 
 inline int SparseLattice::

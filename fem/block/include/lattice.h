@@ -4,6 +4,7 @@
 #include <map>
 #include <set>
 #include "types.h"
+#include "coord.h"
 
 
 
@@ -34,15 +35,13 @@ class Lattice {
         //until after a compactify
         unsigned int activeCount() const {return m_active_count;}
         //Array accessors
-        inline int & operator()(int i, int j, int k);
         inline int operator()(int i, int j, int k) const;
-        inline int & operator()(const mtao::Coord3 & coord);
         inline int operator()(const mtao::Coord3 & coord) const;
 
         inline int add(const mtao::Coord3 & c);
-        inline int add(int i, int j, int k, bool & b);
         inline int add(const mtao::Coord3& c, bool & b);
         inline int add(int i, int j, int k);
+        inline int add(int i, int j, int k, bool & b);
 
         inline void resize(int i, int j, int k);
         //General cleaning
@@ -55,6 +54,7 @@ class Lattice {
 
     protected:
         Lattice(int i, int j, int k, unsigned int default_active=0);
+        bool addRef(int& v);
     private:
         mtao::Coord3 m_N;
     protected:
@@ -67,10 +67,12 @@ class Lattice {
 
 class DenseLattice: public Lattice<DenseLattice>{
     public:
+        typedef Lattice<DenseLattice> Base;
         DenseLattice(int ni, int nj, int nk);
-        using Lattice<DenseLattice>::operator();
+        using Base::operator();
         //Array accessors
-        inline int & operator()(int i, int j, int k);
+        inline int add(int i, int j, int k);
+        inline int add(int i, int j, int k, bool & b);
         inline int operator()(int i, int j, int k) const;
         inline int getIndex(int i, int j, int k) const;
         inline int getIndex(const mtao::Coord3 & coord) const;
@@ -87,6 +89,7 @@ class DenseLattice: public Lattice<DenseLattice>{
         inline int _coord2Index(int i, int j, int k) const;
         inline int _coord2Index(const mtao::Coord3 & c) const;
         inline mtao::Coord3 _index2Coord(int idx) const;
+        inline int& getRef(int i, int j, int k);
 
 };
 
@@ -102,7 +105,8 @@ class NaiveSparseLattice: public Lattice<NaiveSparseLattice> {
         //        unsigned int activeCount() const;
         //Array accessors
         using Lattice<NaiveSparseLattice>::operator();
-        inline int & operator()(int i, int j, int k);
+        inline int add(int i, int j, int k);
+        inline int add(int i, int j, int k, bool & b);
         inline int operator()(int i, int j, int k) const;
         //General cleaning
         inline void resize(int i, int j, int k);
@@ -110,6 +114,7 @@ class NaiveSparseLattice: public Lattice<NaiveSparseLattice> {
         std::map<int,int> compactifyIndices();
     private:
         std::map<mtao::Coord3,int> m_data;
+        inline int& getRef(int i, int j, int k);
 };
 
 
@@ -127,7 +132,8 @@ class SparseLattice: public Lattice<SparseLattice>{
         //        unsigned int activeCount() const;
         //Array accessors
         using Lattice<SparseLattice>::operator();
-        inline int & operator()(int i, int j, int k);
+        inline int add(int i, int j, int k);
+        inline int add(int i, int j, int k, bool & b);
         inline int operator()(int i, int j, int k) const;
         //General cleaning
         void reset();
@@ -140,6 +146,7 @@ class SparseLattice: public Lattice<SparseLattice>{
         inline std::map<int,int> & i_ji_i(int i, int j);
         inline const std::map<int,int> & i_ji_i(int i, int j) const;
         std::vector<std::map<int,int> > m_data;
+        inline int& getRef(int i, int j, int k);
 };
 
 
