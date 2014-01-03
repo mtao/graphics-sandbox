@@ -27,10 +27,14 @@ namespace mtao {
                 void expand(const KDOP<T,Dim,Normals>&);
                 bool operator()(const Vec&) const;
                 bool operator()(const Vec& o, const Vec& d, T tmin=0, T tmax=std::numeric_limits<Scalar>::max()) const;
+                bool operator()(const KDOP<T,Dim,Normals>&);
                 operator bool();
                 const Vector& min() const {return m_min;}
                 const Vector& max() const {return m_max;}
+                T& min(size_t i) const {return m_min(i);}
+                T& max(size_t i) const {return m_max(i);}
                 int size() const {return m_normals.size();}
+                const Vec& normal(int i) const { return m_normals(i); }
             private:
                 Vector m_min;
                 Vector m_max;
@@ -69,14 +73,15 @@ namespace mtao {
                 T val = m_normals(i).dot(v);
                 const T& min = m_min[i];
                 const T& max = m_max[i];
-                if(val < min || val > max) {
+                //include end points to be conservative
+                if(val <= min || val >= max) {
                     return false;
                 }
             }
             return true;
         }
     template <typename T, int Dim, typename Normals>
-        bool KDOP<T,Dim,Normals>::operator()(const Vec& o, const Vec& d, T tmin=0, T tmax=std::numeric_limits<Scalar>::max()) const {
+        bool KDOP<T,Dim,Normals>::operator()(const Vec& o, const Vec& d, T tmin, T tmax) const {
             //r = d*t + o
             //c = n . r
             //c = n . d * t + n . o
@@ -86,21 +91,35 @@ namespace mtao {
                 T no = n.dot(o);
                 const T& min = m_min[i];
                 const T& max = m_max[i];
-                T t0 = (min - no) / nd;
-                T t1 = (max - no) / nd;
-                if(t0 > t1) {
-                    std::swap(t0,t1);
-                }
-                if(t0 > tmax || t1 < tmin) {
-                    return false;
+                if(nd < 1e-6) {
+                    if(no <= min || no >= max) {
+                        return false;
+                    }
+                } else {
+                    T t0 = (min - no) / nd;
+                    T t1 = (max - no) / nd;
+                    if(t0 > t1) {
+                        std::swap(t0,t1);
+                    }
+                    if(t0 > tmax || t1 < tmin) {
+                        return false;
+                    }
                 }
             }
             return true;
 
         }
     template <typename T, int Dim, typename Normals>
+        bool KDOP<T,Dim,Normals>::operator()(const KDOP<T,Dim,Normals>& other) {
+            int minsize = std::min(size(),other.size());
+            auto&& min = m_min.head(minsize).max(other.min().head(minsize));
+            auto&& max = m_max.head(minsize).min(other.max().head(minsize));
+            return (min.array() > max.array()).all();
+        }
+    template <typename T, int Dim, typename Normals>
         KDOP<T,Dim,Normals>::operator bool() {
-            return (m_min.array() < m_min.array()).all();
+            //include end points to be conservative
+            return (m_min.array() <= m_min.array()).all();
         }
 }
 
