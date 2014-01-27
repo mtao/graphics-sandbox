@@ -18,9 +18,13 @@ class MassSpringSystem {
         typedef std::array<size_t,2> Edge;
 
         MassSpringSystem();
-        MassSpringSystem(const std::vector<Vec3f>& vertices, const std::vector<float>& mass, const std::vector<Edge>& edges, const std::vector<SpringProperties>& edge_properties);
+        MassSpringSystem(const std::vector<Vec3f>& vertices, const std::vector<float>& mass, const std::vector<Edge>& edges, const std::vector<SpringProperties>& edge_properties, const std::vector<bool>& rigid);
         const std::vector<Vec3f>& vertices() const {return m_vertices;}
+        std::vector<Vec3f>& vertices() {return m_vertices;}
+        std::vector<SpringProperties>& spring_properties() {return m_edge_properties;}
         const std::vector<Edge>& edges() const {return m_edges;}
+        void setRigid(size_t i){m_rigid[i] = true;}
+        void unsetRigid(size_t i){m_rigid[i] = false;}
         void advect(float dt);
         std::vector<Vec3f> computeForces() const;
     private:
@@ -31,6 +35,7 @@ class MassSpringSystem {
         std::vector<float> m_mass;
         std::vector<Edge> m_edges;
         std::vector<SpringProperties> m_edge_properties;
+        std::vector<bool> m_rigid;
 
 };
 
