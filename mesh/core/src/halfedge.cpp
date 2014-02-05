@@ -1,20 +1,28 @@
 #include "halfedge.h"
 
 
-HalfEdge::HalfEdge(int a, int b): std::array<int,2>{{a,b}} {}
+HalfEdge::HalfEdge(size_t a): head(a) {}
 
-auto HalfEdge::make_half_edge(int a, int b) -> std::array<pointer_type,2> {
-    pointer_type x(new HalfEdge(a,b));
-    pointer_type y(new HalfEdge(b,a));
-    x->m_dual = y;
-    y->m_dual = x;
-    return std::array<std::shared_ptr<HalfEdge>,2>{{x,y}};
+auto HalfEdge::make_half_edge(size_t a, size_t b) -> std::array<ptr_type,2> {
+    //for other purposes it's useful to know which order the edges are coming out?
+    /*
+    if(a > b) {
+        size_t tmp = a;
+        a = b;
+        b = tmp;
+    }
+    */
+    ptr_type x(new HalfEdge(b));
+    ptr_type y(new HalfEdge(a));
+    x->dual = y;
+    y->dual = x;
+    return ptr_pair_type{{x,y}};
 }
 
 
-void HalfEdge::set_triangle(pointer_type& a, pointer_type& b, pointer_type& c) {
+void HalfEdge::set_triangle(ptr_type& a, ptr_type& b, ptr_type& c) {
     //TODO: assert a[1] == b[0], b[1] == c[0], c[1] == a[0]
-    a->m_next = b;
-    b->m_next = c;
-    c->m_next = a;
+    a->next = b;
+    b->next = c;
+    c->next = a;
 }

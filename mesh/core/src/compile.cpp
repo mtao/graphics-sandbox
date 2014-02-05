@@ -1,6 +1,8 @@
-#include "veftrianglemesh.h"
+//#include "veftrianglemesh.h"
+#include "hetrianglemesh.h"
 
 int main() {
+    /*
     VEFTriangleMesh<float> vef;
     VFTriangleMesh<double> vf("bunny_regular.obj");
     for(auto&& v: vf.vertices()) {
@@ -10,4 +12,5 @@ int main() {
         std::cout << f.transpose() << std::endl;
     }
     return 0;
+    */
 }

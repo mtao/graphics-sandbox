@@ -12,7 +12,7 @@
 #include <wrap/io_trimesh/import.h>
 #include <vcg/complex/algorithms/update/normal.h>
 
-MainWindow::MainWindow(QWidget * parent): QMainWindow(parent) {
+MeshRenderMainWindow::MeshRenderMainWindow(QWidget * parent): QMainWindow(parent) {
     setMenuBar(new QMenuBar(this));
     QMenu *fileMenu = menuBar() -> addMenu(tr("&File"));
     QAction *openAct = new QAction(tr("&Open"), this);
@@ -44,32 +44,66 @@ MainWindow::MainWindow(QWidget * parent): QMainWindow(parent) {
     glFormat.setProfile( QGLFormat::CompatibilityProfile );
     glFormat.setSampleBuffers( true );
     m_glwidget = new GLWidget(glFormat,this);
-    connect(this,&MainWindow::meshLoaded, m_glwidget,&GLWidget::receiveMesh);
+    connect(this,&MeshRenderMainWindow::meshLoaded, m_glwidget,&GLWidget::receiveMesh);
     setCentralWidget(m_glwidget);
 
 
 
-    connect(this,&MainWindow::loadingNewMesh
+    connect(this,&MeshRenderMainWindow::loadingNewMesh
             , m_glwidget,&GLWidget::unloadMesh);
+    connect(this,&MeshRenderMainWindow::toggleDrawMode
+            , m_glwidget,&GLWidget::toggleDrawMode);
+    connect(this,&MeshRenderMainWindow::drawSmooth
+            , m_glwidget,&GLWidget::drawSmooth);
+    connect(this,&MeshRenderMainWindow::drawPoints
+            , m_glwidget,&GLWidget::drawPoints);
+    connect(this,&MeshRenderMainWindow::drawWire
+            , m_glwidget,&GLWidget::drawWire);
 
 }
 
 
 
-void MainWindow::openFile(const QString & filename) {
+void MeshRenderMainWindow::openFile(const QString & filename) {
     emit loadingNewMesh();
     m_mesh.reset(new Mesh());
-    if(vcg::tri::io::Importer<Mesh>::Open(*m_mesh,filename.toStdString().c_str()) != 0) {
-        qDebug() << "Couldn't read mesh";
+    int err_code = vcg::tri::io::Importer<Mesh>::Open(*m_mesh,filename.toStdString().c_str());
+    if(vcg::tri::io::Importer<Mesh>::ErrorCritical(err_code)){
+        qDebug() << "Couldn't read mesh: " << vcg::tri::io::Importer<Mesh>::ErrorMsg(err_code);
         return;
     }
     initializeMesh();
 }
 
-void MainWindow::initializeMesh() {
+void MeshRenderMainWindow::initializeMesh() {
     if(!m_mesh) return;
+    auto&& bbox = m_mesh->bbox;
+    for(auto&& p: m_mesh->vert) {
+        bbox.Add(p.P());
+    }
+    auto&& dim = bbox.Dim();
+    auto&& center = bbox.Center();
+    double max = std::max({dim[0],dim[1],dim[2]});
+    for(auto&& p: m_mesh->vert) {
+        auto&& v = p.P();
+        v = (v-center)/max;
+    }
+    bbox.SetNull();
+    for(auto&& p: m_mesh->vert) {
+        bbox.Add(p.P());
+    }
+    std::cout << "(";
+    std::cout << bbox.min[0] << " ";
+    std::cout << bbox.min[1] << " ";
+    std::cout << bbox.min[2] << ")->(";
+    std::cout << bbox.max[0] << " ";
+    std::cout << bbox.max[1] << " ";
+    std::cout << bbox.max[2] << ")\n";
+    std::cout << "Building normals per vertex:" << std::endl;
     vcg::tri::UpdateNormal<Mesh>::PerVertexNormalizedPerFace(*m_mesh);
+    std::cout << "Building normals per face:" << std::endl;
     vcg::tri::UpdateNormal<Mesh>::PerFaceNormalized(*m_mesh);
+    std::cout << "Done with normals" << std::endl;
     emit meshLoaded(m_mesh);
 }
 
@@ -78,7 +112,7 @@ void MainWindow::initializeMesh() {
 
 
 
-void MainWindow::openFile() {
+void MeshRenderMainWindow::openFile() {
     QFileDialog::Options options(QFileDialog::HideNameFilterDetails);
     QString filename = QFileDialog::getOpenFileName(
                 this,
@@ -94,9 +128,23 @@ void MainWindow::openFile() {
     openFile(filename);
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *event) {
+void MeshRenderMainWindow::keyPressEvent(QKeyEvent *event) {
 
     switch(event->key()){
+        case Qt::Key_AsciiTilde:
+            emit toggleDrawMode();
+        case Qt::Key_1:
+            emit drawSmooth();
+            break;
+        case Qt::Key_2:
+            emit drawWire();
+            break;
+        case Qt::Key_3:
+            emit drawPoints();
+            break;
+        case Qt::Key_B:
+            emit toggleBBox();
+            break;
     default:
         m_glwidget->keyPressEvent(event);
         QMainWindow::keyPressEvent(event);

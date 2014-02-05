@@ -56,11 +56,12 @@ void GLWidget::initializeGL() {
     glEnable(GL_LIGHT0);
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_NORMALIZE);
+    glCullFace(GL_BACK);
     //glLineWidth(2.0);
-    GLfloat white_specular[] = {.8,.8,.8};
-    GLfloat white_diffuse[] = {.4,.4,.4};
-    GLfloat white_ambient[] = {.2,.2,.2};
-    GLfloat light_pos[] = {-1,1,-10};
+    GLfloat white_specular[] = {.5,.5,.5};
+    GLfloat white_diffuse[] = {.5,.5,.5};
+    GLfloat white_ambient[] = {.5,.5,.5};
+    GLfloat light_pos[] = {1,1,10};
     glLightfv(GL_LIGHT0,GL_SPECULAR, white_specular);
     glLightfv(GL_LIGHT0,GL_DIFFUSE, white_diffuse);
     glLightfv(GL_LIGHT0,GL_AMBIENT, white_ambient);
@@ -70,7 +71,7 @@ void GLWidget::initializeGL() {
     GLfloat silver_ambient[] = {.19225,.19225,.19225};
     GLfloat silver_diffuse[] = {.50754,.504754,.50754};
     GLfloat silver_specular[] = {.508273,.508273,.508273};
-    GLfloat silver_shininess = 0.4;
+    GLfloat silver_shininess = .4;
 
     GLfloat gold_ambient[] = {.24725,.1995,.0745};
     GLfloat gold_diffuse[] = {.75164,.60648,.22648};
@@ -113,14 +114,19 @@ void GLWidget::paintGL() {
     glLoadIdentity();
     glLoadMatrixf(glm::value_ptr(mat_mv));
 
-    m_glWrap.Draw<vcg::GLW::DMSmooth, vcg::GLW::CMPerMesh, vcg::GLW::TMNone> ();
-    m_glWrap.Draw<vcg::GLW::DMBox, vcg::GLW::CMPerMesh, vcg::GLW::TMNone> ();
+//    m_glWrap.Draw<vcg::GLW::DMSmooth, vcg::GLW::CMPerMesh, vcg::GLW::TMNone> ();
+    m_glWrap.Draw(m_drawMode, vcg::GLW::CMPerMesh, vcg::GLW::TMNone);
+    if(m_drawBBox) {
+        m_glWrap.Draw<vcg::GLW::DMBox, vcg::GLW::CMPerMesh, vcg::GLW::TMNone> ();
+    }
 }
 
 
 void GLWidget::receiveMesh(const Mesh::shared_ptr& ptr) {
     m_mesh = ptr;
     m_glWrap.m = ptr.get();
+    for(auto&& face: m_mesh->vert) {
+    }
 }
 
 
@@ -179,4 +185,22 @@ void GLWidget::unloadMesh() {
 }
 
 
+void GLWidget::toggleBBox() {
+    m_drawBBox ^= true;
+    
+}
+void GLWidget::toggleDrawMode() {
+    //m_drawMode = (m_drawMode+1)%vcg::GLW::DMLast;
+    
+}
+
+void GLWidget::drawSmooth() {
+    m_drawMode = vcg::GLW::DMSmooth;
+}
+void GLWidget::drawWire() {
+    m_drawMode = vcg::GLW::DMWire;
+}
+void GLWidget::drawPoints() {
+    m_drawMode = vcg::GLW::DMPoints;
+}
 

@@ -11,12 +11,12 @@
 #include <wrap/gl/trimesh.h>
 
 
-class MainWindow;
+class MeshRenderMainWindow;
 class GLWidget: public QGLWidget
 {
     Q_OBJECT
 public:
-    friend class MainWindow;
+    friend class MeshRenderMainWindow;
     GLWidget(const QGLFormat&  format, QWidget * parent=0);
     void getVels(const std::vector<Eigen::Vector3f> & vel) {
         velocitytuples = vel;
@@ -50,6 +50,8 @@ private:
     QVector3D m_rotation;
     QVector3D m_angularMomentum;
     QVector3D m_accumulatedMomentum;
+    vcg::GLW::DrawMode m_drawMode = vcg::GLW::DMSmooth;
+    bool m_drawBBox = true;
     signals:
     void doneInitializingGL();
 public slots:
@@ -57,5 +59,10 @@ public slots:
     void enableRendering(){m_doRender = true;}
     void receiveMesh(const Mesh::shared_ptr& ptr);
     void unloadMesh();
+    void toggleDrawMode();
+    void toggleBBox();
+    void drawSmooth();
+    void drawWire();
+    void drawPoints();
 };
 #endif

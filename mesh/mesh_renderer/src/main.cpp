@@ -4,7 +4,7 @@
 
 int main(int argc, char * argv[]) {
     QApplication a(argc,argv);
-    MainWindow * mw = new MainWindow(); 
+    MeshRenderMainWindow * mw = new MeshRenderMainWindow(); 
     QStringList args = a.arguments();
     if(args.size() > 1) {
         mw->openFile(args[1]);
