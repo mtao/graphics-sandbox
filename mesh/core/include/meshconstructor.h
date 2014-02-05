@@ -5,7 +5,8 @@ namespace internal {
 template <typename Scalar>
 class MeshConstructorBase {
     public:
-        virtual void add_triangle(int a, int b, int c) = 0;
+        MeshConstructorBase(const std::string& filename);
+        virtual void add_triangle(size_t a, size_t b, size_t c) = 0;
         virtual void add_vertex(Scalar a, Scalar b, Scalar c) = 0;
 
 };
@@ -14,5 +15,7 @@ class MeshConstructorBase {
 template <typename MeshType>
 class MeshConstructor {};
 }
+
+#include "meshconstructor.ipl"
 
 #endif

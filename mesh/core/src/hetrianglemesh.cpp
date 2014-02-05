@@ -1,5 +1,6 @@
 #include "hetrianglemesh.h"
 
+/*
 internal::HEMeshEdgeConstructor::HEMeshEdgeConstructor() {}
 
 HalfEdge::ptr& internal::HEMeshEdgeConstructor::get_edge(int a, int b) {
@@ -43,3 +44,4 @@ void internal::HEMeshEdgeConstructor::add_triangle(int a, int b, int c) {
     auto z = get_edge(c,a);
     HalfEdge::set_triangle(x,y,z);
 }
+*/

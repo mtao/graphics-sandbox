@@ -4,19 +4,7 @@
 #include "hetrianglemesh.h"
 #endif
 
-template <typename Scalar>
-inline size_t HETriangleMesh<Scalar>::add_vertex(const Vec3& v) {
-    const size_t size = m_vertices.size();
-    m_vertices.insert(v);
-    return size;
-}
 
-template <typename Scalar>
-inline size_t HETriangleMesh<Scalar>::emplace_vertex(Vec3&& v) {
-    const size_t size = m_vertices.size();
-    m_vertices.emplace(v);
-    return size;
-}
 template <typename Scalar>
 inline auto HETriangleMesh<Scalar>::get_vertex(size_t idx) -> Vec3& {
     return m_vertices[idx];
@@ -33,12 +21,12 @@ internal::MeshConstructor<HETriangleMesh<Scalar> >::MeshConstructor(const std::s
 }
 
 template <typename Scalar>
-void internal::MeshConstructor<HETriangleMesh<Scalar> >::add_triangle(int a, int b, int c) {
-    m_edge_manager.add_triangle(a,b,c);
+void internal::MeshConstructor<HETriangleMesh<Scalar> >::add_triangle(size_t a, size_t b, size_t c) {
+    mtao::HETriangleTopologyConstructor::add_triangle(a,b,c);
 }
 template <typename Scalar>
 void internal::MeshConstructor<HETriangleMesh<Scalar> >::add_vertex(Scalar a, Scalar b, Scalar c) {
-    m_edge_manager.add_triangle(a,b,c);
+    m_vertices.push_back(Vec3(a,b,c));
 }
 
 
