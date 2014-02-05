@@ -2,8 +2,7 @@
 #define LOADER_H
 #include <string>
 
-template
-class Loader {
+class MeshLoader {
     public:
         virtual void open(const std::string& str) = 0;
         virtual void save(const std::string& str) = 0;

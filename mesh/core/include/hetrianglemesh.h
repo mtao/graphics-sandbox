@@ -25,17 +25,20 @@ class HETriangleMesh: public mtao::HETriangleTopology {
 namespace internal {
     //A MeshConstructor is useful here because it accelerates searching for existing edges/triangles
 template <typename Scalar>
-class MeshConstructor<HETriangleMesh<Scalar> >: public mtao::HETriangleTopologyConstructor {
+class MeshConstructor<HETriangleMesh<Scalar> >: public internal::MeshConstructorBase<Scalar>, public mtao::HETriangleTopologyConstructor {
     public:
         typedef Eigen::Matrix<Scalar,3,1> Vec3;
         typedef std::vector<Vec3> VertexVector;
-        MeshConstructor(const std::string& filename);
+        using MeshConstructorBase<Scalar>::MeshConstructorBase;
         void add_vertex(Scalar a, Scalar b, Scalar c);
         void add_triangle(size_t a, size_t b, size_t c);
         //size_t add_vertex(const Vec3&);
         //size_t emplace_vertex(Vec3&&);
         const Vec3& get_vertex(size_t idx) const;
+        Vec3& get_vertex(size_t idx) ;
         const VertexVector& vertices() const {return m_vertices;}
+        VertexVector& vertices() {return m_vertices;}
+        
 
     private:
         VertexVector m_vertices;

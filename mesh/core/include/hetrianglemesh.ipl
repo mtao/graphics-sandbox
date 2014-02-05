@@ -16,9 +16,6 @@ inline auto HETriangleMesh<Scalar>::get_vertex(size_t idx) const -> const Vec3&{
 
 
 
-template <typename Scalar>
-internal::MeshConstructor<HETriangleMesh<Scalar> >::MeshConstructor(const std::string& filename): MeshConstructorBase<Scalar>(filename) {
-}
 
 template <typename Scalar>
 void internal::MeshConstructor<HETriangleMesh<Scalar> >::add_triangle(size_t a, size_t b, size_t c) {

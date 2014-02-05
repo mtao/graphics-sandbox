@@ -31,10 +31,18 @@ SET(MeshCore_HEADERS
     include/meshconstructor.h
     )
 
+
+ADD_LIBRARY(mtaoMeshCore ${MeshCore_SOURCES} ${MeshCore_HEADERS})
 ENABLE_TESTING()
-ADD_EXECUTABLE(compile_test src/compile.cpp ${MeshCore_SOURCES}
+ADD_EXECUTABLE(compile_test src/compile.cpp
     ${MeshCore_HEADERS})
+TARGET_LINK_LIBRARIES(compile_test mtaoMeshCore)
 ADD_TEST(compilation compile_test)
-ADD_EXECUTABLE(halfedge_test src/hetriangletests.cpp ${MeshCore_SOURCES}
+ADD_EXECUTABLE(halfedge_test src/hetriangletests.cpp
     ${MeshCore_HEADERS})
+TARGET_LINK_LIBRARIES(halfedge_test mtaoMeshCore)
 ADD_TEST(halfedge halfedge_test)
+
+
+INSTALL(FILES ${MeshCore_HEADERS} DESTINATION include/mtaoMesh)
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/libmtaoMeshCore.a DESTINATION lib)

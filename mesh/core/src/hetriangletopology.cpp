@@ -30,6 +30,7 @@ auto mtao::HETriangleTopologyConstructor::create_edge(size_t a, size_t b) -> ptr
             return hep[0];
     }
 }
+
 void mtao::HETriangleTopologyConstructor::insert(const ptr_type& ptr) {
     
     const size_t& b = ptr->head;
@@ -194,4 +195,32 @@ void mtao::HETriangleTopologyOperators::remove(ptr_type& edge) {
     dual->head = -1;
     topology->halfedges().erase(edge);
     topology->halfedges().erase(dual);
+}
+
+
+
+
+auto mtao::HETriangleTopology::triangles() const -> std::set<ptr_type> {
+    std::set<ptr_type> ret;
+    for(auto&& he: halfedges()) {
+        auto&& tri = triangle(he);
+        if(tri) {
+            ret.insert(tri);
+        }
+    }
+           
+    return ret;
+}
+
+auto mtao::HETriangleTopology::triangle(const ptr_type& he) const -> ptr_type {
+    if(!he->next) {
+        return ptr_type();
+    }
+    ptr_type min = he;
+    for(ptr_type it = he->next; it && (it != he); it = it->next) {
+        if(it->head < min->head) {
+            min = it;
+        }
+    }
+    return min;
 }

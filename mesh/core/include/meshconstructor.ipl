@@ -7,13 +7,13 @@
 #include "loader.h"
 
 template <typename Scalar>
-void internal::MeshConstructorBase::MeshConstructorBase(const std::string& filename) {
+internal::MeshConstructorBase<Scalar>::MeshConstructorBase(const std::string& filename) {
 
-    std::shared_ptr<Loader> loader;
+    std::shared_ptr<MeshLoader> loader;
 
     //TODO: some logic to check if loaders are being written correctly
 
-    loader = std::make_shared<OBJLoader>(filename, [&]);
+//    loader = std::make_shared<OBJLoader>(filename);
 
 }
 

@@ -33,7 +33,9 @@ namespace mtao {
                 const std::set<ptr_type>& halfedges() const {
                     return ptrs;
                 }
+                std::set<ptr_type> triangles() const;
             private:
+                ptr_type triangle(const ptr_type& he) const;
                 std::set<ptr_type> ptrs;
         };
         struct HETriangleTopologyOperators {

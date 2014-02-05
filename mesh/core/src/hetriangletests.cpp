@@ -13,7 +13,7 @@ int main() {
     Mesh m(hecon);
 
     std::cout << "Triangles: " << std::endl;
-    for(auto&& he: hecon.triangles) {
+    for(auto&& he: m.triangles()) {
             std::cout << he->head << " " << he->next->head << " " << he->next->next->head << std::endl;
     }
     std::cout << "Boundary: " << std::endl;
