@@ -8,7 +8,8 @@ INCLUDE_DIRECTORIES(
     ./include
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
-    /home/mtao/hg/eigen/unsupported
+    /usr/local/include/eigen3/unsupported
+    /usr/local/include/eigen3
     /home/mtao/hg/eigen
     /home/mtao/svn/vcglib
     )
@@ -52,7 +53,7 @@ QT5_ADD_RESOURCES(MeshRender_RCC ${MeshRender_RESOURCE})
 
 ADD_LIBRARY(MeshRender STATIC ${MeshRender_SOURCES} ${MeshRender_HEADERS} ${MeshRender_RCC} ${MeshRender_SHADERS})
 
-TARGET_LINK_LIBRARIES(MeshRender ${QT_LIBRARIES} GLEW GL GLU)
+TARGET_LINK_LIBRARIES(MeshRender ${QT_LIBRARIES} GLEW GL GLU mtaoMeshCore)
 
 
 ADD_EXECUTABLE(meshRender src/main.cpp)
