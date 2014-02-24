@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.9)
-PROJECT(vdb2vdb)
+PROJECT(vdb_resize)
 
 SET(CMAKE_RUNTIME_OUTPUT_DIR ${PROJECT_BINARY_DIR}/bin)
 SET(CMAKE_LIBRARY_OUTPUT_DIR ${PROJECT_BINARY_DIR}/lib)
@@ -16,17 +16,17 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include /opt/intel/tbb/include/)
 LINK_DIRECTORIES(/usr/local/lib64 /opt/intel/tbb/lib/intel64/gcc4.4)
 
 # Source files
-SET(vdb2vdb_SOURCES
+SET(vdb_resize_SOURCES
     src/main.cpp
     )
 
-SET(vdb2vdb_HEADERS
+SET(vdb_resize_HEADERS
     )
 
 # Executable to build
-ADD_EXECUTABLE(vdb2vdb
-    ${vdb2vdb_SOURCES}
-    ${vdb2vdb_HEADERS}
+ADD_EXECUTABLE(vdb_resize
+    ${vdb_resize_SOURCES}
+    ${vdb_resize_HEADERS}
     )
 
-TARGET_LINK_LIBRARIES(vdb2vdb openvdb tbb Half)
+TARGET_LINK_LIBRARIES(vdb_resize openvdb tbb Half)

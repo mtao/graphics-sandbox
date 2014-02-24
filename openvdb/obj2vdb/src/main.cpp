@@ -103,8 +103,13 @@ int main(int argc, char * argv[]) {
     std::cout << "Reading file: " << argv[1] << std::endl;
     readOBJ(argv[1], verts, poly);
     float scale = 1.0 / 100;
-    if(argc == 3) {
+    if(argc >= 3) {
         scale = atof(argv[2]);
+    }
+    std::string outname(argv[1]);
+    outname = outname + ".vdb";
+    if(argc >= 4) {
+        outname = argv[3];
     }
     std::cout << "Using scale: " << scale << std::endl;
     /*
@@ -122,7 +127,7 @@ int main(int argc, char * argv[]) {
     auto&& gptr = openvdb::tools::meshToLevelSet<openvdb::FloatGrid>(*tptr, verts, poly);
 
     std::cout << "Writing grid" << std::endl;
-    openvdb::io::File file(std::string(argv[1]) + ".vdb");
+    openvdb::io::File file(outname);
     openvdb::GridPtrVec grids;
     grids.push_back(gptr);
     file.write(grids);
