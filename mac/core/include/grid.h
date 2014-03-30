@@ -3,9 +3,11 @@
 #include "types.h"
 #include "traits.h"
 #include "lerp.h"
+#include "bboxiterator.h"
 #include <vector>
 #include <memory>
 
+namespace mtao {
 
 template <typename Scalar_, int EmbedDim>
 class Grid{
@@ -17,13 +19,18 @@ class Grid{
     typedef typename mtao::dim_types<dim> _dt;
     public:
     typedef typename _dt::template scalar_types<Scalar>::Vec Vec;
+    typedef typename _dt::template scalar_types<Scalar>::BBox BBox;
     typedef typename _dt::Veci Veci;
+    typedef IterableBBox<EmbedDim> ItBBoxi;
+    typedef typename _dt::BBoxi BBoxi;
     typedef typename Eigen::Map<Eigen::Matrix<Scalar,Eigen::Dynamic,1> > MapVec;
     typedef typename Eigen::Map<const Eigen::Matrix<Scalar,Eigen::Dynamic,1> > ConstMapVec;
     typedef std::shared_ptr<Grid<Scalar,dim> > ptr;
     typedef std::weak_ptr<Grid<Scalar,dim> > weak_ptr;
 
+    Grid(): m_lerp(*this) {}
     Grid(const Veci & dim,const Vec & origin,  const Vec & dx): m_N(dim),m_origin(origin),  m_dx(dx), m_data(m_N.prod()), m_lerp(*this) {}
+    Grid(const Grid& other): m_N(other.m_N),m_origin(other.m_origin),  m_dx(other.m_dx), m_data(other.m_data), m_lerp(*this) {}
     Grid(Grid&& other): m_N(other.m_N),m_origin(other.m_origin),  m_dx(other.m_dx), m_data(std::move(other.m_data)), m_lerp(*this) {}
     Grid& operator=(Grid&& other) {
         m_N=other.m_N;
@@ -54,11 +61,17 @@ class Grid{
     Scalar dx(int idx) const {return m_dx(idx);}
     const Vec& origin() const {return m_origin;}
     Scalar origin(int idx) const {return m_origin(idx);}
-    //protected modifiers
-    protected:
-    void resize(const Veci& N) {m_N = N;}
+    Vec center() const {return m_origin.array() + m_N.template cast<float>().array() * m_dx.array() / 2.0;}
+    //modifiers
+    void resize(const Veci& N) {m_N = N; m_data.resize(m_N.prod());}
     void setOrigin(const Vec& origin) {m_origin = origin;}
     void setDx(const Vec& dx) {m_dx = dx;}
+    void reset(const Grid& other) {
+        setOrigin(other.origin());
+        setDx(other.dx());
+        resize(other.N());
+    }
+    protected:
     
 
     public:
@@ -74,8 +87,35 @@ class Grid{
     Vec worldToIndex(const Vec & v) const {return (v-origin()).cwiseQuotient(dx());}
     Vec indexToWorld(const Vec & v) const {return v.cwiseProduct(dx()) + origin();}
     Vec indexToWorld(const Veci & v) const {return v.template cast<Scalar>().cwiseProduct(dx()) + origin();}
+
     Vec indexToWorld(int x,int y) const {return indexToWorld(Veci(x,y));}
     Vec indexToWorld(int x,int y, int z) const {return indexToWorld(Veci(x,y,z));}
+    
+    BBox worldToIndex(const BBox & bb) const {return BBox(worldToIndex(bb.min()),worldToIndex(bb.max()));}
+    BBox indexToWorld(const BBox & bb) const {return BBox(indexToWorld(bb.min()),indexToWorld(bb.max()));}
+    BBox indexToWorld(const BBoxi & bb) const {return BBox(indexToWorld(bb.min()),indexToWorld(bb.max()));}
+
+    template <int N>
+    typename mtao::template dim_types<N>::template scalar_types<Scalar>::Vec indexToWorldSlice(const typename mtao::template dim_types<N>::Veci & v) const {
+        return v.template cast<Scalar>().cwiseProduct(dx().template topRows<N>()) + origin().template topRows<N>();
+        }
+
+    //BBox stuff
+    BBox bbox() const {
+        return BBox(origin(), origin() + m_N.template cast<Scalar>().cwiseProduct(dx()));
+    }
+    ItBBoxi bboxi() const {
+        return ItBBoxi(Veci::Zeros(), N());
+    }
+    BBox clampBB(const BBox& bb) const {
+        return bbox().intersect(bb);
+    }
+    ItBBoxi clampBBi(const BBoxi& bb) const {
+        return bboxi().intersect(bb);
+    }
+    ItBBoxi clampBBi(const ItBBoxi& bb) const {
+        return bboxi().intersect(bb);
+    }
 
     //linear interpolation for a index-space vector
     Scalar ilerp(const Vec & iv) const {
@@ -130,8 +170,10 @@ class Grid{
     //Iterators
     typename std::vector<Scalar>::iterator begin() {return m_data.begin();}
     typename std::vector<Scalar>::iterator end() {return m_data.end();}
-    typename std::vector<Scalar>::const_iterator cbegin() {return m_data.cbegin();}
-    typename std::vector<Scalar>::const_iterator cend() {return m_data.cend();}
+    typename std::vector<Scalar>::const_iterator begin() const{return m_data.begin();}
+    typename std::vector<Scalar>::const_iterator end() const{return m_data.end();}
+    typename std::vector<Scalar>::const_iterator cbegin() const{return m_data.cbegin();}
+    typename std::vector<Scalar>::const_iterator cend() const{return m_data.cend();}
 
     void incrementLoop(Veci& c)const {
         for(int i = EmbedDim-1; i >= 0; --i) {
@@ -179,4 +221,8 @@ class Grid{
 
     };
 
+
+}
+typedef mtao::Grid<float,3> Grid3f;
+typedef mtao::Grid<double,3> Grid3d;
 #endif

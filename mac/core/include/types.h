@@ -2,7 +2,12 @@
 #define TYPES_H
 
 #include <Eigen/Dense>
+#include <Eigen/Geometry>
+#
 namespace mtao{ 
+    typedef Eigen::AlignedBox<float,3> BBox3f;
+    typedef Eigen::AlignedBox<double,3> BBox3d;
+    typedef Eigen::AlignedBox<int,3> BBox3i;
 
     typedef Eigen::Matrix3f Mat3f;
     typedef Eigen::Matrix2f Mat2f;
@@ -23,10 +28,14 @@ namespace mtao{
             typedef Eigen::Matrix<int,Dim,1> Veci;
             typedef Eigen::Matrix<double,Dim,Dim> Matf;
             typedef Eigen::Matrix<float,Dim,Dim> Matd;
+            typedef Eigen::AlignedBox<float,Dim> BBoxf;
+            typedef Eigen::AlignedBox<double,Dim> BBoxd;
+            typedef Eigen::AlignedBox<int,Dim> BBoxi;
             template <typename T>
             struct scalar_types {
                 typedef Eigen::Matrix<T,Dim,1> Vec;
                 typedef Eigen::Matrix<T,Dim,Dim> Mat;
+                typedef Eigen::AlignedBox<T,Dim> BBox;
             };
         };
 }
