@@ -4,9 +4,11 @@
 
 class MeshLoader {
     public:
+        MeshLoader(MeshConstructorBase* constructor): m_constructor(constructor) {}
         virtual void open(const std::string& str) = 0;
         virtual void save(const std::string& str) = 0;
-    private:
+    protected:
+        MeshConstructorBase * m_constructor;
 
 
 };

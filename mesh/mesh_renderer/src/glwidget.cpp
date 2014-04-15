@@ -114,7 +114,7 @@ void GLWidget::paintGL() {
     glLoadIdentity();
     glLoadMatrixf(glm::value_ptr(mat_mv));
 
-//    m_glWrap.Draw<vcg::GLW::DMSmooth, vcg::GLW::CMPerMesh, vcg::GLW::TMNone> ();
+    //m_glWrap.Draw<vcg::GLW::DMSmooth, vcg::GLW::CMPerMesh, vcg::GLW::TMNone> ();
     m_glWrap.Draw(m_drawMode, vcg::GLW::CMPerMesh, vcg::GLW::TMNone);
     if(m_drawBBox) {
         m_glWrap.Draw<vcg::GLW::DMBox, vcg::GLW::CMPerMesh, vcg::GLW::TMNone> ();
