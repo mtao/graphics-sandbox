@@ -1,0 +1,10 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+<file>basic.v.glsl</file>
+<file>texture.v.glsl</file>
+<file>smooth.f.glsl</file>
+<file>texture.f.glsl</file>
+<file>wireframe.g.glsl</file>
+<file>wireframe.f.glsl</file>
+</qresource>
+</RCC>
