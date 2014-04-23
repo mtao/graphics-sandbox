@@ -8,6 +8,7 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLFunctions_4_3_Compatibility>
 #include <QMatrix4x4>
+#include "mesh/mesh_renderer/scene.h"
 class GLWidget: public QGLWidget {
     Q_OBJECT
     public:
@@ -21,12 +22,17 @@ class GLWidget: public QGLWidget {
         void initializeGL();
         void paintGL();
         void resizeGL(int w, int h);
+        void updateBBox();
+        void updateView();
+        void updateViewPlanes();
         std::array<QOpenGLShaderProgram,RenderMode::END-1> m_shaders;
-        size_t m_count;
-        QOpenGLBuffer m_vertices,m_indices,m_texture;
         QOpenGLFunctions_4_3_Compatibility gl;
         RenderMode m_render_mode = RenderMode::WIREFRAME;
+        QVector3D m_eyePos, m_focusPos, m_upDir;
         QMatrix4x4 m_viewMat,m_perspectiveMat,m_MVP;
+        InternalSceneNode m_scene;
+        float m_view_near = 0.001f, m_view_far = 100.0f;
+        mtao::BBox3f m_bbox;
 
 
         

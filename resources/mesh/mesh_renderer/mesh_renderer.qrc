@@ -2,7 +2,8 @@
 <qresource>
 <file>basic.v.glsl</file>
 <file>texture.v.glsl</file>
-<file>smooth.f.glsl</file>
+<file>phong.f.glsl</file>
+<file>flat.g.glsl</file>
 <file>texture.f.glsl</file>
 <file>wireframe.g.glsl</file>
 <file>wireframe.f.glsl</file>

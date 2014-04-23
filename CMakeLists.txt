@@ -75,11 +75,13 @@ QT5_ADD_RESOURCES(mesh_renderer_RCC
 SET(mesh_renderer_HEADERS 
     ${core_HEADERS}
     include/mesh/mesh_renderer/glwidget.h
+    include/mesh/mesh_renderer/scene.h
     )
 SET(mesh_renderer_SOURCES
     ${core_SOURCES}
     src/mesh/mesh_renderer/glwidget.cpp
     src/mesh/mesh_renderer/main.cpp
+    src/mesh/mesh_renderer/scene.cpp
     )
 
 ADD_EXECUTABLE(meshRenderer ${mesh_renderer_SOURCES} ${mesh_renderer_HEADERS}

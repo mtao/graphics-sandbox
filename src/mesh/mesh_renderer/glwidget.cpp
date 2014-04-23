@@ -1,5 +1,4 @@
 #include "mesh/mesh_renderer/glwidget.h"
-#include "core/linereader.hpp"
 #include <QResource>
 #include <array>
 #include <vector>
@@ -10,15 +9,28 @@ GLWidget::GLWidget(QWidget * parent ): QGLWidget(parent) {
 void GLWidget::initializeGL() {
     gl.initializeOpenGLFunctions();
     initializeShaders();
-    openMesh("bunny.obj");
 
-    m_viewMat.setToIdentity();
-    m_viewMat.lookAt(QVector3D(0,0,1), QVector3D(0,0,0), QVector3D(0,1,0));
+    for(auto&& shader: m_shaders) {
+        if(!shader.isLinked()) continue;
+        shader.bind();
+        shader.setUniformValue("color", .2f,.5f,1.f,1.0f);
+        shader.setUniformValue("lightPosition", 10.f,10.f,10.f);
+        shader.release();
+    }
+
+
+    m_eyePos = QVector3D(0,0,2);
+    m_focusPos = QVector3D(0,0,0);
+    m_upDir = QVector3D(0,1,0);
+    updateView();
 
     gl.glEnable(GL_ALPHA_TEST);
     gl.glEnable(GL_DEPTH_TEST);
     gl.glEnable(GL_CULL_FACE);
     gl.glEnable(GL_MULTISAMPLE);
+    openMesh("bunny.obj");
+    m_render_mode = RenderMode::FLAT;
+    openMesh("Test.obj");
 }
 
 void GLWidget::initializeShaders() {
@@ -27,8 +39,8 @@ void GLWidget::initializeShaders() {
 
 
     QOpenGLShader * basic_vertex = makeShader(QOpenGLShader::Vertex, ":/basic.v.glsl");
-// //   QOpenGLShader * flat_fragment = makeShader(QOpenGLShader::Fragment, ":/flat.f.glsl");
-//    QOpenGLShader * smooth_fragment = makeShader(QOpenGLShader::Fragment, ":/smooth.f.glsl");
+ //   QOpenGLShader * flat_fragment = makeShader(QOpenGLShader::Fragment, ":/flat.f.glsl");
+//    QOpenGLShader * phong_fragment = makeShader(QOpenGLShader::Fragment, ":/phong.f.glsl");
     std::cout << "Done making shaders" << std::endl;
 
     /*
@@ -37,12 +49,14 @@ void GLWidget::initializeShaders() {
     
     */
 
-//    m_shaders[RenderMode::FLAT].addShader(basic_vertex);
-//    m_shaders[RenderMode::FLAT].addShader(flat_fragment);
+    m_shaders[RenderMode::FLAT].addShader(basic_vertex);
+//    m_shaders[RenderMode::FLAT].addShader(phong_fragment);
+    m_shaders[RenderMode::FLAT].addShaderFromSourceFile(QOpenGLShader::Fragment, ":/phong.f.glsl");
+    m_shaders[RenderMode::FLAT].addShaderFromSourceFile(QOpenGLShader::Geometry, ":/flat.g.glsl");
 
     m_shaders[RenderMode::SMOOTH].addShader(basic_vertex);
-//    m_shaders[RenderMode::SMOOTH].addShader(smooth_fragment);
-    m_shaders[RenderMode::SMOOTH].addShaderFromSourceFile(QOpenGLShader::Fragment, ":/smooth.f.glsl");
+    //m_shaders[RenderMode::SMOOTH].addShader(phong_fragment);
+    //m_shaders[RenderMode::SMOOTH].addShaderFromSourceFile(QOpenGLShader::Fragment, ":/phong.f.glsl");
     std::cout << "Done adding shaders" << std::endl;
 
     m_shaders[RenderMode::WIREFRAME].addShader(basic_vertex);
@@ -60,6 +74,7 @@ void GLWidget::initializeShaders() {
 }
 
 QOpenGLShader * GLWidget::makeShader(QOpenGLShader::ShaderType, const QString& filename) {
+        qDebug() << "About to compile shader file: " << filename;
     QOpenGLShader * shader = new QOpenGLShader(QOpenGLShader::Vertex, this);
     if(shader->compileSourceFile(filename)) {
         return shader;
@@ -71,78 +86,67 @@ QOpenGLShader * GLWidget::makeShader(QOpenGLShader::ShaderType, const QString& f
     }
 
 }
-
-void GLWidget::openMesh(const QString& filename) {
-    mtao::FileParser fp(filename.toStdString());
-    std::vector<float> vertices;
-    std::vector<GLuint> indices;
-    std::array<float,3> t;
-    std::array<std::string,3> s;
-    std::array<GLuint,3> i;
-//    std::array<int,3> uv;
-    for(auto&& line: fp) {
-        char v;
-        std::stringstream ss(line);
-        ss >> v;
-        switch(v) {
-            case 'v':
-                ss >> t[0] >> t[1] >> t[2];
-                for(auto&& v: t) {
-                    vertices.push_back(v);
-                }
-                break;
-            case 'f':
-                ss >> s[0] >> s[1] >> s[2];
-                for(size_t m=0; m < 3; ++m) {
-                    auto&& str = s[m];
-                    auto it = str.begin();
-                    for(; it != str.end(); ++it) {
-                        if(*it == '/') {
-                            break;
-                        }
-                    }
-                    std::stringstream ss2(str.substr(0,std::distance(str.begin(),it)));
-                    ss2 >> i[m];
-
-                }
-                for(auto&& v: i) {
-                    indices.push_back(v-1);
-                }
-                break;
-            default:
-                break;
-        }
-    }
-    m_vertices = QOpenGLBuffer(QOpenGLBuffer::Type::VertexBuffer);
-    m_vertices.create();
-    m_vertices.bind();
-    m_vertices.allocate(vertices.data(),vertices.size()*sizeof(float));
+void GLWidget::updateView() {
+    m_viewMat.setToIdentity();
+    m_viewMat.lookAt(m_eyePos, m_focusPos, m_upDir);
+    updateViewPlanes();
     for(auto&& shader: m_shaders) {
         if(!shader.isLinked()) continue;
-        shader.enableAttributeArray( "vertexPosition" );
-        shader.setAttributeBuffer( "vertexPosition", GL_FLOAT, 0, 3 );
+        shader.bind();
+        shader.setUniformValue("eyePosition", m_eyePos);
+        shader.release();
     }
 
-    m_indices = QOpenGLBuffer(QOpenGLBuffer::Type::IndexBuffer);
-    m_indices.create();
-    m_indices.bind();
-    m_count = indices.size();
-    m_indices.allocate(indices.data(),indices.size()*sizeof(GLuint));
+}
+void GLWidget::updateViewPlanes() {
+    std::array<mtao::Vec3f,2> bb;
+    bb[0] = m_bbox.min();
+    bb[1] = m_bbox.max();
+    m_view_near = std::numeric_limits<float>::max();
+    m_view_far = std::numeric_limits<float>::min();
+    Eigen::Map<const Eigen::Matrix<float,4,4,Eigen::ColMajor> > map(m_viewMat.constData());
+    for(int a=0; a < 2; ++a) {
+        for(int b=0; b < 2; ++b) {
+            for(int c=0; c < 2; ++c) {
+                auto vec = map*Eigen::Matrix<float,4,1>(bb[a].x(),bb[b].y(),bb[c].z(),1);
+                std::cout << vec.transpose() << std::endl;
+                float z = -vec.z() / vec.w();
+                m_view_near = std::min(z,m_view_near);
+                m_view_far = std::max(z,m_view_far);
+            }
+        }
+    }
+    m_view_near = std::max(0.00001f,m_view_near);
+    m_view_far = std::min(1000.0f,m_view_far);
+    std::cout << "New cut planes: [" << m_view_near << "," << m_view_far << "]" << std::endl;
+}
 
+void GLWidget::updateBBox() {
+    m_bbox = m_scene.bbox();
+    updateViewPlanes();
+}
+
+void GLWidget::openMesh(const QString& filename) {
+    auto n = MeshSceneNode::create(filename);
+
+    if(n) {
+        m_scene.add(n);
+    }
+    updateBBox();
 }
 
 void GLWidget::resizeGL(int w, int h) {
     gl.glViewport(0,0,w,h);
     float aspectRatio = float(w)/float(h);
     m_perspectiveMat.setToIdentity();
-    m_perspectiveMat.perspective(40.0,aspectRatio,0.01,100.0);
+    m_perspectiveMat.perspective(40.0,aspectRatio,m_view_near, m_view_far);
     m_MVP = m_perspectiveMat * m_viewMat;
     for(auto&& shader: m_shaders) {
         if(!shader.isLinked()) continue;
         shader.bind();
         shader.setUniformValue("WIN_SCALE", GLfloat(width()), GLfloat(height()));
         shader.setUniformValue("MVP", m_MVP);
-        shader.setUniformValue("color", .2f,.5f,1.f,1.0f);
+        shader.setUniformValue("normalMatrix", m_MVP.normalMatrix());
         shader.release();
     }
 }
@@ -152,11 +156,7 @@ void GLWidget::paintGL() {
     gl.glClearColor(0,0,0,0);
     gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     m_shaders[m_render_mode].bind();
-    m_shaders[m_render_mode].enableAttributeArray( "vertexPosition" );
-    m_vertices.bind();
-    m_shaders[m_render_mode].setAttributeBuffer( "vertexPosition", GL_FLOAT, 0, 3 );
-    m_indices.bind();
-    gl.glDrawElements(GL_TRIANGLES, m_count, GL_UNSIGNED_INT,(void*)0);
+    m_scene.render(&m_shaders[m_render_mode], gl);
     m_shaders[m_render_mode].release();
 }
 
