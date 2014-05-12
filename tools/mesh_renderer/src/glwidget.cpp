@@ -1,4 +1,4 @@
-#include "mesh/mesh_renderer/glwidget.h"
+#include "glwidget.h"
 #include <QResource>
 #include <array>
 #include <vector>
@@ -28,31 +28,63 @@ void GLWidget::initializeGL() {
     gl.glEnable(GL_DEPTH_TEST);
     gl.glEnable(GL_CULL_FACE);
     gl.glEnable(GL_MULTISAMPLE);
-    openMesh("bunny.obj");
+    openMesh("armadillo.obj");
     m_render_mode = RenderMode::FLAT;
-    openMesh("Test.obj");
+    //openMesh("Test.obj");
 }
 
+bool GLWidget::useAdvancedPipeline() const {
+    int major_version = this->format().majorVersion();
+    int minor_version = this->format().minorVersion();
+    return major_version > 3 && minor_version > 0;
+}
+
+QString GLWidget::getResourceLocation(const QString& filename) const {
+    QString prefix(":/shaders/");
+    if(useAdvancedPipeline()) {
+        prefix += "410/";
+    } else {
+        prefix += "120/";
+    }
+    return prefix + filename;
+}
+
+
 void GLWidget::initializeShaders() {
+    int major_version = this->format().majorVersion();
+    int minor_version = this->format().minorVersion();
+    std::cout << "OpenGL Version: " << major_version << "." << minor_version << std::endl;
 
-    QResource::registerResource("mesh_renderer.rcc");//TODO: doublecheck this
+    QString rcc_prefix("tools/mesh_renderer/");
+    if(useAdvancedPipeline()) {
+        rcc_prefix += "410";
+    } else {
+        rcc_prefix += "120";
+    }
+    QString rcc_filepath = rcc_prefix + "_shaders.rcc";
+
+    //if(!QResource::registerResource(rcc_filepath)) {//TODO: doublecheck this
+    //    std::cout << "Could not open resource!" << std::endl;
+    //}
 
 
-    QOpenGLShader * basic_vertex = makeShader(QOpenGLShader::Vertex, ":/basic.v.glsl");
+    QOpenGLShader * basic_vertex = makeShader(QOpenGLShader::Vertex, getResourceLocation("basic.v.glsl"));
  //   QOpenGLShader * flat_fragment = makeShader(QOpenGLShader::Fragment, ":/flat.f.glsl");
 //    QOpenGLShader * phong_fragment = makeShader(QOpenGLShader::Fragment, ":/phong.f.glsl");
     std::cout << "Done making shaders" << std::endl;
 
     /*
-    QOpenGLShader * texture_vertex = makeShader(QOpenGLShader::Vertex, ":/texture.v.glsl");
-    QOpenGLShader * texture_fragment = makeShader(QOpenGLShader::Fragment, ":/texture.f.glsl");
+    QOpenGLShader * texture_vertex = makeShader(QOpenGLShader::Vertex, "texture.v.glsl");
+    QOpenGLShader * texture_fragment = makeShader(QOpenGLShader::Fragment, "texture.f.glsl");
     
     */
 
     m_shaders[RenderMode::FLAT].addShader(basic_vertex);
 //    m_shaders[RenderMode::FLAT].addShader(phong_fragment);
-    m_shaders[RenderMode::FLAT].addShaderFromSourceFile(QOpenGLShader::Fragment, ":/phong.f.glsl");
-    m_shaders[RenderMode::FLAT].addShaderFromSourceFile(QOpenGLShader::Geometry, ":/flat.g.glsl");
+    m_shaders[RenderMode::FLAT].addShaderFromSourceFile(QOpenGLShader::Fragment, getResourceLocation("phong.f.glsl"));
+    if(useAdvancedPipeline()) {
+        m_shaders[RenderMode::FLAT].addShaderFromSourceFile(QOpenGLShader::Geometry, getResourceLocation("flat.g.glsl"));
+    }
 
     m_shaders[RenderMode::SMOOTH].addShader(basic_vertex);
     //m_shaders[RenderMode::SMOOTH].addShader(phong_fragment);
@@ -60,9 +92,10 @@ void GLWidget::initializeShaders() {
     std::cout << "Done adding shaders" << std::endl;
 
     m_shaders[RenderMode::WIREFRAME].addShader(basic_vertex);
-    m_shaders[RenderMode::WIREFRAME].addShaderFromSourceFile(QOpenGLShader::Fragment, ":/wireframe.f.glsl");
-    m_shaders[RenderMode::WIREFRAME].addShaderFromSourceFile(QOpenGLShader::Geometry, ":/wireframe.g.glsl");
-
+    m_shaders[RenderMode::WIREFRAME].addShaderFromSourceFile(QOpenGLShader::Fragment, getResourceLocation("wireframe.f.glsl"));
+    if(useAdvancedPipeline()) {
+        m_shaders[RenderMode::WIREFRAME].addShaderFromSourceFile(QOpenGLShader::Geometry, getResourceLocation("wireframe.g.glsl"));
+    }
     /*
     m_shaders[RenderMode::TEXTURE].addShader(texture_vertex);
     m_shaders[RenderMode::TEXTURE].addShader(texture_fragment);
@@ -108,8 +141,7 @@ void GLWidget::updateViewPlanes() {
     for(int a=0; a < 2; ++a) {
         for(int b=0; b < 2; ++b) {
             for(int c=0; c < 2; ++c) {
-                auto vec = map*Eigen::Matrix<float,4,1>(bb[a].x(),bb[b].y(),bb[c].z(),1);
-                std::cout << vec.transpose() << std::endl;
+                auto vec = (map*Eigen::Matrix<float,4,1>(bb[a].x(),bb[b].y(),bb[c].z(),1)).eval();
                 float z = -vec.z() / vec.w();
                 m_view_near = std::min(z,m_view_near);
                 m_view_far = std::max(z,m_view_far);
@@ -155,6 +187,7 @@ void GLWidget::paintGL() {
 
     gl.glClearColor(0,0,0,0);
     gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    return;
     m_shaders[m_render_mode].bind();
     m_scene.render(&m_shaders[m_render_mode], gl);
     m_shaders[m_render_mode].release();

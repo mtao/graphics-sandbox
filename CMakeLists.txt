@@ -57,6 +57,10 @@ FOREACH(MOD ${ACTIVE_MODULES})
     SET(TOTAL_LIB_RESOURCES ${TOTAL_LIB_RESOURCES} ${${MOD}_RESOURCES})
 ENDFOREACH(MOD ${ACTIVE_MODULES})
 
+
+
+
+
 QT5_ADD_RESOURCES(TOTAL_LIB_RESOURCE_SOURCES ${TOTAL_LIB_RESOURCES})
 
 ADD_LIBRARY(mtaoGraphics ${TOTAL_LIB_SOURCES} ${TOTAL_LIB_HEADERS}
@@ -66,24 +70,8 @@ INSTALL( TARGETS mtaoGraphics LIBRARY DESTINATION lib ARCHIVE DESTINATION
     lib/static )
 
 
+ADD_SUBDIRECTORY(tools)
 
 
 
 
-QT5_ADD_RESOURCES(mesh_renderer_RCC
-    resources/mesh/mesh_renderer/mesh_renderer.qrc)
-SET(mesh_renderer_HEADERS 
-    ${core_HEADERS}
-    include/mesh/mesh_renderer/glwidget.h
-    include/mesh/mesh_renderer/scene.h
-    )
-SET(mesh_renderer_SOURCES
-    ${core_SOURCES}
-    src/mesh/mesh_renderer/glwidget.cpp
-    src/mesh/mesh_renderer/main.cpp
-    src/mesh/mesh_renderer/scene.cpp
-    )
-
-ADD_EXECUTABLE(meshRenderer ${mesh_renderer_SOURCES} ${mesh_renderer_HEADERS}
-    ${mesh_renderer_RCC})
-TARGET_LINK_LIBRARIES(meshRenderer Qt5::OpenGL)

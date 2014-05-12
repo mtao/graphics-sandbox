@@ -6,9 +6,10 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLShader>
 #include <QOpenGLBuffer>
-#include <QOpenGLFunctions_4_3_Compatibility>
+#include <QOpenGLFunctions>
 #include <QMatrix4x4>
-#include "mesh/mesh_renderer/scene.h"
+#include "scene.h"
+#include <QOpenGLFunctions_3_0>
 class GLWidget: public QGLWidget {
     Q_OBJECT
     public:
@@ -26,7 +27,8 @@ class GLWidget: public QGLWidget {
         void updateView();
         void updateViewPlanes();
         std::array<QOpenGLShaderProgram,RenderMode::END-1> m_shaders;
-        QOpenGLFunctions_4_3_Compatibility gl;
+        QOpenGLFunctions_3_0 gl;
+
         RenderMode m_render_mode = RenderMode::WIREFRAME;
         QVector3D m_eyePos, m_focusPos, m_upDir;
         QMatrix4x4 m_viewMat,m_perspectiveMat,m_MVP;
@@ -35,11 +37,10 @@ class GLWidget: public QGLWidget {
         mtao::BBox3f m_bbox;
 
 
-        
-        
-
-
-
+    private:
+        QString getResourceLocation(const QString& filename) const;
+        bool useAdvancedPipeline() const;
 };
+
 
 #endif

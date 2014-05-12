@@ -1,4 +1,4 @@
-#include "mesh/mesh_renderer/glwidget.h"
+#include "glwidget.h"
 #include <QApplication>
 
 int main(int argc, char * argv[]) {

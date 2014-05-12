@@ -1,10 +1,10 @@
-#include "mesh/mesh_renderer/scene.h"
+#include "scene.h"
 #include <QOpenGLShaderProgram>
 #include <QOpenGLContext>
 #include "core/linereader.hpp"
-#include <QOpenGLFunctions_4_3_Compatibility>
+#include <QOpenGLFunctions_3_0>
 #include <iostream>
-void InternalSceneNode::render(QOpenGLShaderProgram* program, QOpenGLFunctions_4_3_Compatibility& gl) {
+void InternalSceneNode::render(QOpenGLShaderProgram* program, QOpenGLFunctions_3_0& gl) {
     for(auto&& ptr: children) {
         ptr->render(program,gl);
     }
@@ -23,7 +23,7 @@ void InternalSceneNode::add(const SceneNode::Ptr& ptr) {
 }
 
 
-void MeshSceneNode::render(QOpenGLShaderProgram* program, QOpenGLFunctions_4_3_Compatibility&gl) {
+void MeshSceneNode::render(QOpenGLShaderProgram* program, QOpenGLFunctions_3_0&gl) {
     program->bind();
     program->enableAttributeArray( "vertexPosition" );
     m_vertices.bind();

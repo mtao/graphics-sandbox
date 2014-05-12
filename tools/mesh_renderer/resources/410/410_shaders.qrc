@@ -1,5 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
-<qresource>
+<qresource prefix="/shaders/410">
 <file>basic.v.glsl</file>
 <file>texture.v.glsl</file>
 <file>phong.f.glsl</file>
