@@ -1,4 +1,4 @@
-#include "linereader.hpp"
+#include "core/linereader.hpp"
 #include <iostream>
 
 mtao::FileParser::FileParser(const std::string& filename): m_filename(filename) {}
@@ -84,6 +84,7 @@ std::string mtao::LineParser::LineIterator::string() const {
 }
 
 
+/*
 int main(int argc, char * argv[]) {
     mtao::FileParser fp(argv[1]);
     for(auto&& l: fp) {
@@ -98,7 +99,6 @@ int main(int argc, char * argv[]) {
             }
             std::cout << std::endl;
         }
-            /*
         if(l[0] == 'v') {
             std::cout << "Vertex: ";
             mtao::LineParser lp(l);
@@ -114,6 +114,6 @@ int main(int argc, char * argv[]) {
             }
         }
         std::cout << std::endl;
-        */
     }
 }
+*/

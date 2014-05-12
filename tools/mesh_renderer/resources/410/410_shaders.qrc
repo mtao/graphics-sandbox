@@ -1,0 +1,11 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/shaders/410">
+<file>basic.v.glsl</file>
+<file>texture.v.glsl</file>
+<file>phong.f.glsl</file>
+<file>flat.g.glsl</file>
+<file>texture.f.glsl</file>
+<file>wireframe.g.glsl</file>
+<file>wireframe.f.glsl</file>
+</qresource>
+</RCC>

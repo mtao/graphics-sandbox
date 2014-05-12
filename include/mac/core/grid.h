@@ -9,10 +9,10 @@
 
 template <typename Scalar_, int EmbedDim>
 class Grid{
-//    enum {dim = mtao::internal::traits<Derived>::embed_dim};
+    //    enum {dim = mtao::internal::traits<Derived>::embed_dim};
     enum {dim = EmbedDim};
-//    typedef typename mtao::internal::traits<Derived> derived_traits;
-//    typedef typename derived_traits::Scalar Scalar;
+    //    typedef typename mtao::internal::traits<Derived> derived_traits;
+    //    typedef typename derived_traits::Scalar Scalar;
     typedef Scalar_ Scalar;
     typedef typename mtao::dim_types<dim> _dt;
     public:
@@ -23,7 +23,9 @@ class Grid{
     typedef std::shared_ptr<Grid<Scalar,dim> > ptr;
     typedef std::weak_ptr<Grid<Scalar,dim> > weak_ptr;
 
+
     Grid(const Veci & dim,const Vec & origin,  const Vec & dx): m_N(dim),m_origin(origin),  m_dx(dx), m_data(m_N.prod()), m_lerp(*this) {}
+    Grid(const BBox& bb, const Veci& dim): Grid(dim,bb.min(),bb.sizes()/dim.template cast<Scalar>()) {}
     Grid(Grid&& other): m_N(other.m_N),m_origin(other.m_origin),  m_dx(other.m_dx), m_data(std::move(other.m_data)), m_lerp(*this) {}
     Grid& operator=(Grid&& other) {
         m_N=other.m_N;
@@ -43,9 +45,9 @@ class Grid{
     int size() const {return stlVector().size();}
 
 
-//    //Derived handlers
-//    Derived& derived(){return *static_cast<Derived*>(this);}
-//    const Derived & derived()const {return *static_cast<const Derived*>(this);}
+    //    //Derived handlers
+    //    Derived& derived(){return *static_cast<Derived*>(this);}
+    //    const Derived & derived()const {return *static_cast<const Derived*>(this);}
 
     //Internal data accessors
     const Veci& N() const {return m_N;}
@@ -59,7 +61,7 @@ class Grid{
     void resize(const Veci& N) {m_N = N;}
     void setOrigin(const Vec& origin) {m_origin = origin;}
     void setDx(const Vec& dx) {m_dx = dx;}
-    
+
 
     public:
     //There are several nice ways to access the data...
@@ -177,6 +179,6 @@ class Grid{
     const typename mtao::lerp::template LinearInterpolator<Vec::RowsAtCompileTime, Grid<Scalar,EmbedDim> > m_lerp;
 
 
-    };
+};
 
 #endif
