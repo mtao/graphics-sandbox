@@ -43,9 +43,27 @@ SET(core_HEADERS
     include/core/types.h
     )
 
+SET(mesh_SOURCES
+    src/mesh/halfedge.cpp
+    src/mesh/hetrianglemesh.cpp
+    src/mesh/hetriangletopology.cpp
+    )
+
+SET(mesh_HEADERS
+    include/mesh/meshbase.h
+    include/mesh/meshtopologybase.h
+    include/mesh/meshconstructor.h
+    include/mesh/meshconstructor.ipl
+    include/mesh/halfedge.h
+    include/mesh/loaders/objloader.h
+    include/mesh/hetrianglemesh.h
+    include/mesh/hetrianglemesh.ipl
+    include/mesh/hetriangletopology.h
+    )
 
 
-SET(ACTIVE_MODULES core )
+
+SET(ACTIVE_MODULES core mesh)
 
 FOREACH(MOD ${ACTIVE_MODULES})
     STRING(REPLACE "include/" "./" MOD_HEADERS ${${MOD}_HEADERS})
@@ -71,6 +89,7 @@ INSTALL( TARGETS mtaoGraphics LIBRARY DESTINATION lib ARCHIVE DESTINATION
 
 
 ADD_SUBDIRECTORY(tools)
+ADD_SUBDIRECTORY(tests EXCLUDE_FROM_ALL)
 
 
 

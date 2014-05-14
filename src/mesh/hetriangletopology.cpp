@@ -1,4 +1,4 @@
-#include "hetriangletopology.h"
+#include "mesh/hetriangletopology.h"
 #include <limits>
 
 void mtao::HETriangleTopologyConstructor::add_triangle(size_t a, size_t b, size_t c) {

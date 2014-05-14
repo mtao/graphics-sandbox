@@ -5,6 +5,8 @@
 #include <Eigen/Geometry>
 #include "coord.h"
 namespace mtao{ 
+    template <typename T>
+    class type_traits {};
 
     typedef Eigen::Matrix3f Mat3f;
     typedef Eigen::Matrix2f Mat2f;

@@ -1,5 +1,5 @@
 //#include "veftrianglemesh.h"
-#include "hetrianglemesh.h"
+#include "mesh/hetrianglemesh.h"
 
 int main() {
     /*
@@ -11,6 +11,6 @@ int main() {
     for(auto&& f: vf.triangles()) {
         std::cout << f.transpose() << std::endl;
     }
-    return 0;
     */
+    return 0;
 }

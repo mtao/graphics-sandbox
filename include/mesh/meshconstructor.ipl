@@ -1,13 +1,14 @@
 #ifndef MESHCONSTRUCTORS_IPL
 #define MESHCONSTRUCTORS_IPL
 #ifndef MESHCONSTRUCTORS_H
-#include "meshconstructor.h"
+#include "mesh/meshconstructor.h"
 #endif
 
 #include "loader.h"
-
-template <typename Scalar>
-internal::MeshConstructorBase<Scalar>::MeshConstructorBase(const std::string& filename) {
+namespace internal {
+template <typename MeshType>
+auto MeshConstructor<MeshType>::autodetectConstructor(const std::string& filename)
+    -> internal::MeshConstructorBase<MeshType> {
 
     std::shared_ptr<MeshLoader> loader;
 
@@ -15,6 +16,7 @@ internal::MeshConstructorBase<Scalar>::MeshConstructorBase(const std::string& fi
 
 //    loader = std::make_shared<OBJLoader>(filename);
 
+}
 }
 
 

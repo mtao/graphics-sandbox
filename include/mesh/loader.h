@@ -1,7 +1,7 @@
 #ifndef LOADER_H
 #define LOADER_H
 #include <string>
-
+class MeshConstructorBase;
 class MeshLoader {
     public:
         MeshLoader(MeshConstructorBase* constructor): m_constructor(constructor) {}

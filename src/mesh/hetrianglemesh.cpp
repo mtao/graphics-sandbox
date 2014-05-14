@@ -1,4 +1,4 @@
-#include "hetrianglemesh.h"
+#include "mesh/hetrianglemesh.h"
 
 /*
 internal::HEMeshEdgeConstructor::HEMeshEdgeConstructor() {}

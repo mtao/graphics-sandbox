@@ -5,15 +5,19 @@
 #include <set>
 #include "hetriangletopology.h"
 #include "meshconstructor.h"
+#include "meshtraits.h"
 
 
 //Half Edge Triangle Mesh
-template <typename Scalar>
+template <typename Scalar_>
 class HETriangleMesh: public mtao::HETriangleTopology {
-    public:
-        typedef Eigen::Matrix<Scalar,3,1> Vec3;
-        typedef std::vector<Vec3> VertexVector;
-        HETriangleMesh(const internal::MeshConstructor<HETriangleMesh<Scalar> >& hemcon): HETriangleTopology(hemcon), m_vertices(hemcon.vertices()) {}
+public:
+    typedef HETriangleMesh<Scalar_> my_type;
+    typedef Scalar_ Scalar;
+    typedef Eigen::Matrix<Scalar,3,1> Vec3;
+    typedef std::vector<Vec3> VertexVector;
+    typedef typename mtao::mesh_traits<my_type > traits;
+    HETriangleMesh(const typename traits::constructor_type& hemcon): traits::topology_type(hemcon), m_vertices(hemcon.vertices()) {}
 
         Vec3& get_vertex(size_t idx);
         const Vec3& get_vertex(size_t idx) const;
@@ -25,7 +29,7 @@ class HETriangleMesh: public mtao::HETriangleTopology {
 namespace internal {
     //A MeshConstructor is useful here because it accelerates searching for existing edges/triangles
 template <typename Scalar>
-class MeshConstructor<HETriangleMesh<Scalar> >: public internal::MeshConstructorBase<Scalar>, public mtao::HETriangleTopologyConstructor {
+class MeshConstructor<HETriangleMesh<Scalar> >: public mtao::mesh_traits<HETriangleMesh<Scalar>>::constructor_base_type {
     public:
         typedef Eigen::Matrix<Scalar,3,1> Vec3;
         typedef std::vector<Vec3> VertexVector;
