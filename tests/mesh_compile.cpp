@@ -1,6 +1,7 @@
 //#include "veftrianglemesh.h"
 #include "mesh/hetrianglemesh.h"
 #include "mesh/meshexceptions.h"
+#include "mesh/loaders/objloader.h"
 #include <iostream>
 
 void printHE(const mtao::HETriangleTopology::ptr_type& p) {
@@ -29,6 +30,30 @@ int he_construction_test() {
     mc.add_vertex(0,1,0);
     mc.add_vertex(1,1,0);
     vef = mc.move();
+    return 0;
+
+}
+
+int he_mesh_load() {
+    mtao::MeshConstructor<mtao::HETriangleMesh<float> > mc;
+    mtao::OBJLoader ml(&mc);
+    ml.open("armadillo.obj");
+
+    auto vef = mc.move();
+
+    for(auto&& v: vef.vertices()) {
+        std::cout << v.transpose() << std::endl;
+    }
+    for(auto&& hep: vef.triangles()) {
+        auto it = hep;
+        for(int i=0; i < 3; ++i) {
+        if(!it) break;
+            printHE(it);
+            it = it->next;
+
+        }
+        std::cout << std::endl;
+    }
     return 0;
 
 }
@@ -62,5 +87,6 @@ int main() {
     int ret = 0;
     ret |= he_construction_test();
     ret |= he_badedge_test();
+    ret |= he_mesh_load();
     return ret;
 }

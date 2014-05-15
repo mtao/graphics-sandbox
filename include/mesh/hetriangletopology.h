@@ -8,22 +8,6 @@
 namespace mtao {
     class HETriangleTopology;
 
-        template <>
-        class MeshTopologyConstructor<HETriangleTopology>{
-            public:
-                typedef HalfEdge::ptr_type ptr_type;
-                typedef HalfEdge::ptr_pair_type ptr_pair;
-                void add_triangle(size_t a, size_t b, size_t c);
-                ptr_type create_edge(size_t a, size_t b);
-                std::set<ptr_type> toSet() const;
-                //std::vector<ptr_type> toVector() const;
-                std::set<ptr_type> triangles;
-                HETriangleTopology move();
-            private:
-                std::map<size_t, std::map<size_t, ptr_type> > m_edgeMap;
-                //This breaks the structure if ptr already exists!
-                void insert(const ptr_type& ptr);
-        };
 
         class HETriangleTopology {
             public:
@@ -42,6 +26,28 @@ namespace mtao {
                 ptr_type triangle(const ptr_type& he) const;
                 std::set<ptr_type> ptrs;
         };
+
+
+
+        template <>
+        class MeshTopologyConstructor<HETriangleTopology>{
+            public:
+                typedef HalfEdge::ptr_type ptr_type;
+                typedef HalfEdge::ptr_pair_type ptr_pair;
+                void add_triangle(size_t a, size_t b, size_t c);
+                ptr_type create_edge(size_t a, size_t b);
+                std::set<ptr_type> toSet() const;
+                //std::vector<ptr_type> toVector() const;
+                std::set<ptr_type> triangles;
+                HETriangleTopology move();
+                HETriangleTopology construct() {return move();}
+            private:
+                std::map<size_t, std::map<size_t, ptr_type> > m_edgeMap;
+                //This breaks the structure if ptr already exists!
+                void insert(const ptr_type& ptr);
+        };
+
+
         struct HETriangleTopologyOperators {
             public:
                 typedef HalfEdge::ptr_type ptr_type;

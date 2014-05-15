@@ -22,6 +22,7 @@ public:
     HETriangleMesh() {}
     //HETriangleMesh(const typename traits::constructor_type& hemcon): traits::topology_type(hemcon), m_vertices(hemcon.vertices()) {}
     HETriangleMesh(VertexVector&& v, topology_type&& t): topology_type(t), m_vertices(v) {}
+    HETriangleMesh(const VertexVector& v, const topology_type& t): topology_type(t), m_vertices(v) {}
 
         const VertexVector & vertices() const {return m_vertices;}
         VertexVector & vertices() {return m_vertices;}

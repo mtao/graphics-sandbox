@@ -49,6 +49,7 @@ SET(mesh_SOURCES
     src/mesh/halfedge.cpp
     src/mesh/hetrianglemesh.cpp
     src/mesh/hetriangletopology.cpp
+    src/mesh/loaders/objloader.cpp
     )
 
 SET(mesh_HEADERS
@@ -61,6 +62,7 @@ SET(mesh_HEADERS
     include/mesh/meshtopologyconstructor.h
     include/mesh/meshtopologyconstructor.ipl
     include/mesh/halfedge.h
+    include/mesh/loader.h
     include/mesh/loaders/objloader.h
 
     include/mesh/hetrianglemesh.h

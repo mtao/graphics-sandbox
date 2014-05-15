@@ -4,8 +4,16 @@
 #include "meshtopologyconstructor.h"
 #include "meshtraits.h"
 namespace mtao {
+
+class MeshConstructorBase {
+public:
+    virtual void add_triangle(size_t a, size_t b, size_t c) = 0;
+    virtual void add_vertexf(float a, float b, float c) = 0;
+    virtual void add_vertexd(double a, double b, double c) = 0;
+};
+
 template <typename MeshType>
-class MeshConstructor: public mtao::mesh_traits<MeshType>::topology_constructor_type {
+class MeshConstructor: public MeshConstructorBase, public mtao::mesh_traits<MeshType>::topology_constructor_type {
     public:
 
     typedef typename mtao::mesh_traits<MeshType>::Scalar Scalar;
@@ -16,6 +24,8 @@ class MeshConstructor: public mtao::mesh_traits<MeshType>::topology_constructor_
         void add_triangle(size_t a, size_t b, size_t c);
 
         void add_vertex(Scalar a, Scalar b, Scalar c);
+        void add_vertexd(double a, double b, double c) {add_vertex(a,b,c);}
+        void add_vertexf(float a, float b, float c) {add_vertex(a,b,c);}
 
         const MeshType& construct();
         MeshType move();
