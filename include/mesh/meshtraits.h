@@ -7,11 +7,16 @@ template <typename MeshType>
 class MeshConstructorBase;
 template <typename TopologyType>
 class MeshTopologyConstructor;
-template <typename MeshType>
+template <template<typename> class MeshType, typename T>
 class MeshBase;
 
+template <typename TopologyType>
+struct topology_traits {
+    typedef MeshTopologyConstructor<TopologyType> topology_constructor_type;
+};
+
 template <typename MeshType>
-class mesh_traits {
+struct mesh_traits {
     typedef typename MeshType::Scalar Scalar;
     typedef MeshConstructor<MeshType> constructor_type;
     typedef MeshConstructorBase<MeshType> constructor_base_type;

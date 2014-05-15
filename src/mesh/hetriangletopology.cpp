@@ -1,62 +1,73 @@
 #include "mesh/hetriangletopology.h"
+#include "mesh/meshexceptions.h"
 #include <limits>
 
-void mtao::HETriangleTopologyConstructor::add_triangle(size_t a, size_t b, size_t c) {
-    ptr_type&& ab = create_edge(a,b);
-    ptr_type&& bc = create_edge(b,c);
-    ptr_type&& ca = create_edge(c,a);
-    HalfEdge::set_triangle(ab,bc,ca);
-    
-    triangles.insert(ca);
-}
-auto mtao::HETriangleTopologyConstructor::create_edge(size_t a, size_t b) -> ptr_type{
+#include <iostream>
+namespace mtao {
+        void MeshTopologyConstructor<HETriangleTopology>::add_triangle(size_t a, size_t b, size_t c) {
+            ptr_type&& ab = create_edge(a,b);
+            ptr_type&& bc = create_edge(b,c);
+            ptr_type&& ca = create_edge(c,a);
+            HalfEdge::set_triangle(ab,bc,ca);
 
-    auto amapit = m_edgeMap.find(a);
-    if( amapit != m_edgeMap.end()) {
-        auto&& amap = amapit->second;
-        auto bit = amap.find(b);
-        if(bit != amap.end()) {
-            return bit->second;
-        } else {
-            auto&& hep = HalfEdge::make_half_edge(a,b);
-            amap.emplace(b,hep[0]);
-            insert(hep[1]);
-            return hep[0];
+            triangles.insert(ca);
         }
-    } else {
-            auto&& hep = HalfEdge::make_half_edge(a,b);
-            insert(hep[0]);
-            insert(hep[1]);
-            return hep[0];
-    }
-}
+        auto MeshTopologyConstructor<HETriangleTopology>::create_edge(size_t a, size_t b) -> ptr_type{
 
-void mtao::HETriangleTopologyConstructor::insert(const ptr_type& ptr) {
-    
-    const size_t& b = ptr->head;
-    const size_t& a = ptr->dual->head;
-    auto amapit = m_edgeMap.find(a);
-    if( amapit == m_edgeMap.end()) {
-        amapit = m_edgeMap.emplace(a,std::map<size_t,ptr_type>()).first;
-    }
-
-    auto&& amap = amapit->second;
-    amap.emplace(b,ptr);
-}
-
-
-auto mtao::HETriangleTopologyConstructor::toSet() const -> std::set<ptr_type> {
-    std::set<ptr_type> ret_set;
-    for(auto&& amappair: m_edgeMap) {
-        for(auto&& bpair: amappair.second) {
-            ret_set.insert(bpair.second);
-
+            auto amapit = m_edgeMap.find(a);
+            if( amapit != m_edgeMap.end()) {
+                auto&& amap = amapit->second;
+                auto bit = amap.find(b);
+                if(bit != amap.end()) {
+                    if(bit->second->next) {
+                        throw exceptions::NonManifoldEdge(bit->second->tail(),bit->second->head);
+                    }
+                    return bit->second;
+                } else {
+                    auto&& hep = HalfEdge::make_half_edge(a,b);
+                    amap.emplace(b,hep[0]);
+                    insert(hep[1]);
+                    return hep[0];
+                }
+            } else {
+                auto&& hep = HalfEdge::make_half_edge(a,b);
+                insert(hep[0]);
+                insert(hep[1]);
+                return hep[0];
+            }
         }
-    }
-    return ret_set;
+
+        void MeshTopologyConstructor<HETriangleTopology>::insert(const ptr_type& ptr) {
+
+            const size_t& b = ptr->head;
+            const size_t& a = ptr->dual->head;
+            auto amapit = m_edgeMap.find(a);
+            if( amapit == m_edgeMap.end()) {
+                amapit = m_edgeMap.emplace(a,std::map<size_t,ptr_type>()).first;
+            }
+
+            auto&& amap = amapit->second;
+            amap.emplace(b,ptr);
+        }
+
+
+        auto MeshTopologyConstructor<HETriangleTopology>::toSet() const -> std::set<ptr_type> {
+            std::set<ptr_type> ret_set;
+            for(auto&& amappair: m_edgeMap) {
+                for(auto&& bpair: amappair.second) {
+                    ret_set.insert(bpair.second);
+
+                }
+            }
+            return ret_set;
+        }
+        HETriangleTopology MeshTopologyConstructor<HETriangleTopology>::move() {
+            return HETriangleTopology(toSet());
+        }
 }
 
-//auto mtao::HETriangleTopologyConstructor::toVector() const -> std::vector<ptr_type> {
+                //HETriangleTopology(const HETriangleTopologyConstructor& hetcon): ptrs(hetcon.toSet()) {}
+//auto MeshTopologyConstructor<HETriangleTopology>::toVector() const -> std::vector<ptr_type> {
 //    std::vector<ptr_type> ret_vec;
 //    for(auto&& amappair: m_edgeMap) {
 //        for(auto&& bpair: amappair.second) {
@@ -69,11 +80,11 @@ auto mtao::HETriangleTopologyConstructor::toSet() const -> std::set<ptr_type> {
 
 
 /*  /c\      /c\
-// / | \    /   \
-//b  |  d  b---->d
-// \ v /    \   /
-//  \a/      \a/
-*/
+    // / | \    /   \
+    //b  |  d  b---->d
+    // \ v /    \   /
+    //  \a/      \a/
+    */
 
 void mtao::HETriangleTopologyOperators::flip(ptr_type& edge) {
     //a->b->c
@@ -91,7 +102,7 @@ void mtao::HETriangleTopologyOperators::flip(ptr_type& edge) {
     //flip the indices
     bd->head = cd->head;
     db->head = ab->head;
-    
+
     //flip rest of it
 
     bc->next = cd;
@@ -104,11 +115,11 @@ void mtao::HETriangleTopologyOperators::flip(ptr_type& edge) {
 }
 
 /*  /c\        /c\
-// / | \      / v \
-//b  |  d    b--e--d 
-// \ v /      \ v /  
-//  \a/        \a/   
-*/
+    // / | \      / v \
+    //b  |  d    b--e--d 
+    // \ v /      \ v /  
+    //  \a/        \a/   
+    */
 
 void mtao::HETriangleTopologyOperators::split(ptr_type& ca, size_t e) {
     //a->b->c
@@ -158,7 +169,7 @@ void mtao::HETriangleTopologyOperators::split(ptr_type& ca, size_t e) {
 */
 
 void mtao::HETriangleTopologyOperators::collapse(ptr_type& ca) {
-    
+
     //a->b->c
     auto&& ab = ca->next;
     auto&& bc = ab->next;
@@ -208,9 +219,10 @@ auto mtao::HETriangleTopology::triangles() const -> std::set<ptr_type> {
             ret.insert(tri);
         }
     }
-           
+
     return ret;
 }
+
 
 auto mtao::HETriangleTopology::triangle(const ptr_type& he) const -> ptr_type {
     if(!he->next) {

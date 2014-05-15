@@ -5,18 +5,36 @@
 #endif
 
 #include "loader.h"
-namespace internal {
-template <typename MeshType>
-auto MeshConstructor<MeshType>::autodetectConstructor(const std::string& filename)
-    -> internal::MeshConstructorBase<MeshType> {
+namespace mtao {
+        /*
+           template <typename MeshType>
+           auto MeshConstructor<MeshType>::autodetectConstructor(const std::string& filename)
+           -> MeshType{
 
-    std::shared_ptr<MeshLoader> loader;
+           std::shared_ptr<MeshLoader> loader;
 
-    //TODO: some logic to check if loaders are being written correctly
+        //TODO: some logic to check if loaders are being written correctly
 
-//    loader = std::make_shared<OBJLoader>(filename);
+        //    loader = std::make_shared<OBJLoader>(filename);
 
-}
+        }
+         */
+        template <typename MeshType>
+            void MeshConstructor<MeshType>::add_triangle(size_t a, size_t b, size_t c) {
+                TopologyConstructor::add_triangle(a,b,c);
+            }
+        template <typename MeshType>
+            void MeshConstructor<MeshType>::add_vertex(Scalar a, Scalar b, Scalar c) {
+                m_vertices.push_back(Vec3(a,b,c));
+            }
+        template <typename MeshType>
+            const MeshType& MeshConstructor<MeshType>::construct() {
+                return MeshType(m_vertices,TopologyConstructor::construct());
+            }
+        template <typename MeshType>
+            MeshType MeshConstructor<MeshType>::move() {
+                return MeshType(std::move(m_vertices),std::move(TopologyConstructor::move()));
+            }
 }
 
 

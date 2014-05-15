@@ -5,55 +5,42 @@
 #include <set>
 #include "hetriangletopology.h"
 #include "meshconstructor.h"
-#include "meshtraits.h"
+#include "meshbase.h"
 
 
+namespace mtao {
 //Half Edge Triangle Mesh
 template <typename Scalar_>
-class HETriangleMesh: public mtao::HETriangleTopology {
+class HETriangleMesh: public MeshBase<HETriangleMesh,Scalar_ >, public mtao::HETriangleTopology {
 public:
-    typedef HETriangleMesh<Scalar_> my_type;
+    typedef HETriangleMesh<Scalar_> type;
+    typedef HETriangleTopology topology_type;
     typedef Scalar_ Scalar;
     typedef Eigen::Matrix<Scalar,3,1> Vec3;
     typedef std::vector<Vec3> VertexVector;
-    typedef typename mtao::mesh_traits<my_type > traits;
-    HETriangleMesh(const typename traits::constructor_type& hemcon): traits::topology_type(hemcon), m_vertices(hemcon.vertices()) {}
+    typedef typename mtao::mesh_traits<type > traits;
+    HETriangleMesh() {}
+    //HETriangleMesh(const typename traits::constructor_type& hemcon): traits::topology_type(hemcon), m_vertices(hemcon.vertices()) {}
+    HETriangleMesh(VertexVector&& v, topology_type&& t): topology_type(t), m_vertices(v) {}
 
-        Vec3& get_vertex(size_t idx);
-        const Vec3& get_vertex(size_t idx) const;
-    private:
-        VertexVector m_vertices;
-
-
-};
-namespace internal {
-    //A MeshConstructor is useful here because it accelerates searching for existing edges/triangles
-template <typename Scalar>
-class MeshConstructor<HETriangleMesh<Scalar> >: public mtao::mesh_traits<HETriangleMesh<Scalar>>::constructor_base_type {
-    public:
-        typedef Eigen::Matrix<Scalar,3,1> Vec3;
-        typedef std::vector<Vec3> VertexVector;
-        using MeshConstructorBase<Scalar>::MeshConstructorBase;
-        void add_vertex(Scalar a, Scalar b, Scalar c);
+        const VertexVector & vertices() const {return m_vertices;}
+        VertexVector & vertices() {return m_vertices;}
+        Vec3& vertex(size_t idx);
+        const Vec3& vertex(size_t idx) const;
         void add_triangle(size_t a, size_t b, size_t c);
-        //size_t add_vertex(const Vec3&);
-        //size_t emplace_vertex(Vec3&&);
-        const Vec3& get_vertex(size_t idx) const;
-        Vec3& get_vertex(size_t idx) ;
-        const VertexVector& vertices() const {return m_vertices;}
-        VertexVector& vertices() {return m_vertices;}
-        
-
+        void add_vertex(Scalar a, Scalar b, Scalar c);
     private:
         VertexVector m_vertices;
+
+
 };
-}
 template <typename Scalar>
 class HETriangleMeshCleaner: public mtao::HETriangleTopologyOperators {
     public:
         HETriangleMeshCleaner(HETriangleMesh<Scalar>* mesh): mtao::HETriangleTopologyOperators(mesh) {}
         void clean();
 };
+}
 
 #include "hetrianglemesh.ipl"
 

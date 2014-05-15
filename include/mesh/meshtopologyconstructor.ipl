@@ -1,0 +1,32 @@
+#ifndef MESHTOPOLOGYCONSTRUCTORS_IPL
+#define MESHTOPOLOGYCONSTRUCTORS_IPL
+#ifndef MESHTOPOLOGYCONSTRUCTORS_H
+#include "mesh/meshtopologyconstructor.h"
+#endif
+
+/*
+
+template <typename TopologyType>
+TopologyType MeshTopologyConstructor::constructor() {
+
+}
+template <typename TopologyType>
+TopologyType MeshTopologyConstructor::move() {
+
+}
+*/
+
+namespace mtao {
+
+template <typename TopologyType>
+auto MeshTopologyConstructor<TopologyType>::construct() -> const TopologyType& {
+        return move();
+}
+/*
+template <typename TopologyType>
+auto MeshTopologyConstructor<TopologyType>::move -> TopologyType {
+}
+*/
+}
+
+#endif

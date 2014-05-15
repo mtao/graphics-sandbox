@@ -12,8 +12,8 @@ struct HalfEdge {
         typedef std::shared_ptr<HalfEdge> ptr_type;
         typedef std::array<ptr_type,2> ptr_pair_type;
         //friend std::shared_ptr<HalfEdge> std::make_shared<>
-        ptr_type next = 0;
-        ptr_type dual = 0;
+        ptr_type next = nullptr;
+        ptr_type dual = nullptr;
         //Assume CCW oriented mesh
 
         //Circulate with arrow pointing away from vertex
@@ -26,6 +26,7 @@ struct HalfEdge {
             return next->dual;
         }
         size_t head;
+        size_t tail() const {return dual->head;}
     private:
         HalfEdge(size_t a);
 
