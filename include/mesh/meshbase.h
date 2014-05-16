@@ -1,6 +1,6 @@
 #ifndef MESH_H
 #define MESH_H
-#include "core/types.h"
+#include "types.h"
 
 namespace mtao {
     template <template<typename> class MeshType, typename T=float>

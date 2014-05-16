@@ -1,6 +1,6 @@
 #ifndef TOPOLOGYCONSTRUCTOR_H
 #define TOPOLOGYCONSTRUCTOR_H
-#include "core/types.h"
+#include "types.h"
 #include "meshtraits.h"
 namespace mtao {
 template <typename TopologyType>

@@ -1,4 +1,4 @@
-#include "core/linereader.hpp"
+#include "linereader.hpp"
 #include <iostream>
 
 mtao::FileParser::FileParser(const std::string& filename): m_filename(filename) {}

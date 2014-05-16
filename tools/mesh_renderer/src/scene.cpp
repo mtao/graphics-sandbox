@@ -1,7 +1,7 @@
 #include "scene.h"
 #include <QOpenGLShaderProgram>
 #include <QOpenGLContext>
-#include "core/linereader.hpp"
+#include "linereader.hpp"
 #include <QOpenGLFunctions_3_0>
 #include <iostream>
 #include "mesh/vftrianglemesh.h"

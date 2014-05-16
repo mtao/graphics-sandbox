@@ -1,6 +1,6 @@
 #ifndef MESHCONSTRUCTOR_H
 #define MESHCONSTRUCTOR_H
-#include "core/types.h"
+#include "types.h"
 #include "meshtopologyconstructor.h"
 #include "meshtraits.h"
 namespace mtao {

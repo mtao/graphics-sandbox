@@ -4,7 +4,7 @@ class QOpenGLShaderProgram;
 #include <memory>
 #include <vector>
 #include <QOpenGLBuffer>
-#include <core/types.h>
+#include "types.h"
 #include <QOpenGLFunctions_3_0>
 
 class SceneNode {

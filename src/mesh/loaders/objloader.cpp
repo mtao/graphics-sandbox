@@ -1,5 +1,5 @@
 #include "mesh/loaders/objloader.h"
-#include "core/linereader.hpp"
+#include "linereader.hpp"
 #include <vector>
 namespace mtao {
 void OBJLoader::open(const std::string& filename) {

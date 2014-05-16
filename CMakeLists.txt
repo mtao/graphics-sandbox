@@ -32,15 +32,15 @@ FIND_PACKAGE(Qt5OpenGL)
 
 
 SET(core_SOURCES
-    src/core/linereader.cpp
+    src/linereader.cpp
     )
 SET(core_HEADERS 
-    include/core/coord.h
-    include/core/eigen_hash.h  
-    include/core/eigen_ordering.h
-    include/core/kdop.h
-    include/core/linereader.hpp
-    include/core/types.h
+    include/coord.h
+    include/eigen_hash.h  
+    include/eigen_ordering.h
+    include/kdop.h
+    include/linereader.hpp
+    include/types.h
     )
 
 SET(mesh_SOURCES
