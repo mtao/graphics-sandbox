@@ -4,6 +4,8 @@
 #include "core/linereader.hpp"
 #include <QOpenGLFunctions_3_0>
 #include <iostream>
+#include "mesh/vftrianglemesh.h"
+#include "mesh/loaders/objloader.h"
 void InternalSceneNode::render(QOpenGLShaderProgram* program, QOpenGLFunctions_3_0& gl) {
     for(auto&& ptr: children) {
         ptr->render(program,gl);
@@ -36,52 +38,21 @@ void MeshSceneNode::render(QOpenGLShaderProgram* program, QOpenGLFunctions_3_0&g
 
 
 auto MeshSceneNode::create(const QString& filename) -> Ptr{
-    mtao::FileParser fp(filename.toStdString());
-    std::vector<float> vertices;
-    std::vector<GLuint> indices;
-    std::array<float,3> t;
-    std::array<std::string,3> s;
-    std::array<GLuint,3> i;
+    typedef mtao::VFTriangleMesh<float> MeshType;
+    mtao::MeshConstructor<MeshType> mc;
+    mtao::OBJLoader ml(&mc);
+    ml.open(filename.toStdString());
+    auto mesh = mc.construct();
     mtao::BBox3f bb;
-//    std::array<int,3> uv;
-    for(auto&& line: fp) {
-        char v;
-        std::stringstream ss(line);
-        ss >> v;
-        switch(v) {
-            case 'v':
-                ss >> t[0] >> t[1] >> t[2];
-                for(auto&& v: t) {
-                    vertices.push_back(v);
-                }
-                bb.extend(Eigen::Map<mtao::Vec3f>(t.begin()));
-                break;
-            case 'f':
-                ss >> s[0] >> s[1] >> s[2];
-                for(size_t m=0; m < 3; ++m) {
-                    auto&& str = s[m];
-                    auto it = str.begin();
-                    for(; it != str.end(); ++it) {
-                        if(*it == '/') {
-                            break;
-                        }
-                    }
-                    std::stringstream ss2(str.substr(0,std::distance(str.begin(),it)));
-                    ss2 >> i[m];
-
-                }
-                for(auto&& v: i) {
-                    indices.push_back(v-1);
-                }
-                break;
-            default:
-                break;
-        }
+    for(auto&& v: mesh.vertices()) {
+        bb.extend(v);
     }
+//    std::array<int,3> uv;
     float scaler = bb.sizes().maxCoeff();
-    for(auto&& v: vertices) {
+    for(auto&& v: mesh.vertices()) {
         v/=scaler;
     }
+    auto& vertices = mesh.vertices();
     bb.min() = bb.min() / scaler;
     bb.max() = bb.max() / scaler;
     QOpenGLBuffer vbo(QOpenGLBuffer::Type::VertexBuffer);
@@ -92,6 +63,15 @@ auto MeshSceneNode::create(const QString& filename) -> Ptr{
     QOpenGLBuffer ibo(QOpenGLBuffer::Type::IndexBuffer);
     ibo.create();
     ibo.bind();
+    std::vector<GLuint> indices;
+    auto& triangles = mesh.triangles();
+    indices.resize(3*triangles.size());
+    size_t i=0;
+    for(auto& t: triangles) {
+        for(size_t j=0;j<3;++j){
+            indices[3*i + j] = t[j];
+        }
+    }
     size_t count = indices.size();
     ibo.allocate(indices.data(),indices.size()*sizeof(GLuint));
     std::cout << "Loaded mesh from file: (" << filename.toStdString() << ")BBox: " << bb.min().transpose() << " -> " << bb.max().transpose() << std::endl;

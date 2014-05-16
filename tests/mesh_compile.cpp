@@ -1,5 +1,6 @@
 //#include "veftrianglemesh.h"
 #include "mesh/hetrianglemesh.h"
+#include "mesh/vftrianglemesh.h"
 #include "mesh/meshexceptions.h"
 #include "mesh/loaders/objloader.h"
 #include <iostream>
@@ -20,9 +21,12 @@ int he_badedge_test() {
     return 1;
 }
 
-int he_construction_test() {
-    mtao::HETriangleMesh<float> vef;
-    mtao::MeshConstructor<mtao::HETriangleMesh<float> > mc;
+template <typename MeshType>
+int construction_test() {
+    MeshType vef;
+    mtao::MeshConstructor<
+            MeshType
+            > mc;
     mc.add_triangle(0,1,2);
     mc.add_triangle(1,3,2);
     mc.add_vertex(0,0,0);
@@ -34,27 +38,17 @@ int he_construction_test() {
 
 }
 
-int he_mesh_load() {
-    mtao::MeshConstructor<mtao::HETriangleMesh<float> > mc;
+template <typename MeshType>
+int mesh_load() {
+    mtao::MeshConstructor<
+            MeshType
+            > mc;
     mtao::OBJLoader ml(&mc);
     ml.open("armadillo.obj");
 
     auto vef = mc.move();
+    return int(vef.vertices().size() == 0) | int(vef.triangles().size() == 0);
 
-    for(auto&& v: vef.vertices()) {
-        std::cout << v.transpose() << std::endl;
-    }
-    for(auto&& hep: vef.triangles()) {
-        auto it = hep;
-        for(int i=0; i < 3; ++i) {
-        if(!it) break;
-            printHE(it);
-            it = it->next;
-
-        }
-        std::cout << std::endl;
-    }
-    return 0;
 
 }
 
@@ -85,8 +79,10 @@ int main() {
     }
     */
     int ret = 0;
-    ret |= he_construction_test();
+    ret |= construction_test<mtao::HETriangleMesh<float> >();
+    ret |= mesh_load<mtao::HETriangleMesh<float> >();
+    ret |= construction_test<mtao::VFTriangleMesh<float> >();
+    ret |= mesh_load<mtao::VFTriangleMesh<float> >();
     ret |= he_badedge_test();
-    ret |= he_mesh_load();
     return ret;
 }

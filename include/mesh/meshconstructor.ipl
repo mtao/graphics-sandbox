@@ -28,7 +28,7 @@ namespace mtao {
                 m_vertices.push_back(Vec3(a,b,c));
             }
         template <typename MeshType>
-            const MeshType& MeshConstructor<MeshType>::construct() {
+            MeshType MeshConstructor<MeshType>::construct() {
                 return MeshType(m_vertices,TopologyConstructor::construct());
             }
         template <typename MeshType>

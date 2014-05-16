@@ -27,7 +27,7 @@ class MeshConstructor: public MeshConstructorBase, public mtao::mesh_traits<Mesh
         void add_vertexd(double a, double b, double c) {add_vertex(a,b,c);}
         void add_vertexf(float a, float b, float c) {add_vertex(a,b,c);}
 
-        const MeshType& construct();
+        MeshType construct();
         MeshType move();
 
     private:
