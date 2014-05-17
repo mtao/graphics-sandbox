@@ -46,9 +46,10 @@ SET(core_HEADERS
 SET(mesh_SOURCES
     src/mesh/meshexceptions.cpp
 
-    src/mesh/halfedge.cpp
     src/mesh/loaders/objloader.cpp
+    src/mesh/loaders/offloader.cpp
 
+    src/mesh/halfedge.cpp
     src/mesh/hetrianglemesh.cpp
     src/mesh/hetriangletopology.cpp
 
@@ -68,6 +69,7 @@ SET(mesh_HEADERS
     include/mesh/halfedge.h
     include/mesh/loader.h
     include/mesh/loaders/objloader.h
+    include/mesh/loaders/offloader.h
 
     include/mesh/hetrianglemesh.h
     include/mesh/hetrianglemesh.ipl

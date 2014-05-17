@@ -1,6 +1,6 @@
 #ifndef MAC_H
 #define MAC_H
-#include "grid.h"
+#include "../grid.h"
 #include "traits.h"
 
 

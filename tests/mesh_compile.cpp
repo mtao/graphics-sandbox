@@ -3,6 +3,7 @@
 #include "mesh/vftrianglemesh.h"
 #include "mesh/meshexceptions.h"
 #include "mesh/loaders/objloader.h"
+#include "mesh/loaders/offloader.h"
 #include <iostream>
 
 void printHE(const mtao::HETriangleTopology::ptr_type& p) {
@@ -39,7 +40,21 @@ int construction_test() {
 }
 
 template <typename MeshType>
-int mesh_load() {
+int mesh_load_off() {
+    mtao::MeshConstructor<
+            MeshType
+            > mc;
+    mtao::OFFLoader ml(&mc);
+    ml.open("sword.off");
+
+    auto vef = mc.move();
+    return int(vef.vertices().size() == 0) | int(vef.triangles().size() == 0);
+
+
+}
+
+template <typename MeshType>
+int mesh_load_obj() {
     mtao::MeshConstructor<
             MeshType
             > mc;
@@ -80,9 +95,11 @@ int main() {
     */
     int ret = 0;
     ret |= construction_test<mtao::HETriangleMesh<float> >();
-    ret |= mesh_load<mtao::HETriangleMesh<float> >();
     ret |= construction_test<mtao::VFTriangleMesh<float> >();
-    ret |= mesh_load<mtao::VFTriangleMesh<float> >();
+    ret |= mesh_load_obj<mtao::HETriangleMesh<float> >();
+    ret |= mesh_load_obj<mtao::VFTriangleMesh<float> >();
+
+    ret |= mesh_load_off<mtao::VFTriangleMesh<float> >();
     ret |= he_badedge_test();
     return ret;
 }
