@@ -16,6 +16,7 @@ class Grid{
     //    typedef typename derived_traits::Scalar Scalar;
     typedef Scalar_ Scalar;
     typedef typename mtao::dim_types<dim> _dt;
+    typedef typename mtao::scalar_types<Scalar> _st;
     typedef typename _dt::Veci Veci;
     typedef typename Eigen::Map<Eigen::Matrix<Scalar,Eigen::Dynamic,1> > MapVec;
     typedef typename Eigen::Map<const Eigen::Matrix<Scalar,Eigen::Dynamic,1> > ConstMapVec;
@@ -87,6 +88,18 @@ class Grid{
     Scalar operator()(int a)const {return coeff(a);}
     Scalar operator()(int a, int b) const {return coeff(a,b);}
     Scalar operator()(int a, int b, int c)const {return coeff(a,b,c);}
+
+        Scalar operator()(const mtao::Vec1i& idx) const {
+            return coeff(idx[0]);
+        }
+        Scalar operator()(const mtao::Vec2i& idx) const {
+            return coeff(idx[0],idx[1]);
+        }
+        Scalar operator()(const mtao::Vec3i& idx) const {
+            return coeff(idx[0],idx[1],idx[2]);
+        }
+
+
     //Iterators
     typename std::vector<Scalar>::iterator begin() {return m_data.begin();}
     typename std::vector<Scalar>::iterator end() {return m_data.end();}
@@ -128,10 +141,45 @@ class Grid{
         std::transform(m_data.begin(),m_data.end(),m_data.begin(), f);
         return *this;
     }
+    
+
+    //Interpolation tools...
+    //
+    /*
+    value_type lerp(const typename _st::template dim_types<1>::Vec& v) const {
+        _st::template dim_types<T>::Veci idx = iv.template cast<int>();
+        _st::template dim_types<T>::Vec bary = iv - idx.template cast<Scalar>();
+        const Grid& g = *this;
+        const typename GridType::value_type& x=v(0);
+        const int& a=idx(0);
+        return lerp(g(a),g(a+1),x);
+    }
+    value_type lerp(const _st::template dim_types<2>::Vec& v) const {
+        const Grid& g = *this;
+        const typename GridType::value_type& x=v(0);
+        const typename GridType::value_type& y=v(1);
+        const int& a=idx(0);
+        const int& b=idx(1);
+        return bilerp(g(a,b),g(a+1,b),g(a,b+1),g(a+1,b+1),x,y);
+    }
+    value_type lerp(const _st::template dim_types<3>::Vec& v) const {
+        const Grid& g = *this;
+        const typename GridType::value_type& x=v(0);
+        const typename GridType::value_type& y=v(1);
+        const typename GridType::value_type& z=v(2);
+        const int& a=idx(0);
+        const int& b=idx(1);
+        const int& c=idx(2);
+        return trilerp(
+                g(a,b,c),g(a+1,b,c),g(a,b+1,c),g(a+1,b+1,c),
+                g(a,b,c+1),g(a+1,b,c+1),g(a,b+1,c+1),g(a+1,b+1,c+1)
+                ,x,y,z);
+    }
+    */
 
     private:
+        Veci m_N;
     std::vector<Scalar> m_data;
-    const typename mtao::lerp::template LinearInterpolator<Vec::RowsAtCompileTime, Grid<Scalar,EmbedDim> > m_lerp;
 
 
 };

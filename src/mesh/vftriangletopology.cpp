@@ -6,7 +6,7 @@
 #include <iostream>
 namespace mtao {
         void MeshTopologyConstructor<VFTriangleTopology>::add_triangle(size_t a, size_t b, size_t c) {
-            m_triangles.emplace(triangle_type{a,b,c});
+            m_triangles.emplace(triangle_type{{a,b,c}});
         }
 
         VFTriangleTopology MeshTopologyConstructor<VFTriangleTopology>::move() {

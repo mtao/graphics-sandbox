@@ -14,9 +14,9 @@ class EmbeddedGrid: public Grid {
         typedef typename mtao::dim_types<dim> _dt;
         typedef typename _dt::template scalar_types<Scalar>::Vec Vec;
         typedef typename _dt::Veci Veci;
-        EmbeddedGrid(const Veci & dim,const Vec & origin,  const Vec & dx): ParentGrid(dim),m_origin(origin),  m_dx(dx), m_lerp(*this) {}
+        EmbeddedGrid(const Veci & dim,const Vec & origin,  const Vec & dx): ParentGrid(dim),m_origin(origin),  m_dx(dx) {}
         EmbeddedGrid(const BBox& bb, const Veci& dim): EmbeddedGrid(dim,bb.min(),bb.sizes()/dim.template cast<Scalar>()) {}
-        EmbeddedGrid(EmbeddedGrid&& other): ParentGrid(std::move(other)),m_origin(other.m_origin),  m_dx(other.m_dx), m_lerp(*this) {}
+        EmbeddedGrid(EmbeddedGrid&& other): ParentGrid(std::move(other)),m_origin(other.m_origin),  m_dx(other.m_dx) {}
         EmbeddedGrid& operator=(EmbeddedGrid&& other) {
             ParentGrid::operator=( std::move(other) );
             m_N=other.m_N;

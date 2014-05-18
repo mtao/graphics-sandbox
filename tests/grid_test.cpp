@@ -1,4 +1,5 @@
-#include "macgridfactory.h"
+/*
+#include "grid/mac/macgridfactory.h"
 #include <iostream>
 
 
@@ -113,4 +114,9 @@ int main() {
     std::cout << d->indexToWorld(coord).transpose() << std::endl;
     auto&& f1 = factory2.indexToWorldIntegralFunction<mtao::CGrid>();
     std::cout << f1(coord) << std::endl;
+}
+*/
+
+int main(int argc, char * argv[]) {
+    return 0;
 }

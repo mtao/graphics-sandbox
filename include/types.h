@@ -7,6 +7,9 @@
 namespace mtao{ 
     template <typename T>
     class type_traits {};
+    typedef Eigen::Matrix<int,1,1> Vec1i;
+    typedef Eigen::Matrix<float,1,1> Vec1f;
+    typedef Eigen::Matrix<double,1,1> Vec1d;
 
     typedef Eigen::Matrix3f Mat3f;
     typedef Eigen::Matrix2f Mat2f;
@@ -35,6 +38,13 @@ namespace mtao{
     typedef Eigen::AlignedBox<int,Eigen::Dynamic> BBoxXi;
     typedef Coord<3> Coord3;
     typedef Coord<2> Coord2;
+    template <typename T, int Dim>
+        struct numerical_types {
+            typedef Eigen::Matrix<T,Dim,1> Vec;
+            typedef Eigen::Matrix<int,Dim,1> Veci;
+            typedef Eigen::Matrix<T,Dim,Dim> Mat;
+            typedef Eigen::AlignedBox<T,Dim> BBox;
+        };
     template <typename T>
         struct scalar_types {
             typedef Eigen::Matrix<T,2,1> Vec2;
@@ -46,6 +56,8 @@ namespace mtao{
             typedef Eigen::AlignedBox<T,3> BBox3;
             typedef Eigen::AlignedBox<T,2> BBox2;
             typedef Eigen::AlignedBox<T,Eigen::Dynamic> BBoxX;
+            template <int Dim>
+                using dim_types = numerical_types<T,Dim>;
         };
     template <int Dim>
         struct dim_types {
@@ -58,12 +70,8 @@ namespace mtao{
             typedef Eigen::AlignedBox<double,Dim> BBoxd;
             typedef Eigen::AlignedBox<int,Dim> BBox;
             typedef mtao::Coord<Dim> Coord;
-        };
-    template <typename T, int Dim>
-        struct numerical_types {
-            typedef Eigen::Matrix<T,Dim,1> Vec;
-            typedef Eigen::Matrix<T,Dim,Dim> Mat;
-            typedef Eigen::AlignedBox<T,Dim> BBox;
+            template <typename T>
+                using scalar_types = numerical_types<T,Dim>;
         };
 }
 #endif
