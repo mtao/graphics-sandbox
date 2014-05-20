@@ -29,6 +29,7 @@ void OBJLoader::open(const std::string& filename) {
                     }
                     std::stringstream ss2(str.substr(0,std::distance(str.begin(),it)));
                     ss2 >> i[m];
+                    --i[m];
 
                 }
                 add_triangle(i[0],i[1],i[2]);

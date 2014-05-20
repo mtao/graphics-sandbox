@@ -8,7 +8,9 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLFunctions>
 #include <QMatrix4x4>
-#include "scene.h"
+#include "render/scene.h"
+#include "render/internalnode.h"
+#include "render/mesh/meshnode.h"
 #include <QOpenGLFunctions_3_0>
 class GLWidget: public QGLWidget {
     Q_OBJECT
@@ -32,7 +34,7 @@ class GLWidget: public QGLWidget {
         RenderMode m_render_mode = RenderMode::WIREFRAME;
         QVector3D m_eyePos, m_focusPos, m_upDir;
         QMatrix4x4 m_viewMat,m_perspectiveMat,m_MVP;
-        InternalSceneNode m_scene;
+        mtao::rendering::InternalSceneNode m_scene;
         float m_view_near = 0.001f, m_view_far = 100.0f;
         mtao::BBox3f m_bbox;
 

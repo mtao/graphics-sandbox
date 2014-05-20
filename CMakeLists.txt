@@ -34,6 +34,7 @@ FIND_PACKAGE(Qt5OpenGL)
 SET(core_SOURCES
     src/linereader.cpp
     )
+
 SET(core_HEADERS 
     include/coord.h
     include/eigen_hash.h  
@@ -41,6 +42,17 @@ SET(core_HEADERS
     include/kdop.h
     include/linereader.hpp
     include/types.h
+    )
+
+
+SET(core_RENDER_SOURCES
+    src/render/scene.cpp
+    src/render/internalnode.cpp
+    )
+SET(core_RENDER_HEADERS
+    include/render/scene.h
+    include/render/internalnode.h
+    include/render/scenenode.h
     )
 
 SET(mesh_SOURCES
@@ -55,6 +67,13 @@ SET(mesh_SOURCES
 
     src/mesh/vftrianglemesh.cpp
     src/mesh/vftriangletopology.cpp
+    )
+
+SET(mesh_RENDER_SOURCES
+    src/render/mesh/meshnode.cpp
+    )
+SET(mesh_RENDER_HEADERS
+    include/render/mesh/meshnode.h
     )
 
 SET(mesh_HEADERS
@@ -92,6 +111,11 @@ FOREACH(MOD ${ACTIVE_MODULES})
     SET(TOTAL_LIB_SOURCES ${TOTAL_LIB_SOURCES} ${${MOD}_SOURCES})
     SET(TOTAL_LIB_HEADERS ${TOTAL_LIB_HEADERS} ${${MOD}_HEADERS})
     SET(TOTAL_LIB_RESOURCES ${TOTAL_LIB_RESOURCES} ${${MOD}_RESOURCES})
+
+    SET(TOTAL_RENDER_LIB_SOURCES ${TOTAL_RENDER_LIB_SOURCES} ${${MOD}_RENDER_SOURCES})
+    SET(TOTAL_RENDER_LIB_HEADERS ${TOTAL_RENDER_LIB_HEADERS} ${${MOD}_RENDER_HEADERS})
+    SET(TOTAL_RENDER_LIB_RESOURCES ${TOTAL_RENDER_LIB_RESOURCES} ${${MOD}_RENDER_RESOURCES})
+
 ENDFOREACH(MOD ${ACTIVE_MODULES})
 
 
@@ -104,6 +128,22 @@ ADD_LIBRARY(mtaoGraphics ${TOTAL_LIB_SOURCES} ${TOTAL_LIB_HEADERS}
     ${TOTAL_LIB_RESOURCE_SOURCES})
 
 INSTALL( TARGETS mtaoGraphics LIBRARY DESTINATION lib ARCHIVE DESTINATION
+    lib/static )
+
+
+
+
+
+
+QT5_ADD_RESOURCES(TOTAL_RENDER_LIB_RESOURCE_SOURCES ${TOTAL_RENDER_LIB_RESOURCES})
+
+ADD_LIBRARY(mtaoRendering ${TOTAL_RENDER_LIB_SOURCES} ${TOTAL_RENDER_LIB_HEADERS}
+    ${TOTAL_RENDER_LIB_RESOURCE_SOURCES})
+
+
+TARGET_LINK_LIBRARIES(mtaoRendering Qt5::OpenGL mtaoGraphics GLEW GL)
+
+INSTALL( TARGETS mtaoRendering LIBRARY DESTINATION lib ARCHIVE DESTINATION
     lib/static )
 
 

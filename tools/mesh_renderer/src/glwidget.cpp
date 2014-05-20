@@ -3,11 +3,15 @@
 #include <array>
 #include <vector>
 #include <iostream>
+#include "render/scene.h"
 
 GLWidget::GLWidget(QWidget * parent ): QGLWidget(parent) {
 }
+
 void GLWidget::initializeGL() {
     gl.initializeOpenGLFunctions();
+    mtao::rendering::Scene scene;
+
     initializeShaders();
 
     for(auto&& shader: m_shaders) {
@@ -159,7 +163,7 @@ void GLWidget::updateBBox() {
 }
 
 void GLWidget::openMesh(const QString& filename) {
-    auto n = MeshSceneNode::create(filename);
+    auto n = mtao::rendering::MeshSceneNode::create(filename.toStdString());
 
     if(n) {
         m_scene.add(n);
@@ -184,12 +188,21 @@ void GLWidget::resizeGL(int w, int h) {
 }
 
 void GLWidget::paintGL() {
-
+    std::cout << "Render start" << std::endl;
     gl.glClearColor(0,0,0,0);
-    gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    return;
+    gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    gl.glMatrixMode(GL_MODELVIEW);
+    gl.glLoadIdentity();
+    gl.glBegin(GL_POINTS);
+    gl.glVertex3f(0,0,0);
+    gl.glEnd();
+
+//    gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     m_shaders[m_render_mode].bind();
-    m_scene.render(&m_shaders[m_render_mode], gl);
+    //m_scene.render(&m_shaders[m_render_mode], gl);
+    m_scene.render();
     m_shaders[m_render_mode].release();
 }
+
+
 
