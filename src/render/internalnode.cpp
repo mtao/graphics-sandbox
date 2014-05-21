@@ -1,4 +1,5 @@
 #include "render/internalnode.h"
+#include <iostream>
 
 namespace mtao{namespace rendering{
 void InternalSceneNode::render() {

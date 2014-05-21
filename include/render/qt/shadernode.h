@@ -4,15 +4,10 @@
 #include <QOpenGLShaderProgram>
 #include <memory>
 
-namespace mtao{rendering{
-class ShaderProgramNode: public InternalSceneNode {
+namespace mtao{namespace rendering{
+class ShaderProgramNode: public InternalSceneNode, public QOpenGLShaderProgram {
     public:
-        virtual void render() = 0;
-        ShaderProgramNode();
-        ShaderProgramNode(std::unique_ptr<QOpenGLShaderProgram>&& p);
-        ~ShaderProgramNode();
-    private:
-        std::unique_ptr<QOpenGLShaderProgram> program;
+        virtual void render();
 
 };
 }}

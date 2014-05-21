@@ -5,7 +5,10 @@
 #include <iostream>
 #include "render/scene.h"
 
-GLWidget::GLWidget(QWidget * parent ): QGLWidget(parent) {
+GLWidget::GLWidget(QWidget * parent ): QGLWidget(parent), m_scene(std::make_shared<mtao::rendering::InternalSceneNode>()) {
+    for(auto&& shader: m_shaders) {
+        shader.add(m_scene);
+    }
 }
 
 void GLWidget::initializeGL() {
@@ -158,7 +161,7 @@ void GLWidget::updateViewPlanes() {
 }
 
 void GLWidget::updateBBox() {
-    m_bbox = m_scene.bbox();
+    m_bbox = m_scene->bbox();
     updateViewPlanes();
 }
 
@@ -166,7 +169,7 @@ void GLWidget::openMesh(const QString& filename) {
     auto n = mtao::rendering::MeshSceneNode::create(filename.toStdString());
 
     if(n) {
-        m_scene.add(n);
+        m_scene->add(n);
     }
     updateBBox();
 }
@@ -193,15 +196,17 @@ void GLWidget::paintGL() {
     gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gl.glMatrixMode(GL_MODELVIEW);
     gl.glLoadIdentity();
+    gl.glLoadMatrixf(m_viewMat.data());
+    gl.glLoadIdentity();
     gl.glBegin(GL_POINTS);
     gl.glVertex3f(0,0,0);
     gl.glEnd();
 
 //    gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    m_shaders[m_render_mode].bind();
+    m_render_mode = RenderMode::FLAT;
+    m_shaders[m_render_mode].render();
     //m_scene.render(&m_shaders[m_render_mode], gl);
-    m_scene.render();
-    m_shaders[m_render_mode].release();
+    //m_scene.render();
 }
 
 

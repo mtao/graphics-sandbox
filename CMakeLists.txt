@@ -48,11 +48,15 @@ SET(core_HEADERS
 SET(core_RENDER_SOURCES
     src/render/scene.cpp
     src/render/internalnode.cpp
+    src/render/transformnode.cpp
+    src/render/qt/shadernode.cpp
     )
 SET(core_RENDER_HEADERS
     include/render/scene.h
     include/render/internalnode.h
     include/render/scenenode.h
+    include/render/transformnode.h
+    include/render/qt/shadernode.h
     )
 
 SET(mesh_SOURCES
