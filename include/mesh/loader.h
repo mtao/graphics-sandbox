@@ -8,7 +8,6 @@ class MeshLoader {
     MeshLoader() {}
         MeshLoader(MeshConstructorBase* constructor): m_constructor(constructor) {}
         virtual void open(const std::string& str) = 0;
-        virtual void save(const std::string& str) = 0;
         void add_triangle(size_t a, size_t b, size_t c ) {
             m_constructor->add_triangle(a,b,c);
         }
@@ -25,6 +24,7 @@ class MeshLoader {
 
 
 };
+
 }
 
 #endif

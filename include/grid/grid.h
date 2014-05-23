@@ -27,6 +27,15 @@ class Grid{
     public:
 
     typedef Scalar value_type;
+
+
+    Grid() {}
+    Grid(const Veci& v): m_N(v), m_data(v.prod()) {}
+    Grid(const Grid& o) = default;
+
+
+
+
     int size() const {return stlVector().size();}
     const Veci& N() const {return m_N;}
     int N(int idx) const {return m_N(idx);}
@@ -65,15 +74,16 @@ class Grid{
         }
         return idx;
     }
-    void idx2coord2(int idx, mtao::dim_types<2>::Veci & c) {
-        c(0) = idx%m_N(2);
-        c(1) = idx/m_N(2);
+    void idx2coord(int idx, Veci & c) {
+        for(int i=EmbedDim-1; i >= 0; --i) {
+        c(i) = idx%m_N(i);
+        idx = idx/m_N(i);
+        }
     }
-    void idx2coord3(int idx, mtao::dim_types<3>::Veci& c) {
-        c(2) = idx%m_N(1);
-        idx /= m_N(1);
-        c(1) = idx%m_N(2);
-        c(0) = idx/m_N(2);
+    Veci idx2coord(int idx) {
+        Veci v;
+        idx2coord(idx,v);
+        return v;
     }
     //Accessors
     Scalar& coeffRef(int a) {return m_data[a];}
