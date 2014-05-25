@@ -8,16 +8,17 @@
 
 
 namespace mtao {
-template <typename Scalar_, int EmbedDim>
+template <typename Scalar_, int Dim>
 class Grid{
     //    enum {dim = mtao::internal::traits<Derived>::embed_dim};
-    enum {dim = EmbedDim};
+    enum {dim = Dim};
     //    typedef typename mtao::internal::traits<Derived> derived_traits;
     //    typedef typename derived_traits::Scalar Scalar;
     typedef Scalar_ Scalar;
     typedef typename mtao::dim_types<dim> _dt;
     typedef typename mtao::scalar_types<Scalar> _st;
     typedef typename _dt::Veci Veci;
+    typedef typename _dt::template scalar_types<Scalar>::Vec Vec;
     typedef typename Eigen::Map<Eigen::Matrix<Scalar,Eigen::Dynamic,1> > MapVec;
     typedef typename Eigen::Map<const Eigen::Matrix<Scalar,Eigen::Dynamic,1> > ConstMapVec;
     typedef std::shared_ptr<Grid<Scalar,dim> > ptr;
@@ -62,20 +63,20 @@ class Grid{
         return a;
     }
     int coord2idx(int a, int b) const{
-        return m_N(1) * a + b;
+        return coord2idx(Veci(a,b));
     }
     int coord2idx(int a, int b, int c)const {
-        return m_N(2) * (m_N(1) * a + b) + c;
+        return coord2idx(Veci(a,b,c));
     }
     int coord2idx(const Veci& c)const {
         int idx=c(0);
-        for(int i=1; i <EmbedDim; ++i) {
+        for(int i=1; i <dim; ++i) {
             idx = m_N(i) * idx + c(i);
         }
         return idx;
     }
     void idx2coord(int idx, Veci & c) {
-        for(int i=EmbedDim-1; i >= 0; --i) {
+        for(int i=dim-1; i >= 0; --i) {
         c(i) = idx%m_N(i);
         idx = idx/m_N(i);
         }
@@ -117,7 +118,7 @@ class Grid{
     typename std::vector<Scalar>::const_iterator cend() {return m_data.cend();}
 
     void incrementLoop(Veci& c)const {
-        for(int i = EmbedDim-1; i >= 0; --i) {
+        for(int i = dim-1; i >= 0; --i) {
             if(++c(i) >= m_N(i)) {
                 c(i)=0;
                 continue;
@@ -186,6 +187,14 @@ class Grid{
                 ,x,y,z);
     }
     */
+    //linear interpolation for a index-space vector
+    Scalar lerp(const Vec & iv) const {
+        Veci idx = iv.template cast<int>();
+        Vec bary = iv - idx.template cast<Scalar>();
+        lerp::Cube<Scalar,dim> c(*this,idx);
+
+        return c.barylerp(bary);
+    }
 
     private:
         Veci m_N;

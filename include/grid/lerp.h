@@ -32,6 +32,7 @@ namespace mtao{
                 //typedef typename mtao::numreical_types<T,EmbedDim>::Veci Veci;
                 //typedef typename mtao::Grid<T,EmbedDim> Grid;
             public:
+                Cube() {}
                 template <int EmbedDim>
                 Cube(const mtao::Grid<T,EmbedDim>& g, const typename mtao::numerical_types<T,EmbedDim>::Veci& v)
                 : data({{
@@ -40,21 +41,27 @@ namespace mtao{
                         Cube<T,CubeDim-1>(g,v+mtao::numerical_types<T,EmbedDim>::Veci::Unit(CubeDim-1))
                         }}){}
 
+                template <int EmbedDim>
+                void load(const mtao::Grid<T,EmbedDim>& g, const typename mtao::numerical_types<T,EmbedDim>::Veci& v) {
+                    data[0].load(g,v);
+                    data[1].load(g,v+mtao::numerical_types<T,EmbedDim>::Veci::Unit(CubeDim-1));
+                }
+
                 template <typename VecType>
                 T lerp(const VecType& v) {
                     auto idx = v.template cast<int>();
                     auto bary = v - idx.template cast<T>();
-                    return lerp_(bary);
-
+                    return barylerp(bary);
                 }
                 template <typename VecType>
-                T lerp_(const VecType& b) {
+                T barylerp(const VecType& b) {
                     T a = b(CubeDim-1);
-                    return (1-a)*data[0].lerp_(b) + a * data[1].lerp_(b);
+                    return (1-a)*data[0].barylerp(b) + a * data[1].barylerp(b);
                 }
 
             private:
                 std::array<Cube<T,CubeDim-1>,2> data;
+
         };
     template <typename T>
         class Cube<T,0> {
@@ -62,8 +69,12 @@ namespace mtao{
                 template <int EmbedDim>
                 Cube(const mtao::Grid<T,EmbedDim>& g, const typename mtao::numerical_types<T,EmbedDim>::Veci& v): value(g(v)) {
                 }
+                template <int EmbedDim>
+                void load(const mtao::Grid<T,EmbedDim>& g, const typename mtao::numerical_types<T,EmbedDim>::Veci& v) {
+                    value = g(v);
+                }
                 template <typename VecType>
-                T lerp_(const VecType& b) {
+                T barylerp(const VecType& b) {
                     return value;
                 }
             private:
