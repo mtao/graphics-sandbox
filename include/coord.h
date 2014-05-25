@@ -7,6 +7,7 @@ namespace mtao {
         class Coord: public Eigen::Matrix<int,N,1> {
             public:
                 typedef Eigen::Matrix<int,N,1> Base;
+                using Base::Base;
                 Coord();
                 Coord(const int& a);
                 Coord(const int& a, const int& b);
@@ -18,6 +19,7 @@ namespace mtao {
                 inline bool operator<=(const Coord& other) const;
                 inline bool operator>(const Coord& other) const;
                 inline bool operator>=(const Coord& other) const;
+                using Base::operator=;
             protected:
                 using Base::m_storage;
         };

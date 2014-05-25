@@ -17,7 +17,7 @@ class Grid{
     typedef Scalar_ Scalar;
     typedef typename mtao::dim_types<dim> _dt;
     typedef typename mtao::scalar_types<Scalar> _st;
-    typedef typename _dt::Veci Veci;
+    typedef typename _dt::Coord Coord;
     typedef typename _dt::template scalar_types<Scalar>::Vec Vec;
     typedef typename Eigen::Map<Eigen::Matrix<Scalar,Eigen::Dynamic,1> > MapVec;
     typedef typename Eigen::Map<const Eigen::Matrix<Scalar,Eigen::Dynamic,1> > ConstMapVec;
@@ -31,16 +31,16 @@ class Grid{
 
 
     Grid() {}
-    Grid(const Veci& v): m_N(v), m_data(v.prod()) {}
+    Grid(const Coord& v): m_N(v), m_data(v.prod()) {}
     Grid(const Grid& o) = default;
 
 
 
 
     int size() const {return stlVector().size();}
-    const Veci& N() const {return m_N;}
+    const Coord& N() const {return m_N;}
     int N(int idx) const {return m_N(idx);}
-    void reshape(const Veci& N) {m_N = N; m_data.resize(N.prod());}
+    void reshape(const Coord& N) {m_N = N; m_data.resize(N.prod());}
 
 
     //    //Derived handlers
@@ -63,26 +63,26 @@ class Grid{
         return a;
     }
     int coord2idx(int a, int b) const{
-        return coord2idx(Veci(a,b));
+        return coord2idx(Coord(a,b));
     }
     int coord2idx(int a, int b, int c)const {
-        return coord2idx(Veci(a,b,c));
+        return coord2idx(Coord(a,b,c));
     }
-    int coord2idx(const Veci& c)const {
+    int coord2idx(const Coord& c)const {
         int idx=c(0);
         for(int i=1; i <dim; ++i) {
             idx = m_N(i) * idx + c(i);
         }
         return idx;
     }
-    void idx2coord(int idx, Veci & c) {
+    void idx2coord(int idx, Coord & c) {
         for(int i=dim-1; i >= 0; --i) {
         c(i) = idx%m_N(i);
         idx = idx/m_N(i);
         }
     }
-    Veci idx2coord(int idx) {
-        Veci v;
+    Coord idx2coord(int idx) {
+        Coord v;
         idx2coord(idx,v);
         return v;
     }
@@ -117,7 +117,7 @@ class Grid{
     typename std::vector<Scalar>::const_iterator cbegin() {return m_data.cbegin();}
     typename std::vector<Scalar>::const_iterator cend() {return m_data.cend();}
 
-    void incrementLoop(Veci& c)const {
+    void incrementLoop(Coord& c)const {
         for(int i = dim-1; i >= 0; --i) {
             if(++c(i) >= m_N(i)) {
                 c(i)=0;
@@ -130,8 +130,8 @@ class Grid{
     //Looping
     //Provides the index-space coordinate of the vector and the current value in the grid
     //Expects a value returned for writing
-    Grid& loop(const std::function<Scalar(const Veci&, Scalar)>& f) {
-        Veci coord(Veci::Zero());
+    Grid& loop(const std::function<Scalar(const Coord&, Scalar)>& f) {
+        Coord coord(Coord::Zero());
         for(Scalar& v: m_data) {
             v=f(coord,v);
             incrementLoop(coord);
@@ -140,8 +140,8 @@ class Grid{
     }
     //Provides the index-space coordinate of the vector and the current value in the grid
     //Doesn't expect any modification of the grid
-    void loop(const std::function<void(const Veci&, Scalar)>& f)const {
-        Veci coord(Veci::Zero());
+    void loop(const std::function<void(const Coord&, Scalar)>& f)const {
+        Coord coord(Coord::Zero());
         for(Scalar v: m_data) {
             f(coord,v);
             incrementLoop(coord);
@@ -158,7 +158,7 @@ class Grid{
     //
     /*
     value_type lerp(const typename _st::template dim_types<1>::Vec& v) const {
-        _st::template dim_types<T>::Veci idx = iv.template cast<int>();
+        _st::template dim_types<T>::Coord idx = iv.template cast<int>();
         _st::template dim_types<T>::Vec bary = iv - idx.template cast<Scalar>();
         const Grid& g = *this;
         const typename GridType::value_type& x=v(0);
@@ -189,7 +189,7 @@ class Grid{
     */
     //linear interpolation for a index-space vector
     Scalar lerp(const Vec & iv) const {
-        Veci idx = iv.template cast<int>();
+        Coord idx = iv.template cast<int>();
         Vec bary = iv - idx.template cast<Scalar>();
         lerp::Cube<Scalar,dim> c(*this,idx);
 
@@ -197,7 +197,7 @@ class Grid{
     }
 
     private:
-        Veci m_N;
+        Coord m_N;
     std::vector<Scalar> m_data;
 
 
