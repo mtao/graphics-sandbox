@@ -8,5 +8,7 @@ int main(int argc, char * argv[]) {
     auto gridptr = mtao::vdb::gridToVDB(g);
     auto acc = gridptr->getAccessor();
     std::cout << acc.getValue(openvdb::Coord(0,0,0)) << std::endl;
+    auto g2 = mtao::vdb::vdbToGrid(*gridptr);
+    std::cout << g2(0,0,0) << std::endl;
     return 0;
 }

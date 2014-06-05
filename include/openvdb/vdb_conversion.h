@@ -31,6 +31,28 @@ namespace mtao {
 
                 return vg;
             }
+        template <typename GridType>
+            mtao::EmbeddedGrid<typename GridType::ValueType,3> vdbToGrid(const GridType& g) {
+                typedef typename GridType::ValueType ValueType;
+
+                typedef mtao::scalar_types<ValueType> _st;
+                typedef typename _st::Vec3 Vec3;
+                Vec3 dx = vdb2eigen(g.voxelSize()).template cast<ValueType>();
+                auto cbb = g.evalActiveVoxelBoundingBox();
+                Vec3 origin = vdb2eigen(cbb.min()).template cast<ValueType>();
+
+                mtao::EmbeddedGrid<ValueType,3> mg(vdb2eigen(cbb.extents()),origin,dx);
+
+
+
+                auto acc = g.getAccessor();
+                mg.loop([&](const mtao::Coord3& c, ValueType v) {
+                        openvdb::Coord vc = eigen2vdb(c);
+                        return acc.getValue(vc);
+                        });
+
+                return mg;
+            }
     }
 }
 
