@@ -104,7 +104,13 @@ SET(mesh_HEADERS
     include/mesh/vftriangletopology.h
     )
 
+SET(openvdb_SOURCES
+    )
 
+SET(openvdb_HEADERS
+    include/openvdb/vdb_conversion.h
+    include/openvdb/vdb_utils.h
+    )
 
 SET(ACTIVE_MODULES core mesh)
 

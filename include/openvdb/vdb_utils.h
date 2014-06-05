@@ -37,7 +37,7 @@ namespace mtao {
                         };
                 };
             //method to extract the type of a vdb grid
-            template <template <class> class VecType>
+            template <class VecType>
                 struct vdb_dim{
                     enum {value = VecType::size};
                 };
@@ -61,7 +61,7 @@ namespace mtao {
             template <template <class> class VecType, typename Scalar_>
                 struct vdb_traits <VecType<Scalar_> >{
                     typedef Scalar_ Scalar;
-                    enum {dim = vdb_dim<VecType>::value};
+                    enum {dim = vdb_dim<VecType<Scalar_> >::value};
                 };
 
         }
@@ -86,7 +86,7 @@ namespace mtao {
             return openvdb::Coord(c(0),c(1),c(2));
         }
         mtao::Coord<3> vdb2eigen(const openvdb::Coord& c) {
-            return mtao::Coord<3>(c(0),c(1),c(2));
+            return mtao::Coord<3>(c.x(),c.y(),c.z());
         }
 
     }

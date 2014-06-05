@@ -136,7 +136,7 @@ class Grid{
     void loop(const std::function<void(const Coord&, Scalar)>& f)const {
         CoordIterator<Dim> ci(N());
         for(Scalar v: m_data) {
-            v=f(*ci,v);
+            f(*ci,v);
             ++ci;
         }
     }
