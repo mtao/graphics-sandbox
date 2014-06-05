@@ -8,6 +8,7 @@ class InternalSceneNode: public SceneNode {
     public:
         virtual void render() ;
         virtual mtao::BBox3f bbox() const;
+        virtual void renderBBox() const;
         void add(const SceneNode::Ptr& ptr) ;
     private:
     std::vector<SceneNode::Ptr> children;

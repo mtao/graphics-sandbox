@@ -9,6 +9,7 @@ class SceneNode {
         typedef std::shared_ptr<SceneNode> Ptr;
         virtual void render() = 0;
         virtual mtao::BBox3f bbox() const = 0;
+        virtual void renderBBox() const;
 };
 }}
 #endif

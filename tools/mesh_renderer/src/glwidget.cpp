@@ -35,7 +35,7 @@ void GLWidget::initializeGL() {
     gl.glEnable(GL_DEPTH_TEST);
     gl.glEnable(GL_CULL_FACE);
     gl.glEnable(GL_MULTISAMPLE);
-    openMesh("armadillo.obj");
+    openMesh("/home/mtao/armadillo.obj");
     m_render_mode = RenderMode::FLAT;
     //openMesh("Test.obj");
 }
@@ -201,6 +201,8 @@ void GLWidget::paintGL() {
     gl.glBegin(GL_POINTS);
     gl.glVertex3f(0,0,0);
     gl.glEnd();
+    glColor3f(1,1,1);
+    m_scene->renderBBox();
 
 //    gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     m_render_mode = RenderMode::FLAT;

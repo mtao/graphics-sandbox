@@ -1,7 +1,7 @@
 #ifndef VDB_CONVERSION_H
 #define VDB_CONVERSION_H
 
-#include "../embedded_grid.h"
+#include "../grid/embedded_grid.h"
 #include <openvdb/openvdb.h>
 
 namespace mtao {

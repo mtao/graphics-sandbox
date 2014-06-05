@@ -49,6 +49,7 @@ SET(core_RENDER_SOURCES
     src/render/scene.cpp
     src/render/internalnode.cpp
     src/render/transformnode.cpp
+    src/render/scenenode.cpp
     src/render/qt/shadernode.cpp
     )
 SET(core_RENDER_HEADERS

@@ -2,8 +2,8 @@
 #define VDB_UTILS_H
 
 #include <openvdb/openvdb.h>
-#include "../../types.h"
-#include "../../coord.h"
+#include "../types.h"
+#include "../coord.h"
 #include <openvdb/math/Vec2.h>
 #include <openvdb/math/Vec3.h>
 #include <openvdb/math/Vec4.h>
@@ -85,7 +85,7 @@ namespace mtao {
         openvdb::Coord eigen2vdb(const mtao::Coord<3>& c) {
             return openvdb::Coord(c(0),c(1),c(2));
         }
-        mtao::Coord<3> ceigen2vdb(openvdb::Coord) {
+        mtao::Coord<3> vdb2eigen(const openvdb::Coord& c) {
             return mtao::Coord<3>(c(0),c(1),c(2));
         }
 

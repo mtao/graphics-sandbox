@@ -16,6 +16,15 @@ mtao::BBox3f InternalSceneNode::bbox() const {
     return bb;
 
 }
+
+void InternalSceneNode::renderBBox() const {
+    SceneNode::renderBBox();
+    for(auto&& ptr: children) {
+        ptr->renderBBox();
+    }
+
+}
+
 void InternalSceneNode::add(const SceneNode::Ptr& ptr) {
     children.push_back(ptr);
 }
