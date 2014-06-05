@@ -1,4 +1,5 @@
 #include "grid/grid.h"
+#include "coorditerator.h"
 #include <iostream>
 
 
@@ -37,6 +38,14 @@ int test_3d() {
                 assert(g.coord2idx(i,j,k) == g.coord2idx(v));
             }
         }
+    }
+    mtao::CoordIterator<3> ci(g.N());
+    for(; ci; ++ci) {
+        auto&& v = *ci;
+        int i = v(0);
+        int j = v(1);
+        int k = v(2);
+        assert(g.coord2idx(i,j,k) == g.coord2idx(v));
     }
     return 0;
 }

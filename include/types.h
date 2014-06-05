@@ -38,6 +38,8 @@ namespace mtao{
     typedef Eigen::AlignedBox<int,Eigen::Dynamic> BBoxXi;
     typedef Coord<3> Coord3;
     typedef Coord<2> Coord2;
+    typedef Eigen::AlignedBox<int,2> CoordBBox2;
+    typedef Eigen::AlignedBox<int,3> CoordBBox3;
     template <typename T, int Dim>
         struct numerical_types {
             typedef Eigen::Matrix<T,Dim,1> Vec;
@@ -70,6 +72,7 @@ namespace mtao{
             typedef Eigen::AlignedBox<double,Dim> BBoxd;
             typedef Eigen::AlignedBox<int,Dim> BBox;
             typedef mtao::Coord<Dim> Coord;
+            typedef Eigen::AlignedBox<int,Dim> CoordBBox;
             template <typename T>
                 using scalar_types = numerical_types<T,Dim>;
         };

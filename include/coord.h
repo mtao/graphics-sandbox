@@ -13,6 +13,7 @@ namespace mtao {
                 Coord(const int& a, const int& b);
                 Coord(const int& a, const int& b, const int& c);
                 Coord(const int& a, const int& b, const int& c, const int& d);
+                Coord(const Base& b): Base(b) {}
                 Coord(const std::initializer_list<int>& list);
                 //Lexicographical ordering
                 inline bool operator<(const Coord& other) const;

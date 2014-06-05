@@ -3,6 +3,7 @@
 #include "types.h"
 #include "traits.h"
 #include "lerp.h"
+#include "../coorditerator.h"
 #include <vector>
 #include <memory>
 
@@ -69,6 +70,7 @@ class Grid{
         return coord2idx(Coord(a,b,c));
     }
     int coord2idx(const Coord& c)const {
+        //Note:: Higher indices change the fastest
         int idx=c(0);
         for(int i=1; i <dim; ++i) {
             idx = m_N(i) * idx + c(i);
@@ -76,6 +78,7 @@ class Grid{
         return idx;
     }
     void idx2coord(int idx, Coord & c) {
+        //Note:: Higher indices change the fastest
         for(int i=dim-1; i >= 0; --i) {
         c(i) = idx%m_N(i);
         idx = idx/m_N(i);
@@ -117,34 +120,24 @@ class Grid{
     typename std::vector<Scalar>::const_iterator cbegin() {return m_data.cbegin();}
     typename std::vector<Scalar>::const_iterator cend() {return m_data.cend();}
 
-    void incrementLoop(Coord& c)const {
-        for(int i = dim-1; i >= 0; --i) {
-            if(++c(i) >= m_N(i)) {
-                c(i)=0;
-                continue;
-            } else {
-                return;
-            }
-        }
-    }
     //Looping
     //Provides the index-space coordinate of the vector and the current value in the grid
     //Expects a value returned for writing
     Grid& loop(const std::function<Scalar(const Coord&, Scalar)>& f) {
-        Coord coord(Coord::Zero());
+        CoordIterator<Dim> ci(N());
         for(Scalar& v: m_data) {
-            v=f(coord,v);
-            incrementLoop(coord);
+            v=f(*ci,v);
+            ++ci;
         }
         return *this;
     }
     //Provides the index-space coordinate of the vector and the current value in the grid
     //Doesn't expect any modification of the grid
     void loop(const std::function<void(const Coord&, Scalar)>& f)const {
-        Coord coord(Coord::Zero());
+        CoordIterator<Dim> ci(N());
         for(Scalar v: m_data) {
-            f(coord,v);
-            incrementLoop(coord);
+            v=f(*ci,v);
+            ++ci;
         }
     }
     //Provides a value-by-value evaluation
