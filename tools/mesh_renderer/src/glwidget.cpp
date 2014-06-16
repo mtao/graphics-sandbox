@@ -5,7 +5,7 @@
 #include <iostream>
 #include "render/scene.h"
 
-GLWidget::GLWidget(QWidget * parent ): QGLWidget(parent), m_scene(std::make_shared<mtao::rendering::InternalSceneNode>()) {
+GLWidget::GLWidget(QWidget * parent ): QGLWidget(parent), m_scene(std::make_shared<mtao::rendering::Scene>()) {
     for(auto&& shader: m_shaders) {
         shader.add(m_scene);
     }

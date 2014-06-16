@@ -6,11 +6,13 @@ namespace mtao { namespace rendering {
     Scene::Scene() {
         glewInit();
     }
-    mtao::BBox3f Scene::bbox() const {
-        return root->bbox();
-    }
 
     void Scene::render() {
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
+        InternalSceneNode::render();
+        glPopMatrix();
     }
 }
 }

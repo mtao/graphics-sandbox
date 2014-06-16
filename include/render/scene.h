@@ -3,16 +3,14 @@
 #include <memory>
 #include <vector>
 #include "types.h"
-#include "scenenode.h"
+#include "internalnode.h"
 
 namespace mtao { namespace rendering{
-class Scene: public SceneNode {
+class Scene: public InternalSceneNode {
     public:
         Scene();
         void render();
-        mtao::BBox3f bbox() const;
     private:
-        std::unique_ptr<SceneNode> root;
 };
 }}
 
