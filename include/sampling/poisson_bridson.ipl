@@ -1,0 +1,115 @@
+#ifndef BRIDSON_POISSON_SAMPLING_IPL
+#define BRIDSON_POISSON_SAMPLING_IPL
+
+#ifndef BRIDSON_POISSON_SAMPLING_H
+#include "poisson_bridson.h"
+#endif
+
+#include <random>
+#include <iostream>
+namespace mtao {
+    template <typename Scalar, int Dim>
+        auto BridsonSampler<Scalar,Dim>::sample(Scalar r, size_t k, const BBox& bb) const -> std::vector<Vec> {
+            std::vector<Vec> v;
+            sample(v,r,k,bb);
+            return v;
+        }
+
+    template <typename Scalar, int Dim>
+        void BridsonSampler<Scalar,Dim>::sample(std::vector<Vec>& v, Scalar r, size_t k, const BBox& bb) const {
+            IGrid g(bb,r);
+
+            std::random_device rd;
+            std::default_random_engine e(rd());
+            std::uniform_real_distribution<Scalar> ud(0,1);
+
+
+            auto getRandVec = [&]() -> Vec {
+                Vec v;
+                for(int i=0; i < Dim; ++i) {
+                    v(i) = ud(e);
+                }
+                return v;
+            };
+            auto getRadial = [&](const Vec& p) -> Vec {
+                Vec v = getRandVec().array()-.5;
+                v.normalize();
+                v *= r*(1+ud(e));
+                return v + p;
+            };
+            v.push_back(getRandVec().cwiseProduct(bb.sizes()) + bb.min()); 
+            g(g.wld2idx(v[0])) = 0;
+
+
+            for(size_t idx=0; idx < v.size(); ++idx) {
+                auto&& x = v[idx];
+                for(int k_=0; k_<k; ++k_) {
+                    Vec y = getRadial(x);
+                    if(bb.contains(y)) {
+                        Veci coord = g.wld2idx(y);
+                        bool hasIsect=false;
+
+
+
+
+
+
+
+
+
+
+                        for(int counter = 0; counter < std::pow(3,Dim); ++counter) {
+                            Veci p = coord;
+                            int c2 = counter;
+                            bool oob=false;
+                            for(int i=0; i < Dim; ++i) {
+                                p(i) += (c2%3)-1;
+                                if(p(i) < 0 || p(i) >= g.N(i)) {
+                                    oob = true;
+                                    break;
+                                }
+                                c2/=3;
+                            }
+                            if(oob) {
+                                continue;
+                            }
+
+                            int idx2=g(p);
+                            if(idx2<0) {
+                                continue;
+                            }
+                            const Vec& z = v[idx2];
+                            if((y-z).norm() < r) {
+                                hasIsect=true;
+                                break;
+                            }
+                        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        if(!hasIsect) {
+                            g(coord) = v.size();
+                            v.push_back(y);
+                        }
+                    }
+                }
+            }
+
+        }
+}
+
+#endif
