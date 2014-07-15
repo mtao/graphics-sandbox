@@ -37,13 +37,17 @@ namespace mtao {
                 v *= r*(1+ud(e));
                 return v + p;
             };
-            v.push_back(getRandVec().cwiseProduct(bb.sizes()) + bb.min()); 
-            g(g.wld2idx(v[0])) = 0;
+            if(v.size() == 0) {
+                v.push_back(getRandVec().cwiseProduct(bb.sizes()) + bb.min()); 
+            }
+            for(size_t i=0; i < v.size(); ++i) {
+                g(g.wld2idx(v[i])) = i;
+            }
 
 
             for(size_t idx=0; idx < v.size(); ++idx) {
                 auto&& x = v[idx];
-                for(int k_=0; k_<k; ++k_) {
+                for(size_t k_=0; k_<k; ++k_) {
                     Vec y = getRadial(x);
                     if(bb.contains(y)) {
                         Veci coord = g.wld2idx(y);
