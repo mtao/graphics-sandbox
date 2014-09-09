@@ -9,14 +9,14 @@
 #include <iostream>
 namespace mtao {
     template <typename Scalar, int Dim>
-        auto BridsonSampler<Scalar,Dim>::sample(Scalar r, size_t k, const BBox& bb) const -> std::vector<Vec> {
-            std::vector<Vec> v;
+        auto BridsonSampler<Scalar,Dim>::sample(Scalar r, size_t k, const BBox& bb) const -> VecVector {
+            VecVector v;
             sample(v,r,k,bb);
             return v;
         }
 
     template <typename Scalar, int Dim>
-        void BridsonSampler<Scalar,Dim>::sample(std::vector<Vec>& v, Scalar r, size_t k, const BBox& bb) const {
+        void BridsonSampler<Scalar,Dim>::sample(VecVector& v, Scalar r, size_t k, const BBox& bb) const {
             IGrid g(bb,r);
 
             std::random_device rd;

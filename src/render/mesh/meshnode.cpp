@@ -70,9 +70,9 @@ auto MeshSceneNode::create(const std::string& filename) -> Ptr{
     size_t count = indices.size();
     ibo.allocate(indices.data(),indices.size()*sizeof(GLuint));
     std::cout << "Loaded mesh from file: (" << filename << ")BBox: " << bb.min().transpose() << " -> " << bb.max().transpose() << std::endl;
-    auto ptr = std::shared_ptr<MeshSceneNode>(new MeshSceneNode(vbo,ibo,QOpenGLBuffer(),count,bb));
+    auto ptr = new MeshSceneNode(vbo,ibo,QOpenGLBuffer(),count,bb);
     ptr->mesh = mesh;
-    return ptr;
+    return std::shared_ptr<MeshSceneNode>(ptr);
 
 }
 

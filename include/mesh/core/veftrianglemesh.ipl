@@ -1,0 +1,52 @@
+#ifndef VEFTRIANGLEMESH_IPL
+#define VEFTRIANGLEMESH_IPL
+#ifndef VEFTRIANGLEMESH_H
+#include "veftrianglemesh.h"
+#endif
+
+template <typename Scalar>
+VEFTriangleMesh<Scalar>::VEFTriangleMesh(): VFMesh() {}
+
+
+template <typename Scalar>
+VEFTriangleMesh<Scalar>::VEFTriangleMesh(const TriangleSet& triangles, const VertexVector& vertices): VFMesh(triangles,vertices) {
+    generateEdgesFromTriangles();
+}
+
+
+template <typename Scalar>
+VEFTriangleMesh<Scalar>::VEFTriangleMesh(const VEFTriangleMesh& other): VFMesh(dynamic_cast<VFMesh>(other)), m_edges(other.m_edges) {
+
+}
+template <typename Scalar>
+VEFTriangleMesh<Scalar>::VEFTriangleMesh(VEFTriangleMesh&& other): VFMesh(dynamic_cast<VFMesh&&>(other)), m_edges(std::move(other.m_edges)) {
+
+}
+template <typename Scalar>
+VEFTriangleMesh<Scalar>::VEFTriangleMesh(const VFMesh& other): VFMesh(dynamic_cast<VFMesh>(other)) {
+    generateEdgesFromTriangles();
+}
+template <typename Scalar>
+VEFTriangleMesh<Scalar>::VEFTriangleMesh(VFMesh&& other): VFMesh(other) {
+    generateEdgesFromTriangles();
+}
+
+
+
+template <typename Scalar>
+void VEFTriangleMesh<Scalar>::generateEdgesFromTriangles() {
+    for(auto&& t: VFMesh::m_triangles) {
+        for(int i=0; i < 3; ++i) {
+            int a=t(i);
+            int b=t((i+1)%3);
+            if(a<b) {
+                m_edges.emplace(a,b);
+            } else {
+                m_edges.emplace(b,a);
+            }
+        }
+    }
+
+}
+
+#endif

@@ -4,7 +4,7 @@
 #include <memory>
 
 namespace mtao{namespace rendering{
-class SceneNode: std::enable_shared_from_this<SceneNode> {
+class SceneNode: public std::enable_shared_from_this<SceneNode> {
     public:
         typedef std::shared_ptr<SceneNode> Ptr;
         virtual void render() = 0;

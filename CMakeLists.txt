@@ -112,6 +112,14 @@ SET(openvdb_HEADERS
     include/openvdb/vdb_utils.h
     )
 
+SET(sampling_SOURCES
+    )
+
+SET(sampling_HEADERS
+    include/sampling/poisson_bridson.h
+    include/sampling/poisson_bridson.ipl
+    )
+
 SET(ACTIVE_MODULES core mesh)
 
 FOREACH(MOD ${ACTIVE_MODULES})

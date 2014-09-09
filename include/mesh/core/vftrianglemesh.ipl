@@ -1,0 +1,55 @@
+#ifndef VFTRIANGLEMESH_IPL
+#define VFTRIANGLEMESH_IPL
+#ifndef VFTRIANGLEMESH_H
+#include "vftrianglemesh.h"
+#endif
+
+#include <iostream>
+template <typename Scalar>
+VFTriangleMesh<Scalar>::VFTriangleMesh() {}
+
+template <typename Scalar>
+VFTriangleMesh<Scalar>::VFTriangleMesh(const std::string& filename) {
+    internal::MeshConstructor<VFTriangleMesh<Scalar> > constructor(filename);
+    constructor.emplace(*this);
+
+}
+
+
+template <typename Scalar>
+internal::MeshConstructor<VFTriangleMesh<Scalar> >::MeshConstructor(const std::string& str) {
+    load(str);
+}
+template <typename Scalar>
+void internal::MeshConstructor<VFTriangleMesh<Scalar> >::load(const std::string& str, internal::MeshFileType type) {
+    std::shared_ptr<MeshFileReaderBase<Scalar> > file_reader = internal::selectFileReader<Scalar>(str,type);
+    triangles.clear();
+    vertices.clear();
+    file_reader->parse(*this);
+
+}
+template <typename Scalar>
+void internal::MeshConstructor<VFTriangleMesh<Scalar> >::add_triangle(int a, int b, int c){ 
+//    triangles.emplace(a,b,c);
+}
+
+template <typename Scalar>
+void internal::MeshConstructor<VFTriangleMesh<Scalar> >::add_vertex(Scalar a, Scalar b, Scalar c){ 
+    vertices.emplace_back(a,b,c);
+}
+
+template <typename Scalar>
+void internal::MeshConstructor<VFTriangleMesh<Scalar> >::write(mesh_type& mesh) const{
+    mesh.triangles() = triangles;
+    mesh.vertices() = vertices;
+    for(int i=0; i < vertices.size(); ++i) {
+        std::cout << mesh.vertices()[i].transpose() << "||||" << vertices[i].transpose() << std::endl;
+    }
+}
+template <typename Scalar>
+void internal::MeshConstructor<VFTriangleMesh<Scalar> >::emplace(mesh_type& mesh) {
+    mesh.triangles() = std::move(triangles);
+    mesh.vertices() = std::move(vertices);
+}
+
+#endif

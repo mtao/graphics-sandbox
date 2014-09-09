@@ -3,6 +3,7 @@
 
 #include "../types.h"
 #include <vector>
+#include <Eigen/StdVector>
 
 namespace mtao {
     template <typename Scalar, int Dim>
@@ -12,10 +13,11 @@ namespace mtao {
                 typedef typename NumTraits::Vec Vec;
                 typedef typename NumTraits::Veci Veci;
                 typedef typename NumTraits::BBox BBox;
+                typedef typename std::vector<Vec,Eigen::aligned_allocator<Vec> > VecVector;
                 BridsonSampler() = default;
 
-                std::vector<Vec> sample(Scalar r=Scalar(0.01), size_t k=30, const BBox& bb = BBox(Vec::Zero(),Vec::Ones())) const;//r = radius, k = num retries
-                void sample(std::vector<Vec>& v, Scalar r=Scalar(0.01), size_t k=30, const BBox& bb = BBox(Vec::Zero(),Vec::Ones())) const;//r = radius, k = num retries
+                VecVector sample(Scalar r=Scalar(0.01), size_t k=30, const BBox& bb = BBox(Vec::Zero(),Vec::Ones())) const;//r = radius, k = num retries
+                void sample(VecVector& v, Scalar r=Scalar(0.01), size_t k=30, const BBox& bb = BBox(Vec::Zero(),Vec::Ones())) const;//r = radius, k = num retries
 
             private:
                 class IGrid {

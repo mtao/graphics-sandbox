@@ -3,13 +3,13 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 
-std::vector<mtao::Vec2f> vec; 
+std::vector<mtao::Vec2f,Eigen::aligned_allocator<mtao::Vec2f> > vec; 
 
 void render() {
     glClearColor(0,0,0,1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     mtao::BridsonSampler<float,2> bs;
-    vec = bs.sample();
+    vec = bs.sample(0.05);
 
     glColor3f(1,1,1);
     glBegin(GL_POINTS);
