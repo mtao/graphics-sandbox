@@ -6,7 +6,7 @@ PROJECT( Tools )
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES(SYSTEM ${CMAKE_CURRENT_BINARY_DIR})
-INCLUDE_DIRECTORIES(SYSTEM /usr/local/include/eigen3)
+INCLUDE_DIRECTORIES(SYSTEM /usr/include/eigen3)
 ADD_DEFINITIONS(-std=c++14)
 ADD_DEFINITIONS(-Wall)
 ADD_DEFINITIONS(-g)
@@ -28,12 +28,14 @@ SET(VIS_HDRS
     include/imgui_impl.h
     include/shader_program.hpp
     include/line_renderer.hpp
+    include/mesh_renderer.hpp
     )
 SET(VIS_SRCS
     src/line_renderer.cpp
     src/renderer.cpp
     src/imgui_impl.cpp
     src/shader_program.cpp
+    src/mesh_renderer.cpp
 
     external/imgui/imgui_draw.cpp
     external/imgui/imgui.cpp
@@ -60,4 +62,15 @@ TARGET_LINK_LIBRARIES(vis_demo GLEW glfw ${OPENGL_GL_LIBRARY} GL
 
 
 
+ADD_EXECUTABLE(voronoi_test
+    src/voronoi_test.cpp
+    ${VIS_SRCS}
+    ${VIS_HDRS}
+    )
+
+
+TARGET_INCLUDE_DIRECTORIES(voronoi_test SYSTEM PUBLIC ${GLFW3_INCLUDE_DIRS})
+TARGET_INCLUDE_DIRECTORIES(voronoi_test PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui)
+TARGET_LINK_LIBRARIES(voronoi_test GLEW glfw ${OPENGL_GL_LIBRARY} GL
+    ${CMAKE_THREAD_LIBS_INIT})
 
