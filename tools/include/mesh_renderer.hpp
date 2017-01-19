@@ -6,6 +6,7 @@
 #include "renderer.hpp"
 #include <Eigen/Dense>
 #include "mesh/simplexmesh.h"
+#include <glm/glm.hpp>
 
 class MeshRenderer: public Renderer {
     public:

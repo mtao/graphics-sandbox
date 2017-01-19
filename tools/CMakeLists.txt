@@ -26,6 +26,7 @@ SET(VIS_HDRS
     include/shader_program.hpp
     include/line_renderer.hpp
     include/mesh_renderer.hpp
+    include/scene_renderer.hpp
     )
 SET(VIS_SRCS
     src/line_renderer.cpp
@@ -33,6 +34,7 @@ SET(VIS_SRCS
     src/imgui_impl.cpp
     src/shader_program.cpp
     src/mesh_renderer.cpp
+    src/scene_renderer.cpp
 
     external/imgui/imgui_draw.cpp
     external/imgui/imgui.cpp
