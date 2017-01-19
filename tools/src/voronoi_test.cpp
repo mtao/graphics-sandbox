@@ -84,8 +84,8 @@ int setup() {
     std::uniform_int_distribution<double> uniform_dist(-1,1);
     */
 
-    vertices = Eigen::MatrixXf::Random(3,100);
-    vertices.row(2).array() = 0;
+    vertices = Eigen::MatrixXf::Random(2,100);
+    //vertices.row(2).array() = 0;
 
     indices.resize(2,100);
     for(int i = 0; i < 100; ++i) {

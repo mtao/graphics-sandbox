@@ -9,10 +9,11 @@ namespace mtao { namespace geometry { namespace mesh {
     template <int Dim>
         class SimplexMesh {
             public:
+                using Vec2 = mtao::geometry::Vec2;
                 using Vec3 = mtao::geometry::Vec3;
                 using Scalar = mtao::geometry::config::Scalar;
 
-                using VertexMat = Eigen::Matrix<Scalar,3,Eigen::Dynamic>;
+                using VertexMat = Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>;
                 using SimplexMat = Eigen::Matrix<int,Dim+1,Eigen::Dynamic>;
 
 

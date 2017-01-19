@@ -7,11 +7,11 @@
 MeshRenderer::MeshRenderer(const std::shared_ptr<MeshWrapperBase>& m): mMesh(m) {
     // Shaders
     static const GLchar* linesVertexShaderSource = "#version 330 core\n"
-        "layout (location = 0) in vec3 position;\n"
+        "layout (location = 0) in vec2 position;\n"
         "uniform vec2 scale;\n"
         "void main()\n"
         "{\n"
-        "   gl_Position = vec4(scale*position.xy, position.z, 1.0);\n"
+        "   gl_Position = vec4(scale*position,0, 1.0);\n"
         //"   gl_Position = vec4(position, 0.0, 1.0);\n"
         "}\n\0";
     static const GLchar* linesFragmentShaderSource = "#version 330 core\n"
@@ -75,7 +75,7 @@ void MeshRenderer::_render(int w, int h) {
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glVertexAttribPointer(
             0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-            3,                  // size
+            mMesh->dimension(),                  // size
             GL_FLOAT,           // type
             GL_FALSE,           // normalized?
             0,                  // stride

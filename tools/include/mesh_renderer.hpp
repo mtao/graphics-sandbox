@@ -39,6 +39,7 @@ class MeshRenderer::MeshWrapperBase {
         virtual int numVertices() const = 0;
         virtual int numFacets() const = 0;
         virtual int verticesPerFacet() const = 0;
+        virtual int dimension() const = 0;
         GLenum renderEnum() {
             switch(verticesPerFacet()) {
                 case 1: return GL_POINTS;
@@ -82,6 +83,9 @@ class MeshRenderer::SimplexMeshWrapper: public MeshRenderer::MeshWrapperBase {
 
         int verticesPerFacet() const {
             return D+1;
+        }
+        int dimension() const {
+            return sm->vertices().rows();
         }
 
     private:
