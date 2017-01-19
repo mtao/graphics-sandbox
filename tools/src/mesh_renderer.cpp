@@ -4,14 +4,14 @@
 #include <iomanip>
 
 
-MeshRenderer::MeshRenderer(const Eigen::MatrixXf& v, const Eigen::MatrixXi& i): mVertices(v), mIndices(i) {
+MeshRenderer::MeshRenderer(const std::shared_ptr<MeshWrapperBase>& m): mMesh(m) {
     // Shaders
     static const GLchar* linesVertexShaderSource = "#version 330 core\n"
-        "layout (location = 0) in vec2 position;\n"
+        "layout (location = 0) in vec3 position;\n"
         "uniform vec2 scale;\n"
         "void main()\n"
         "{\n"
-        "   gl_Position = vec4(scale*position, 0.0, 1.0);\n"
+        "   gl_Position = vec4(scale*position.xy, position.z, 1.0);\n"
         //"   gl_Position = vec4(position, 0.0, 1.0);\n"
         "}\n\0";
     static const GLchar* linesFragmentShaderSource = "#version 330 core\n"
@@ -37,12 +37,12 @@ MeshRenderer::MeshRenderer(const Eigen::MatrixXf& v, const Eigen::MatrixXi& i): 
 
     glGenBuffers(1, &mVBO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(float), mVertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m->vertexSize() * sizeof(float), m->vertexData(), GL_STATIC_DRAW);
 
     glGenBuffers(1, &mEBO);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() * sizeof(int), mIndices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m->facetSize() * sizeof(int), m->facetData(), GL_STATIC_DRAW);
 
 
     glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
@@ -51,6 +51,7 @@ MeshRenderer::MeshRenderer(const Eigen::MatrixXf& v, const Eigen::MatrixXi& i): 
 
 
     glPointSize(5);
+    glLineWidth(5);
 
 
 }
@@ -74,7 +75,7 @@ void MeshRenderer::_render(int w, int h) {
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glVertexAttribPointer(
             0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-            2,                  // size
+            3,                  // size
             GL_FLOAT,           // type
             GL_FALSE,           // normalized?
             0,                  // stride
@@ -86,9 +87,10 @@ void MeshRenderer::_render(int w, int h) {
 
     glUniform2f(mScaleUniform,mScale,mScale);
     glUniform3f(mColorUniform,1,1,1);
-    glDrawArrays(GL_POINTS, 0, mVertices.cols()); // 3 indices starting at 0 -> 1 triangle
+    glDrawArrays(GL_POINTS, 0, mMesh->numVertices()); // 3 indices starting at 0 -> 1 triangle
+    //glDrawArrays(GL_POINTS, 0, mMesh->vertexSize()); // 3 indices starting at 0 -> 1 triangle
     glUniform3f(mColorUniform,1,0,0);
-    glDrawElements(GL_LINES, mIndices.size(), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(mMesh->renderEnum(), mMesh->facetSize(), GL_UNSIGNED_INT, nullptr);
 
     glDisableVertexAttribArray(0);
 

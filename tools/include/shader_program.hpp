@@ -38,7 +38,7 @@ struct ShaderProgram::Guard {
 };
 
 
-struct ShaderProgram::Constructor {
+class ShaderProgram::Constructor {
     public:
         class Shader;
         struct tags {

@@ -17,7 +17,7 @@
 #include "mesh_renderer.hpp"
 #include <random>
 #include <Eigen/Dense>
-#include <voro++.hh>
+#include <voro++/voro++.hh>
 
 void prepareImgui();
 void updateLogic();
@@ -84,19 +84,24 @@ int setup() {
     std::uniform_int_distribution<double> uniform_dist(-1,1);
     */
 
-    vertices = Eigen::MatrixXf::Random(2,100);
+    vertices = Eigen::MatrixXf::Random(3,100);
+    vertices.row(2).array() = 0;
 
     indices.resize(2,100);
     for(int i = 0; i < 100; ++i) {
         indices.col(i) = Eigen::Vector2i(i,(i+1)%100);
     }
-    int nx=3;
-    int ny=3;
-    int nz=3;
+    int n_x=3;
+    int n_y=3;
+    int n_z=3;
     voro::container con(-1,1,-1,1,-1,1,n_x,n_y,n_z,false,false,false,0);
     std::cout << indices << std::endl;
 
-    renderer = std::make_unique<MeshRenderer>(vertices, indices);
+    using Mesh = mtao::geometry::mesh::SimplexMesh<1>;
+
+
+    auto mesh = std::make_shared<Mesh>(vertices, indices);
+    renderer = std::make_unique<MeshRenderer>(mesh);
 
     return 0;
 }
