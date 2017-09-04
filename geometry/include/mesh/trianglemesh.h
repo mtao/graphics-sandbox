@@ -4,6 +4,7 @@
 #include <set>
 #include <Eigen/Dense>
 #include <string>
+#include <memory>
 #include "simplexmesh.h"
 
 namespace mtao { namespace geometry { namespace mesh {
@@ -17,7 +18,7 @@ namespace mtao { namespace geometry { namespace mesh {
         using BaseMesh::BaseMesh;
 
 
-        static TriangleMesh readObj(const std::string & path);
+        static std::shared_ptr<TriangleMesh> readObj(const std::string & path);
         void writeObj(const std::string & path);
 
 

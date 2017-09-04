@@ -20,7 +20,7 @@ namespace mtao { namespace geometry { namespace mesh {
     }
 
 
-    TriangleMesh TriangleMesh::readObj(const std::string & path) {
+    std::shared_ptr<TriangleMesh> TriangleMesh::readObj(const std::string & path) {
         typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
         std::ifstream ifs(path);
 
@@ -28,8 +28,9 @@ namespace mtao { namespace geometry { namespace mesh {
         auto readFirstIntFromIterator = [](tokenizer::iterator & it) -> size_t {
             static boost::char_separator<char> sep("//");
             tokenizer tok(*it,sep);
+            int v = atoi(tok.begin()->c_str())-1;
             it++;
-            return atoi(tok.begin()->c_str())-1;
+            return v;
 
         };
         auto readFirstDoubleFromIterator = [](tokenizer::iterator & it) -> double {
@@ -57,13 +58,18 @@ namespace mtao { namespace geometry { namespace mesh {
         }
 
 
-        Eigen::Matrix<Scalar,3,Eigen::Dynamic> vertices(3,nfaces);
-        Eigen::Matrix<int,3,Eigen::Dynamic> faces(3,nverts);
+        Eigen::Matrix<Scalar,3,Eigen::Dynamic> vertices(3,nverts);
+        Eigen::Matrix<int,3,Eigen::Dynamic> faces(3,nfaces);
 
 
 
         int vind = 0;
         int find = 0;
+
+         ifs = std::ifstream(path);
+        //ifs.seekg(0, std::ios::beg);
+        //ifs.seekg(0);
+
 
 
         while(getline(ifs,line)) {
@@ -97,7 +103,7 @@ namespace mtao { namespace geometry { namespace mesh {
 
             }
         }
-        return {vertices,faces};
+        return std::make_shared<TriangleMesh>(vertices,faces);
     }
     /*
     double TriangleMesh::intersect(const Triangle & t, const Eigen::ParametrizedLine<double,3> & ray)const {
