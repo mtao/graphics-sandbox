@@ -33,9 +33,20 @@ MeshRenderer::MeshRenderer(const std::shared_ptr<MeshWrapperBase>& m): mMesh(m) 
 
 
     glGenVertexArrays(1, &mVAO);
+    glGenBuffers(1, &mVBO);
+
+    if(mMesh) {
+        load(mMesh);
+    }
+
+    glPointSize(5);
+    glLineWidth(5);
+}
+
+    
+void MeshRenderer::load(const std::shared_ptr<MeshWrapperBase>& m) {
     glBindVertexArray(mVAO);
 
-    glGenBuffers(1, &mVBO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, m->vertexSize() * sizeof(float), m->vertexData(), GL_STATIC_DRAW);
 
@@ -50,8 +61,6 @@ MeshRenderer::MeshRenderer(const std::shared_ptr<MeshWrapperBase>& m): mMesh(m) 
     glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
 
 
-    glPointSize(5);
-    glLineWidth(5);
 
 
 }
@@ -65,7 +74,9 @@ MeshRenderer::~MeshRenderer() {
 
 
 void MeshRenderer::_render(int w, int h) {
-    glClear( GL_COLOR_BUFFER_BIT );
+    if(!mMesh) {
+        return;
+    }
 
     auto g = program()->guard();
 

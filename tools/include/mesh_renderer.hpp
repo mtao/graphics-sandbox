@@ -20,6 +20,10 @@ class MeshRenderer: public Renderer {
         void _render(int w, int h) override;
 
         GLfloat& scale() { return mScale; }
+        
+        void load(const std::shared_ptr<MeshWrapperBase>& m);
+        template <int D>
+        void load(const std::shared_ptr<mtao::geometry::mesh::SimplexMesh<D>>& m){ load(std::make_shared<SimplexMeshWrapper<D>>(m)); }
 
     private:
         std::shared_ptr<MeshWrapperBase> mMesh;
