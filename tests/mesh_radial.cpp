@@ -11,6 +11,7 @@
 #endif
 #include <igl/read_triangle_mesh.h>
 #include <igl/centroid.h>
+#include <igl/embree/EmbreeIntersector.h>
 #endif
 #include <Eigen/Sparse>
 #include <iostream>
@@ -24,6 +25,7 @@ Eigen::MatrixXd Vmesh;
 Eigen::MatrixXi Fmesh;
 Eigen::MatrixXd Vsh;
 Eigen::MatrixXi Fsh;
+
 
 
 constexpr static int SHDim = 4;
